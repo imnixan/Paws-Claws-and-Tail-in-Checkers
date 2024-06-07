@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using static System.IO.Path;
-
-
 #pragma warning disable IDE0005
 using Serilog = Meryel.UnityCodeAssist.Serilog;
 #pragma warning restore IDE0005
@@ -76,7 +74,7 @@ namespace Meryel.UnityCodeAssist.Editor
     // https://github.com/dmitrynogin/cdsf/blob/master/Cds.Folders/OSPath.cs
     internal class OSPath
     {
-        public static readonly OSPath Empty = "";
+        public static OSPath Empty = "";
 
         public static bool IsWindows => DirectorySeparatorChar == '\\';
 
@@ -86,13 +84,16 @@ namespace Meryel.UnityCodeAssist.Editor
         }
 
         public static implicit operator OSPath(string text) => new OSPath(text);
+
         public static implicit operator string(OSPath path) => path.Normalized;
+
         public override string ToString() => Normalized;
 
         protected string Text { get; }
 
         public string Normalized => IsWindows ? Windows : Unix;
         public string Windows => Text.Replace('/', '\\');
+
         //public string Unix => Simplified.Text.Replace('\\', '/');
         public string Unix => Text.Replace('\\', '/');
 
@@ -106,15 +107,14 @@ namespace Meryel.UnityCodeAssist.Editor
 
         public OSPath Parent => GetDirectoryName(Text);
 
-        public bool Contains(OSPath path) =>
-            Normalized.StartsWith(path);
+        public bool Contains(OSPath path) => Normalized.StartsWith(path);
 
         public static OSPath operator +(OSPath left, OSPath right) =>
             new OSPath(Combine(left, right.Relative));
 
         public static OSPath operator -(OSPath left, OSPath right) =>
             left.Contains(right)
-            ? new OSPath(left.Normalized.Substring(right.Normalized.Length)).Relative
-            : left;
+                ? new OSPath(left.Normalized.Substring(right.Normalized.Length)).Relative
+                : left;
     }
 }

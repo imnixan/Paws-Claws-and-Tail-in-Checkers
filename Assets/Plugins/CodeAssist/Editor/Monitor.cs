@@ -1,12 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-
-
 #pragma warning disable IDE0005
 using Serilog = Meryel.UnityCodeAssist.Serilog;
 #pragma warning restore IDE0005
@@ -17,18 +15,17 @@ using Serilog = Meryel.UnityCodeAssist.Serilog;
 
 namespace Meryel.UnityCodeAssist.Editor
 {
-
     //[InitializeOnLoad]
     public static class Monitor
     {
-        private readonly static string tagManagerFilePath;
+        private static string tagManagerFilePath;
         private static System.DateTime previousTagManagerLastWrite;
 
         private static bool isAppFocused;
         private static bool isAppFocusedOnTagManager;
 
         private static int dirtyCounter;
-        private static readonly Dictionary<GameObject, int> dirtyDict;
+        private static Dictionary<GameObject, int> dirtyDict;
 
         static Monitor()
         {
@@ -39,7 +36,11 @@ namespace Meryel.UnityCodeAssist.Editor
             }
             catch (System.Exception ex)
             {
-                Serilog.Log.Debug(ex, "Exception at {Location}", nameof(System.IO.File.GetLastWriteTime));
+                Serilog.Log.Debug(
+                    ex,
+                    "Exception at {Location}",
+                    nameof(System.IO.File.GetLastWriteTime)
+                );
             }
             dirtyDict = new Dictionary<GameObject, int>();
             dirtyCounter = 0;
@@ -50,10 +51,11 @@ namespace Meryel.UnityCodeAssist.Editor
             //Undo.undoRedoPerformed += MyUndoCallback;
             Selection.selectionChanged += OnSelectionChanged;
             //EditorSceneManager.sceneOpened += EditorSceneManager_sceneOpened;
-            EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManager_activeSceneChangedInEditMode;
+            EditorSceneManager.activeSceneChangedInEditMode +=
+                EditorSceneManager_activeSceneChangedInEditMode;
 
             Application.logMessageReceived += Application_logMessageReceived;
-            //System.Threading.Tasks.TaskScheduler.UnobservedTaskException += 
+            //System.Threading.Tasks.TaskScheduler.UnobservedTaskException +=
         }
 
         /// <summary>
@@ -69,7 +71,12 @@ namespace Meryel.UnityCodeAssist.Editor
 
         private static void EditorSceneManager_sceneOpened(Scene scene, OpenSceneMode mode)
         {
-            Serilog.Log.Debug("Monitor {Event} scene:{Scene} mode:{Mode}", nameof(EditorSceneManager_sceneOpened), scene.name, mode);
+            Serilog.Log.Debug(
+                "Monitor {Event} scene:{Scene} mode:{Mode}",
+                nameof(EditorSceneManager_sceneOpened),
+                scene.name,
+                mode
+            );
             //Debug.Log("EditorSceneManager_sceneOpened");
             OnHierarchyChanged();
         }
@@ -87,7 +94,11 @@ namespace Meryel.UnityCodeAssist.Editor
             }
             catch (System.Exception ex)
             {
-                Serilog.Log.Debug(ex, "Exception at {Location}", nameof(System.IO.File.GetLastWriteTime));
+                Serilog.Log.Debug(
+                    ex,
+                    "Exception at {Location}",
+                    nameof(System.IO.File.GetLastWriteTime)
+                );
             }
             if (currentTagManagerLastWrite != previousTagManagerLastWrite)
             {
@@ -99,7 +110,6 @@ namespace Meryel.UnityCodeAssist.Editor
                 // since unity does not commit changes to the file immediately, checking if user is displaying and focusing on tag manager (tags & layers) inspector
                 isAppFocusedOnTagManager = true;
             }
-            
 
             if (isAppFocused != UnityEditorInternal.InternalEditorUtility.isApplicationActive)
             {
@@ -128,7 +138,9 @@ namespace Meryel.UnityCodeAssist.Editor
             //Assister.SendTagsAndLayers(); Don't send tags & layers here
         }
 
-        static UndoPropertyModification[] MyPostprocessModificationsCallback(UndoPropertyModification[] modifications)
+        static UndoPropertyModification[] MyPostprocessModificationsCallback(
+            UndoPropertyModification[] modifications
+        )
         {
             Serilog.Log.Debug("Monitor {Event}", nameof(MyPostprocessModificationsCallback));
 
@@ -177,11 +189,10 @@ namespace Meryel.UnityCodeAssist.Editor
 
         static void OnSelectionChanged()
         {
-            
             //**--check order, last selected should be sent last as well
             //**--limit here, what if too many?
             //selectedObjects.UnionWith(Selection.objects);
-            foreach(var so in Selection.objects)
+            foreach (var so in Selection.objects)
             {
                 SetDirty(so);
             }
@@ -201,7 +212,7 @@ namespace Meryel.UnityCodeAssist.Editor
                     SetDirty(componentGo);
             }
             //else
-                //;//**--scriptable obj
+            //;//**--scriptable obj
         }
 
         public static void SetDirty(GameObject go)
@@ -227,8 +238,11 @@ namespace Meryel.UnityCodeAssist.Editor
             dirtyCounter = 0;
         }
 
-
-        private static void Application_logMessageReceived(string condition, string stackTrace, LogType type)
+        private static void Application_logMessageReceived(
+            string condition,
+            string stackTrace,
+            LogType type
+        )
         {
             if (type != LogType.Exception && type != LogType.Error && type != LogType.Warning)
                 return;
@@ -241,18 +255,17 @@ namespace Meryel.UnityCodeAssist.Editor
             NetMQInitializer.Publisher?.SendErrorReport(condition, stackTrace, typeStr);
         }
 
-
         public static void LazyLoad(string category)
         {
             if (category == "PlayerPrefs")
             {
                 Preferences.PreferenceMonitor.InstanceOfPlayerPrefs.Bump();
             }
-            else if(category == "EditorPrefs")
+            else if (category == "EditorPrefs")
             {
                 Preferences.PreferenceMonitor.InstanceOfEditorPrefs.Bump();
             }
-            else if(category == "InputManager")
+            else if (category == "InputManager")
             {
                 Input.InputManagerMonitor.Instance.Bump();
             }
@@ -262,5 +275,4 @@ namespace Meryel.UnityCodeAssist.Editor
             }
         }
     }
-
 }

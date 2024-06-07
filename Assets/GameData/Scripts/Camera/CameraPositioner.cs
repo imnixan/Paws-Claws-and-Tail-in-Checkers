@@ -16,12 +16,14 @@ namespace PCTC.Camera
         private int currentside = 1;
 
         private Vector3 gameFieldCenter;
-        private int fieldSize;
+        private int fieldSize = 8;
 
-        public void PlaceCamera(Vector3 gameFieldCenter, int fieldSize)
+        public void PlaceCamera(Vector3 gameFieldCenter, int playerId)
         {
+            Debug.Log("playerID " + playerId);
             this.gameFieldCenter = gameFieldCenter;
-            this.fieldSize = fieldSize;
+
+            int playerSit = playerId == 0 ? -1 : 1;
 
             float viewZoneSize = fieldSize * 1.5f;
             Debug.Log($"center {gameFieldCenter}");
@@ -34,7 +36,8 @@ namespace PCTC.Camera
             // Рассчитываем высоту камеры
             float height = Mathf.Tan(angleInRadians) * horizontalDistance;
             Vector3 cameraPosition =
-                gameFieldCenter + new Vector3(horizontalDistance * currentside, height, 0);
+                gameFieldCenter
+                + new Vector3(horizontalDistance * playerSit * currentside, height, 0);
 
             Transform cameraPlaceHolder = new GameObject("cameraPlaceHolder").transform;
             cameraPlaceHolder.position = cameraPosition;
@@ -45,18 +48,12 @@ namespace PCTC.Camera
             Quaternion cameraEndRotation = cameraPlaceHolder.transform.rotation;
             Destroy(cameraPlaceHolder.gameObject);
 
-            transform.DOMove(cameraPosition, animLength).SetEase(Ease.InOutQuad);
+            transform.DOMove(cameraPosition, animLength).SetEase(Ease.InOutQuad).Play();
 
-            transform.DORotateQuaternion(cameraEndRotation, animLength).SetEase(Ease.InOutQuad);
-        }
-
-        public void Update()
-        {
-            currentside *= -1;
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                PlaceCamera(gameFieldCenter, fieldSize);
-            }
+            transform
+                .DORotateQuaternion(cameraEndRotation, animLength)
+                .SetEase(Ease.InOutQuad)
+                .Play();
         }
     }
 }

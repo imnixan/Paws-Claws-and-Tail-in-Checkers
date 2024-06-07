@@ -1,17 +1,16 @@
-﻿
-/*
+﻿/*
  * Thanks to gr0ss for the inspiration.
- * 
+ *
  * https://github.com/gr0ss/RegistryMonitor
- * 
+ *
  * 11/08/2019
  */
 
 using System;
 using System.ComponentModel;
 using System.IO;
-using System.Threading;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Microsoft.Win32;
 
 //namespace BgTools.PlayerPrefsEditor
@@ -22,10 +21,22 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
         #region P/Invoke
 
         [DllImport("advapi32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern int RegOpenKeyEx(IntPtr hKey, string subKey, uint options, int samDesired, out IntPtr phkResult);
+        private static extern int RegOpenKeyEx(
+            IntPtr hKey,
+            string subKey,
+            uint options,
+            int samDesired,
+            out IntPtr phkResult
+        );
 
         [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern int RegNotifyChangeKeyValue(IntPtr hKey, bool bWatchSubtree, RegChangeNotifyFilter dwNotifyFilter, IntPtr hEvent, bool fAsynchronous);
+        private static extern int RegNotifyChangeKeyValue(
+            IntPtr hKey,
+            bool bWatchSubtree,
+            RegChangeNotifyFilter dwNotifyFilter,
+            IntPtr hEvent,
+            bool fAsynchronous
+        );
 
         [DllImport("advapi32.dll", SetLastError = true)]
         private static extern int RegCloseKey(IntPtr hKey);
@@ -34,13 +45,13 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
         private const int KEY_NOTIFY = 0x0010;
         private const int STANDARD_RIGHTS_READ = 0x00020000;
 
-        private static readonly IntPtr HKEY_CLASSES_ROOT = new IntPtr(unchecked((int)0x80000000));
-        private static readonly IntPtr HKEY_CURRENT_USER = new IntPtr(unchecked((int)0x80000001));
-        private static readonly IntPtr HKEY_LOCAL_MACHINE = new IntPtr(unchecked((int)0x80000002));
-        private static readonly IntPtr HKEY_USERS = new IntPtr(unchecked((int)0x80000003));
-        private static readonly IntPtr HKEY_PERFORMANCE_DATA = new IntPtr(unchecked((int)0x80000004));
-        private static readonly IntPtr HKEY_CURRENT_CONFIG = new IntPtr(unchecked((int)0x80000005));
-        private static readonly IntPtr HKEY_DYN_DATA = new IntPtr(unchecked((int)0x80000006));
+        private static IntPtr HKEY_CLASSES_ROOT = new IntPtr(unchecked((int)0x80000000));
+        private static IntPtr HKEY_CURRENT_USER = new IntPtr(unchecked((int)0x80000001));
+        private static IntPtr HKEY_LOCAL_MACHINE = new IntPtr(unchecked((int)0x80000002));
+        private static IntPtr HKEY_USERS = new IntPtr(unchecked((int)0x80000003));
+        private static IntPtr HKEY_PERFORMANCE_DATA = new IntPtr(unchecked((int)0x80000004));
+        private static IntPtr HKEY_CURRENT_CONFIG = new IntPtr(unchecked((int)0x80000005));
+        private static IntPtr HKEY_DYN_DATA = new IntPtr(unchecked((int)0x80000006));
 
         #endregion
 
@@ -97,12 +108,16 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
         private IntPtr _registryHive;
         private string _registrySubName;
-        private readonly object _threadLock = new object();
+        private object _threadLock = new object();
         private Thread _thread;
         private bool _disposed = false;
-        private readonly ManualResetEvent _eventTerminate = new ManualResetEvent(false);
+        private ManualResetEvent _eventTerminate = new ManualResetEvent(false);
 
-        private RegChangeNotifyFilter _regFilter = RegChangeNotifyFilter.Key | RegChangeNotifyFilter.Attribute | RegChangeNotifyFilter.Value | RegChangeNotifyFilter.Security;
+        private RegChangeNotifyFilter _regFilter =
+            RegChangeNotifyFilter.Key
+            | RegChangeNotifyFilter.Attribute
+            | RegChangeNotifyFilter.Value
+            | RegChangeNotifyFilter.Security;
 
         #endregion
 
@@ -178,7 +193,12 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
                 RegistryHive.LocalMachine => HKEY_LOCAL_MACHINE,
                 RegistryHive.PerformanceData => HKEY_PERFORMANCE_DATA,
                 RegistryHive.Users => HKEY_USERS,
-                _ => throw new InvalidEnumArgumentException("hive", (int)hive, typeof(RegistryHive)),
+                _
+                    => throw new InvalidEnumArgumentException(
+                        "hive",
+                        (int)hive,
+                        typeof(RegistryHive)
+                    ),
             };
             _registrySubName = name;
         }
@@ -214,7 +234,10 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
                 default:
                     _registryHive = IntPtr.Zero;
-                    throw new ArgumentException("The registry hive '" + nameParts[0] + "' is not supported", "value");
+                    throw new ArgumentException(
+                        "The registry hive '" + nameParts[0] + "' is not supported",
+                        "value"
+                    );
             }
 
             _registrySubName = String.Join("\\", nameParts, 1, nameParts.Length - 1);
@@ -284,7 +307,13 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
         private void ThreadLoop()
         {
-            int result = RegOpenKeyEx(_registryHive, _registrySubName, 0, STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_NOTIFY, out IntPtr registryKey);
+            int result = RegOpenKeyEx(
+                _registryHive,
+                _registrySubName,
+                0,
+                STANDARD_RIGHTS_READ | KEY_QUERY_VALUE | KEY_NOTIFY,
+                out IntPtr registryKey
+            );
             if (result != 0)
             {
                 throw new Win32Exception(result);
@@ -296,7 +325,13 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
                 WaitHandle[] waitHandles = new WaitHandle[] { _eventNotify, _eventTerminate };
                 while (!_eventTerminate.WaitOne(0, true))
                 {
-                    result = RegNotifyChangeKeyValue(registryKey, true, _regFilter, _eventNotify.SafeWaitHandle.DangerousGetHandle(), true);
+                    result = RegNotifyChangeKeyValue(
+                        registryKey,
+                        true,
+                        _regFilter,
+                        _eventNotify.SafeWaitHandle.DangerousGetHandle(),
+                        true
+                    );
                     if (result != 0)
                     {
                         throw new Win32Exception(result);
@@ -326,12 +361,15 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
     {
         /// <summary>Notify the caller if a subkey is added or deleted.</summary>
         Key = 1,
+
         /// <summary>Notify the caller of changes to the attributes of the key,
         /// such as the security descriptor information.</summary>
         Attribute = 2,
+
         /// <summary>Notify the caller of changes to a value of the key. This can
         /// include adding or deleting a value, or changing an existing value.</summary>
         Value = 4,
+
         /// <summary>Notify the caller of changes to the security descriptor
         /// of the key.</summary>
         Security = 8,

@@ -7,13 +7,12 @@ namespace PCTC.Handlers
 {
     public class ClickInputHandler : MonoBehaviour
     {
-        public event UnityAction Click;
-        public event UnityAction<ClickInputHandler> ClickTargeted;
+        public event UnityAction<ClickInputHandler> Click;
+        public Vector2Int position;
 
         private void OnMouseDown()
         {
-            this.Click?.Invoke();
-            this.ClickTargeted?.Invoke(this);
+            this.Click?.Invoke(this);
         }
     }
 }

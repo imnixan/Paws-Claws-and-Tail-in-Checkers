@@ -1,11 +1,9 @@
 using System;
 using System.Linq;
 using Meryel.UnityCodeAssist.Serilog;
+using Meryel.UnityCodeAssist.Serilog.Configuration;
 using Meryel.UnityCodeAssist.Serilog.Core;
 using Meryel.UnityCodeAssist.Serilog.Events;
-using Meryel.UnityCodeAssist.Serilog.Configuration;
-
-
 #pragma warning disable IDE0005
 using Serilog = Meryel.UnityCodeAssist.Serilog;
 #pragma warning restore IDE0005
@@ -18,7 +16,7 @@ namespace Meryel.UnityCodeAssist.Editor.Logger
 {
     public class DomainHashEnricher : ILogEventEnricher
     {
-        static readonly int domainHash;
+        static int domainHash;
 
         static DomainHashEnricher()
         {
@@ -28,9 +26,7 @@ namespace Meryel.UnityCodeAssist.Editor.Logger
 
         public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
         {
-            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty(
-                    "DomainHash", domainHash));
+            logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("DomainHash", domainHash));
         }
     }
-
 }

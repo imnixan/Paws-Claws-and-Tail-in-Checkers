@@ -5,8 +5,6 @@ using System.Text;
 using Meryel.UnityCodeAssist.Serilog.Core;
 using Meryel.UnityCodeAssist.Serilog.Events;
 using Meryel.UnityCodeAssist.Serilog.Formatting;
-
-
 #pragma warning disable IDE0005
 using Serilog = Meryel.UnityCodeAssist.Serilog;
 #pragma warning restore IDE0005
@@ -24,15 +22,15 @@ namespace Meryel.UnityCodeAssist.Editor.Logger
     // or maybe move it to a external process like com.unity.process-server
     public class MemorySink : ILogEventSink
     {
-        readonly ConcurrentQueue<LogEvent> logs;
-        readonly ConcurrentQueue<LogEvent[]> warningLogs;
-        readonly ConcurrentQueue<LogEvent[]> errorLogs;
+        ConcurrentQueue<LogEvent> logs;
+        ConcurrentQueue<LogEvent[]> warningLogs;
+        ConcurrentQueue<LogEvent[]> errorLogs;
 
         const int logsLimit = 30;
         const int warningLimit = 5;
         const int errorLimit = 3;
 
-        readonly string outputTemplate;
+        string outputTemplate;
 
         public MemorySink(string outputTemplate)
         {
@@ -78,7 +76,9 @@ namespace Meryel.UnityCodeAssist.Editor.Logger
         {
             IFormatProvider? formatProvider = null;
             var formatter = new Serilog.Formatting.Display.MessageTemplateTextFormatter(
-                outputTemplate, formatProvider);
+                outputTemplate,
+                formatProvider
+            );
 
             var result = string.Empty;
 
@@ -124,13 +124,9 @@ namespace Meryel.UnityCodeAssist.Editor.Logger
                 outputStream.Seek(0, SeekOrigin.Begin);
                 using var streamReader = new StreamReader(outputStream, encoding);
                 result = streamReader.ReadToEnd();
-
-
             }
 
             return result;
         }
-
-
     }
 }

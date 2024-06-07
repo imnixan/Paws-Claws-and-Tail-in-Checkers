@@ -6,6 +6,7 @@ using System.Text;
 using PCTC.Camera;
 using PCTC.Game;
 using PCTC.Handlers;
+using PCTC.Structs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -29,19 +30,20 @@ namespace PCTC.Builders
         [SerializeField]
         private CameraPositioner cameraPositioner;
 
-        public List<ClickInputHandler> BuildGameField(GameField gameField)
+        private ClickInputHandler[,] handlersMap;
+
+        public void BuildGameField(CatData[,] catData, int playerId)
         {
-            List<ClickInputHandler> blackCellsHandlers = BuildCarpet(gameField.GetField());
+            BuildCarpet(catData);
             float center = (float)(fieldSize - 1) / 2;
             Vector3 fieldCenter = new Vector3(center, floorY, center);
-            cameraPositioner.PlaceCamera(fieldCenter, fieldSize);
-            return blackCellsHandlers;
+            cameraPositioner.PlaceCamera(fieldCenter, playerId);
         }
 
-        private List<ClickInputHandler> BuildCarpet(int[,] gameField)
+        private void BuildCarpet(CatData[,] gameField)
         {
+            handlersMap = new ClickInputHandler[8, 8];
             fieldSize = gameField.GetLength(0);
-            List<ClickInputHandler> blackCellsHandlers = new List<ClickInputHandler>();
             Vector3 cellPosition = new Vector3();
             cellPosition.y = floorY;
             for (int x = 0; x < fieldSize; x++)
@@ -61,11 +63,15 @@ namespace PCTC.Builders
                     Material carpetMaterial;
 
                     string cellColor = "(COLOR UNDEFINED)";
-                    if (gameField[x, y] > 0)
+                    if (gameField[x, y].id > 0)
                     {
                         carpetMaterial = blackCarpet;
-                        blackCellsHandlers.Add(carpetCell.AddComponent<ClickInputHandler>());
+                        ClickInputHandler cellHandler =
+                            carpetCell.AddComponent<ClickInputHandler>();
+                        cellHandler.position = new Vector2Int(x, y);
+
                         cellColor = "(BLACK)";
+                        handlersMap[x, y] = cellHandler;
                     }
                     else
                     {
@@ -77,7 +83,11 @@ namespace PCTC.Builders
                     carpetCell.name = cellName;
                 }
             }
-            return blackCellsHandlers;
+        }
+
+        public ClickInputHandler[,] GetHandlersMap()
+        {
+            return handlersMap;
         }
     }
 }

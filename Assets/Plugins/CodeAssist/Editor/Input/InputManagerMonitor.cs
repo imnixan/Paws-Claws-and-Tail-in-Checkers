@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
-
-
 #pragma warning disable IDE0005
 using Serilog = Meryel.UnityCodeAssist.Serilog;
 #pragma warning restore IDE0005
@@ -16,14 +14,15 @@ using Serilog = Meryel.UnityCodeAssist.Serilog;
 
 namespace Meryel.UnityCodeAssist.Editor.Input
 {
-
     public class InputManagerMonitor
     {
-        private static readonly Lazy<InputManagerMonitor> _instance = new Lazy<InputManagerMonitor>(() => new InputManagerMonitor());
+        private static Lazy<InputManagerMonitor> _instance = new Lazy<InputManagerMonitor>(
+            () => new InputManagerMonitor()
+        );
         public static InputManagerMonitor Instance => _instance.Value;
 
         //UnityInputManager inputManager;
-        readonly string inputManagerFilePath;
+        string inputManagerFilePath;
         DateTime previousTagManagerLastWrite;
 
         public InputManagerMonitor()
@@ -37,7 +36,11 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             }
             catch (Exception ex)
             {
-                Serilog.Log.Debug(ex, "Exception at {Location}", nameof(System.IO.File.GetLastWriteTime));
+                Serilog.Log.Debug(
+                    ex,
+                    "Exception at {Location}",
+                    nameof(System.IO.File.GetLastWriteTime)
+                );
             }
         }
 
@@ -53,11 +56,17 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             var currentInputManagerLastWrite = previousTagManagerLastWrite;
             try
             {
-                currentInputManagerLastWrite = System.IO.File.GetLastWriteTime(inputManagerFilePath);
+                currentInputManagerLastWrite = System.IO.File.GetLastWriteTime(
+                    inputManagerFilePath
+                );
             }
             catch (Exception ex)
             {
-                Serilog.Log.Debug(ex, "Exception at {Location}", nameof(System.IO.File.GetLastWriteTime));
+                Serilog.Log.Debug(
+                    ex,
+                    "Exception at {Location}",
+                    nameof(System.IO.File.GetLastWriteTime)
+                );
             }
             if (currentInputManagerLastWrite != previousTagManagerLastWrite)
             {
@@ -83,13 +92,10 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             inputManager.ReadFromPath(inputManagerFilePath);
             inputManager.SendData();
 
-
 #pragma warning restore CS0162
 #pragma warning restore IDE0035
         }
-
     }
-
 
     public static partial class Extensions
     {
@@ -147,5 +153,4 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             return sb.ToString();
         }
     }
-
 }

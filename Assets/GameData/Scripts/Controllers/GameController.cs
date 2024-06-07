@@ -1,30 +1,105 @@
 ﻿using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using PCTC.Builders;
+using PCTC.CatScripts;
 using PCTC.Game;
 using PCTC.Handlers;
+using PCTC.Managers;
+using PCTC.Structs;
 using UnityEngine;
 
 namespace PCTC.Controllers
 {
     public class GameController : MonoBehaviour
     {
-        [SerializeField]
-        private CarpetBuilder carpetBuilder;
         private GameField gameField;
 
-        public void InitControllers(GameField gameField, List<ClickInputHandler> carpetHandlers)
+        [SerializeField]
+        private CarpetController carpetController;
+
+        [SerializeField]
+        private PlayerController playerController;
+
+        public bool playerOrder;
+
+        private CatData choosedCat;
+        private ClientGameManager gameManager;
+
+        public void Init(
+            CatData[,] catData,
+            int playerId,
+            List<Cat> cats,
+            ClickInputHandler[,] cellHandlers,
+            ClientGameManager gameManager
+        )
         {
-            this.gameField = gameField;
-            foreach (var handler in carpetHandlers)
+            this.gameField = new GameField(catData);
+            playerController.InitController(cats, playerId, this);
+            this.carpetController.Init(cellHandlers, this);
+            this.gameManager = gameManager;
+        }
+
+        public void ShowPossibleMoves(Moves moves)
+        {
+            carpetController.ActiveCells(moves.possibleMoves);
+        }
+
+        public void OnCatClick(CatData cat)
+        {
+            if (playerOrder)
             {
-                handler.ClickTargeted += OnCarpetClick;
+                choosedCat = cat;
+                gameManager.RequestPossibleMoves(cat);
             }
         }
 
-        private void OnCarpetClick(ClickInputHandler carpetHandler)
+        public void OnCarpetClick(Vector2Int position)
         {
-            Debug.Log(carpetHandler.name);
+            if (choosedCat != null)
+            {
+                MoveData moveData = new MoveData(choosedCat, position);
+                gameManager.MakeMove(moveData);
+                carpetController.DeactivateCells();
+                choosedCat = null;
+            }
+        }
+
+        public void ProcessMove(MoveResult moveResult)
+        {
+            Sequence move = DOTween.Sequence();
+
+            foreach (var moveData in moveResult.moves)
+            {
+                Cat cat = playerController.GetCat(moveData.catData);
+                if (cat != null)
+                {
+                    move.Append(cat.MoveTo(moveData.moveEnd));
+                }
+            }
+            move.AppendCallback(() =>
+                {
+                    RemoveCats(moveResult.catsForRemove);
+                    UpgradeCats(moveResult.catsForUpgrade);
+                    gameManager.FinishMove();
+                })
+                .Restart();
+        }
+
+        private void RemoveCats(CatData[] catsForRemove)
+        {
+            foreach (var catData in catsForRemove)
+            {
+                playerController.RemoveCat(catData);
+            }
+        }
+
+        private void UpgradeCats(CatData[] catsForUpgrade)
+        {
+            foreach (var catData in catsForUpgrade)
+            {
+                playerController.UpgradeCat(catData);
+            }
         }
     }
 }

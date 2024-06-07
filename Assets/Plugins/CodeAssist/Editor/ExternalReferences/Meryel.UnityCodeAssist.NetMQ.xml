@@ -8022,9 +8022,9 @@
         </member>
         <member name="M:Meryel.UnityCodeAssist.NetMQ.NetMQFrame.AsSpan">
             <summary>
-            Return an readonly span of bytes that carries the content of this NetMQFrames Buffer.
+            Return an  span of bytes that carries the content of this NetMQFrames Buffer.
             </summary>
-            <returns>the Buffer as a readonly span</returns>
+            <returns>the Buffer as a  span</returns>
         </member>
         <member name="T:Meryel.UnityCodeAssist.NetMQ.NamespaceDoc">
             <summary>

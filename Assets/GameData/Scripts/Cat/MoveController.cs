@@ -2,7 +2,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-namespace PCTC.Cat
+namespace PCTC.CatScripts
 {
     public class MoveController : PCTC.Controllers.MoveController
     {

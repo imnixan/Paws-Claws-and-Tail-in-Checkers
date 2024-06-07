@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Globalization;
 using UnityEditor;
-using UnityEngine;
 using UnityEditorInternal;
-
-
+using UnityEngine;
 #pragma warning disable IDE0005
 using Serilog = Meryel.UnityCodeAssist.Serilog;
 #pragma warning restore IDE0005
@@ -19,10 +17,14 @@ using Serilog = Meryel.UnityCodeAssist.Serilog;
 
 namespace Meryel.UnityCodeAssist.Editor.Preferences
 {
-    public class PreferenceMonitor 
+    public class PreferenceMonitor
     {
-        private static readonly Lazy<PreferenceMonitor> _instanceOfPlayerPrefs = new Lazy<PreferenceMonitor>(() => new PreferenceMonitor(true));
-        private static readonly Lazy<PreferenceMonitor> _instanceOfEditorPrefs = new Lazy<PreferenceMonitor>(() => new PreferenceMonitor(false));
+        private static Lazy<PreferenceMonitor> _instanceOfPlayerPrefs = new Lazy<PreferenceMonitor>(
+            () => new PreferenceMonitor(true)
+        );
+        private static Lazy<PreferenceMonitor> _instanceOfEditorPrefs = new Lazy<PreferenceMonitor>(
+            () => new PreferenceMonitor(false)
+        );
         public static PreferenceMonitor InstanceOfPlayerPrefs => _instanceOfPlayerPrefs.Value;
         public static PreferenceMonitor InstanceOfEditorPrefs => _instanceOfEditorPrefs.Value;
 
@@ -32,12 +34,12 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
         /// <summary>
         /// PlayerPrefs or EditorPrefs
         /// </summary>
-        readonly bool isPlayerPrefs;
+        bool isPlayerPrefs;
 
-#region ErrorValues
-        private readonly int ERROR_VALUE_INT = int.MinValue;
-        private readonly string ERROR_VALUE_STR = "<UCA_ERR_2407201713>";
-#endregion //ErrorValues
+        #region ErrorValues
+        private int ERROR_VALUE_INT = int.MinValue;
+        private string ERROR_VALUE_STR = "<UCA_ERR_2407201713>";
+        #endregion //ErrorValues
 
 #pragma warning disable CS0414
         private static string pathToPrefs = String.Empty;
@@ -56,19 +58,16 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
         private PreferanceStorageAccessor? entryAccessor;
 
-
         private bool updateView = false;
         //private bool monitoring = false;
         //private bool showLoadingIndicatorOverlay = false;
 
 
 #if UNITY_EDITOR_LINUX
-        private readonly char[] invalidFilenameChars = { '"', '\\', '*', '/', ':', '<', '>', '?', '|' };
+        private char[] invalidFilenameChars = { '"', '\\', '*', '/', ':', '<', '>', '?', '|' };
 #elif UNITY_EDITOR_OSX
-        private readonly char[] invalidFilenameChars = { '$', '%', '&', '\\', '/', ':', '<', '>', '|', '~' };
+        private char[] invalidFilenameChars = { '$', '%', '&', '\\', '/', ':', '<', '>', '|', '~' };
 #endif
-
-
 
         PreferenceMonitor(bool isPlayerPrefs)
         {
@@ -85,7 +84,7 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
         public void Bump()
         {
             Serilog.Log.Debug("Bumping preference {IsPlayerPrefs}", isPlayerPrefs);
-            
+
             RetrieveAndSendKeysAndValues(false);
         }
 
@@ -94,37 +93,71 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
             string[]? keys = GetKeys(reloadKeys);
             if (keys == null)
                 return;
-            string[] values = GetKeyValues(reloadKeys, keys, out var stringKeys, out var integerKeys, out var floatKeys, out var booleanKeys);
+            string[] values = GetKeyValues(
+                reloadKeys,
+                keys,
+                out var stringKeys,
+                out var integerKeys,
+                out var floatKeys,
+                out var booleanKeys
+            );
 
             if (isPlayerPrefs)
-                NetMQInitializer.Publisher?.SendPlayerPrefs(keys, values, stringKeys, integerKeys, floatKeys);
+                NetMQInitializer.Publisher?.SendPlayerPrefs(
+                    keys,
+                    values,
+                    stringKeys,
+                    integerKeys,
+                    floatKeys
+                );
             else
-                NetMQInitializer.Publisher?.SendEditorPrefs(keys, values, stringKeys, integerKeys, floatKeys, booleanKeys);
+                NetMQInitializer.Publisher?.SendEditorPrefs(
+                    keys,
+                    values,
+                    stringKeys,
+                    integerKeys,
+                    floatKeys,
+                    booleanKeys
+                );
         }
 
         private void OnEnable()
         {
 #if UNITY_EDITOR_WIN
             if (isPlayerPrefs)
-                pathToPrefs = @"SOFTWARE\Unity\UnityEditor\" + PlayerSettings.companyName + @"\" + PlayerSettings.productName;
+                pathToPrefs =
+                    @"SOFTWARE\Unity\UnityEditor\"
+                    + PlayerSettings.companyName
+                    + @"\"
+                    + PlayerSettings.productName;
             else
                 pathToPrefs = @"Software\Unity Technologies\Unity Editor 5.x";
-            
+
             platformPathPrefix = @"<CurrentUser>";
             entryAccessor = new WindowsPrefStorage(pathToPrefs);
 #elif UNITY_EDITOR_OSX
             if (isPlayerPrefs)
-                pathToPrefs = @"Library/Preferences/com." + MakeValidFileName(PlayerSettings.companyName) + "." + MakeValidFileName(PlayerSettings.productName) + ".plist";
+                pathToPrefs =
+                    @"Library/Preferences/com."
+                    + MakeValidFileName(PlayerSettings.companyName)
+                    + "."
+                    + MakeValidFileName(PlayerSettings.productName)
+                    + ".plist";
             else
                 pathToPrefs = @"Library/Preferences/com.unity3d.UnityEditor5.x.plist";
-                
+
             platformPathPrefix = @"~";
             entryAccessor = new MacPrefStorage(pathToPrefs);
             //entryAccessor.StartLoadingDelegate = () => { showLoadingIndicatorOverlay = true; };
             //entryAccessor.StopLoadingDelegate = () => { showLoadingIndicatorOverlay = false; };
 #elif UNITY_EDITOR_LINUX
             if (isPlayerPrefs)
-                pathToPrefs = @".config/unity3d/" + MakeValidFileName(PlayerSettings.companyName) + "/" + MakeValidFileName(PlayerSettings.productName) + "/prefs";
+                pathToPrefs =
+                    @".config/unity3d/"
+                    + MakeValidFileName(PlayerSettings.companyName)
+                    + "/"
+                    + MakeValidFileName(PlayerSettings.productName)
+                    + "/prefs";
             else
                 pathToPrefs = @".local/share/unity3d/prefs";
 
@@ -139,7 +172,10 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
             if (entryAccessor != null)
             {
-                entryAccessor.PrefEntryChangedDelegate = () => { updateView = true; };
+                entryAccessor.PrefEntryChangedDelegate = () =>
+                {
+                    updateView = true;
+                };
                 entryAccessor.StartMonitoring();
             }
         }
@@ -180,16 +216,25 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
                 }
             }
 
-
             serializedObject ??= new SerializedObject(prefEntryHolder);
 
-            userDefList = new ReorderableList(serializedObject, serializedObject.FindProperty("userDefList"), false, true, true, true);
-            unityDefList = new ReorderableList(serializedObject, serializedObject.FindProperty("unityDefList"), false, true, false, false);
-
+            userDefList = new ReorderableList(
+                serializedObject,
+                serializedObject.FindProperty("userDefList"),
+                false,
+                true,
+                true,
+                true
+            );
+            unityDefList = new ReorderableList(
+                serializedObject,
+                serializedObject.FindProperty("unityDefList"),
+                false,
+                true,
+                false,
+                false
+            );
         }
-
-
-        
 
         private string[]? GetKeys(bool reloadKeys)
         {
@@ -202,7 +247,11 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
             string[] keys = entryAccessor.GetKeys(reloadKeys);
 
             if (keys.Length > Limit)
-                keys = keys.Where(k => !k.StartsWith("unity.") && !k.StartsWith("UnityGraphicsQuality")).Take(Limit).ToArray();
+                keys = keys.Where(k =>
+                        !k.StartsWith("unity.") && !k.StartsWith("UnityGraphicsQuality")
+                    )
+                    .Take(Limit)
+                    .ToArray();
 
             return keys;
         }
@@ -214,8 +263,14 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
         string[]? _cachedFloatKeys = null;
         string[]? _cachedBooleanKeys = null;
 
-        private string[] GetKeyValues(bool reloadData, string[] keys,
-            out string[] stringKeys, out string[] integerKeys, out string[] floatKeys, out string[] booleanKeys)
+        private string[] GetKeyValues(
+            bool reloadData,
+            string[] keys,
+            out string[] stringKeys,
+            out string[] integerKeys,
+            out string[] floatKeys,
+            out string[] booleanKeys
+        )
         {
             if (!reloadData && _cachedKeyValues != null && _cachedKeyValues.Length == keys.Length)
             {
@@ -295,15 +350,28 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
                 {
                     // Keys with ? causing problems, just ignore them
                     if (key.Contains("?"))
-                        Serilog.Log.Debug("Invalid {PreferenceType} KEY WITH '?', '{Key}' at {Location}, str:{StringValue}, int:{IntegerValue}, float:{FloatValue}, bool:{BooleanValue}",
-                            (isPlayerPrefs ? "PlayerPrefs" : "EditorPrefs"), key, nameof(GetKeyValues),
-                            stringValue, intValue, floatValue, boolValue);
-
+                        Serilog.Log.Debug(
+                            "Invalid {PreferenceType} KEY WITH '?', '{Key}' at {Location}, str:{StringValue}, int:{IntegerValue}, float:{FloatValue}, bool:{BooleanValue}",
+                            (isPlayerPrefs ? "PlayerPrefs" : "EditorPrefs"),
+                            key,
+                            nameof(GetKeyValues),
+                            stringValue,
+                            intValue,
+                            floatValue,
+                            boolValue
+                        );
                     else
                         // EditorPrefs gives error for some keys
-                        Serilog.Log.Error("Invalid {PreferenceType} '{Key}' at {Location}, str:{StringValue}, int:{IntegerValue}, float:{FloatValue}, bool:{BooleanValue}",
-                            (isPlayerPrefs ? "PlayerPrefs" : "EditorPrefs"), key, nameof(GetKeyValues),
-                            stringValue, intValue, floatValue, boolValue);
+                        Serilog.Log.Error(
+                            "Invalid {PreferenceType} '{Key}' at {Location}, str:{StringValue}, int:{IntegerValue}, float:{FloatValue}, bool:{BooleanValue}",
+                            (isPlayerPrefs ? "PlayerPrefs" : "EditorPrefs"),
+                            key,
+                            nameof(GetKeyValues),
+                            stringValue,
+                            intValue,
+                            floatValue,
+                            boolValue
+                        );
                 }
             }
 
@@ -324,7 +392,7 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
         private void LoadKeys(out string[]? userDef, out string[]? unityDef, bool reloadKeys)
         {
-            if(entryAccessor == null)
+            if (entryAccessor == null)
             {
                 userDef = null;
                 unityDef = null;
@@ -336,14 +404,14 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
             //keys.ToList().ForEach( e => { Debug.Log(e); } );
 
             // Seperate keys int unity defined and user defined
-            Dictionary<bool, List<string>> groups = keys
-                .GroupBy((key) => key.StartsWith("unity.") || key.StartsWith("UnityGraphicsQuality"))
+            Dictionary<bool, List<string>> groups = keys.GroupBy(
+                    (key) => key.StartsWith("unity.") || key.StartsWith("UnityGraphicsQuality")
+                )
                 .ToDictionary((g) => g.Key, (g) => g.ToList());
 
             unityDef = (groups.ContainsKey(true)) ? groups[true].ToArray() : new string[0];
             userDef = (groups.ContainsKey(false)) ? groups[false].ToArray() : new string[0];
         }
-
 
 #if (UNITY_EDITOR_LINUX || UNITY_EDITOR_OSX)
         private string MakeValidFileName(string unsafeFileName)
@@ -352,7 +420,9 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
             StringBuilder stringBuilder = new StringBuilder();
 
             // We need to use a TextElementEmumerator in order to support UTF16 characters that may take up more than one char(case 1169358)
-            TextElementEnumerator charEnum = StringInfo.GetTextElementEnumerator(normalizedFileName);
+            TextElementEnumerator charEnum = StringInfo.GetTextElementEnumerator(
+                normalizedFileName
+            );
             while (charEnum.MoveNext())
             {
                 string c = charEnum.GetTextElement();
@@ -368,8 +438,5 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
 #endif
-
     }
-
-
 }

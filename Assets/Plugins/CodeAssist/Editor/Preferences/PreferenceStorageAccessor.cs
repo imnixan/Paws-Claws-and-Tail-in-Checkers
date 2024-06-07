@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-
+using Serilog = Meryel.UnityCodeAssist.Serilog;
 #if UNITY_EDITOR_WIN
 using Microsoft.Win32;
 using System.Text;
@@ -14,9 +14,8 @@ using System.Xml;
 using System.Xml.Linq;
 #endif
 
-
 #pragma warning disable IDE0005
-using Serilog = Meryel.UnityCodeAssist.Serilog;
+
 #pragma warning restore IDE0005
 
 
@@ -79,9 +78,10 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
     public class WindowsPrefStorage : PreferanceStorageAccessor
     {
-        readonly RegistryMonitor monitor;
+        RegistryMonitor monitor;
 
-        public WindowsPrefStorage(string pathToPrefs) : base(pathToPrefs)
+        public WindowsPrefStorage(string pathToPrefs)
+            : base(pathToPrefs)
         {
             monitor = new RegistryMonitor(RegistryHive.CurrentUser, prefPath);
             monitor.RegChanged += new EventHandler(OnRegChanged);
@@ -148,9 +148,10 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
     public class LinuxPrefStorage : PreferanceStorageAccessor
     {
-        readonly FileSystemWatcher fileWatcher;
+        FileSystemWatcher fileWatcher;
 
-        public LinuxPrefStorage(string pathToPrefs) : base(Path.Combine(Environment.GetEnvironmentVariable("HOME"), pathToPrefs))
+        public LinuxPrefStorage(string pathToPrefs)
+            : base(Path.Combine(Environment.GetEnvironmentVariable("HOME"), pathToPrefs))
         {
             fileWatcher = new FileSystemWatcher
             {
@@ -173,7 +174,10 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
                 XDocument doc = XDocument.Load(reader);
 
-                cachedData = doc.Element("unity_prefs").Elements().Select((e) => e.Attribute("name").Value).ToArray();
+                cachedData = doc.Element("unity_prefs")
+                    .Elements()
+                    .Select((e) => e.Attribute("name").Value)
+                    .ToArray();
             }
         }
 
@@ -202,11 +206,12 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
     public class MacPrefStorage : PreferanceStorageAccessor
     {
-        private readonly FileSystemWatcher fileWatcher;
-        private readonly DirectoryInfo prefsDirInfo;
-        private readonly String prefsFileNameWithoutExtension;
+        private FileSystemWatcher fileWatcher;
+        private DirectoryInfo prefsDirInfo;
+        private String prefsFileNameWithoutExtension;
 
-        public MacPrefStorage(string pathToPrefs) : base(Path.Combine(Environment.GetEnvironmentVariable("HOME"), pathToPrefs))
+        public MacPrefStorage(string pathToPrefs)
+            : base(Path.Combine(Environment.GetEnvironmentVariable("HOME"), pathToPrefs))
         {
             prefsDirInfo = new DirectoryInfo(Path.GetDirectoryName(prefPath));
             prefsFileNameWithoutExtension = Path.GetFileNameWithoutExtension(prefPath);
@@ -228,7 +233,10 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
             foreach (FileInfo info in prefsDirInfo.GetFiles())
             {
                 // Check if tmp PlayerPrefs file exist
-                if (info.FullName.Contains(prefsFileNameWithoutExtension) && !info.FullName.EndsWith(".plist"))
+                if (
+                    info.FullName.Contains(prefsFileNameWithoutExtension)
+                    && !info.FullName.EndsWith(".plist")
+                )
                 {
                     StartLoadingDelegate?.Invoke();
                     return;
@@ -240,7 +248,10 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
 
             if (File.Exists(prefPath))
             {
-                string fixedPrefsPath = prefPath.Replace("\"", "\\\"").Replace("'", "\\'").Replace("`", "\\`");
+                string fixedPrefsPath = prefPath
+                    .Replace("\"", "\\\"")
+                    .Replace("'", "\\'")
+                    .Replace("`", "\\`");
                 var cmdStr = string.Format(@"-p '{0}'", fixedPrefsPath);
 
                 string stdOut = String.Empty;
@@ -252,8 +263,18 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
                 process.StartInfo.Arguments = cmdStr;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
-                process.OutputDataReceived += new DataReceivedEventHandler((sender, evt) => { stdOut += evt.Data + "\n"; });
-                process.ErrorDataReceived += new DataReceivedEventHandler((sender, evt) => { errOut += evt.Data + "\n"; });
+                process.OutputDataReceived += new DataReceivedEventHandler(
+                    (sender, evt) =>
+                    {
+                        stdOut += evt.Data + "\n";
+                    }
+                );
+                process.ErrorDataReceived += new DataReceivedEventHandler(
+                    (sender, evt) =>
+                    {
+                        errOut += evt.Data + "\n";
+                    }
+                );
 
                 process.Start();
 
@@ -286,7 +307,6 @@ namespace Meryel.UnityCodeAssist.Editor.Preferences
         {
             OnPrefEntryChanged();
         }
-
     }
 #endif
 }
