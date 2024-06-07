@@ -42,11 +42,7 @@ namespace PCTC.Managers
 
         private void SendMessage(RequestTypes.ClientRequests type, string message)
         {
-            ClientServerMessage csm = new ClientServerMessage(
-                (int)type,
-                gameManager.playerId,
-                message
-            );
+            ClientServerMessage csm = new ClientServerMessage((int)type, message);
             string data = JsonUtility.ToJson(csm);
 
             this.ws.Send(data);

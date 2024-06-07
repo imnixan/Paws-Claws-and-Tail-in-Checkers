@@ -8,9 +8,9 @@ namespace PCTC.Server
 {
     internal class GlobalMessageHandler
     {
-        public static void OnMessage(MessageEventArgs e, Guid roomNumber)
+        public static void OnMessage(MessageEventArgs e, Guid roomNumber, int playerId)
         {
-            RoomStorage.rooms[roomNumber].playerDataHandler.ProcessUserData(e.Data);
+            RoomStorage.rooms[roomNumber].playerDataHandler.ProcessUserData(e.Data, playerId);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
-using PCTC.Camera;
+using PCTC.CameraControl;
 using PCTC.Game;
 using PCTC.Handlers;
 using PCTC.Structs;
@@ -27,17 +27,13 @@ namespace PCTC.Builders
         private Material whiteCarpet,
             blackCarpet;
 
-        [SerializeField]
-        private CameraPositioner cameraPositioner;
-
         private ClickInputHandler[,] handlersMap;
 
-        public void BuildGameField(CatData[,] catData, int playerId)
+        public void BuildGameField(CatData[,] catData)
         {
             BuildCarpet(catData);
             float center = (float)(fieldSize - 1) / 2;
             Vector3 fieldCenter = new Vector3(center, floorY, center);
-            cameraPositioner.PlaceCamera(fieldCenter, playerId);
         }
 
         private void BuildCarpet(CatData[,] gameField)

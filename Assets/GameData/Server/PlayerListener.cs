@@ -25,7 +25,7 @@ namespace PCTC.Server
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            GlobalMessageHandler.OnMessage(e, roomNumber);
+            GlobalMessageHandler.OnMessage(e, roomNumber, playerId);
         }
 
         protected override void OnError(ErrorEventArgs e)

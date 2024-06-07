@@ -9,32 +9,37 @@ namespace PCTC.Structs
     {
         public int type;
         public string data;
-        public int playerId;
-
-        public ClientServerMessage(int type, int playerId, string data)
-        {
-            this.type = type;
-            this.playerId = playerId;
-            this.data = data;
-        }
 
         public ClientServerMessage(int type, string data)
         {
             this.type = type;
-            this.playerId = -1;
+
             this.data = data;
+        }
+    }
+
+    [System.Serializable]
+    public class DataFromPlayer
+    {
+        public ClientServerMessage message;
+        public int playerID;
+
+        public DataFromPlayer(ClientServerMessage message, int playerId)
+        {
+            this.message = message;
+            this.playerID = playerId;
         }
     }
 
     [System.Serializable]
     public class PlayerInitData
     {
-        public int playerId;
+        public int playerID;
         public CatData[] gameField;
 
         public PlayerInitData(int playerId, CatData[] gameField)
         {
-            this.playerId = playerId;
+            this.playerID = playerId;
             this.gameField = gameField;
         }
     }
@@ -91,18 +96,25 @@ namespace PCTC.Structs
         public CatData[] catsForRemove;
         public CatData[] catsForUpgrade;
 
-        public MoveResult(MoveData[] moves, CatData[] catsForRemove, CatData[] catsForUpdate)
+        public MoveResult(MoveData[] moves, CatData[] catsForRemove, CatData[] catsForUpgrade)
         {
             this.moves = moves;
             this.catsForRemove = catsForRemove;
-            this.catsForUpgrade = catsForUpdate;
+            this.catsForUpgrade = catsForUpgrade;
         }
 
         public MoveResult(MoveData[] moves)
         {
             this.moves = moves;
-            this.catsForUpgrade = new CatData[0];
             this.catsForRemove = new CatData[0];
+            this.catsForUpgrade = new CatData[0];
+        }
+
+        public MoveResult(MoveData[] moves, CatData[] catsForRemove)
+        {
+            this.moves = moves;
+            this.catsForRemove = catsForRemove;
+            this.catsForUpgrade = new CatData[0];
         }
     }
 

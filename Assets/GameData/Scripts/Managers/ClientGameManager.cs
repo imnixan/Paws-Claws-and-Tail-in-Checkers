@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GameData.Scripts;
 using PCTC.Builders;
+using PCTC.CameraControl;
 using PCTC.CatScripts;
 using PCTC.Controllers;
 using PCTC.Handlers;
@@ -9,6 +10,8 @@ using PCTC.Scripts;
 using PCTC.Structs;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using WebSocketSharp;
 
 namespace PCTC.Managers
 {
@@ -26,25 +29,33 @@ namespace PCTC.Managers
         [SerializeField]
         private GameController gameController;
 
-        public int playerId { get; private set; }
+        [SerializeField]
+        private CameraPositioner cameraPositioner;
 
-        public void Update()
+        public int playerId { get; private set; }
+        public GameObject buttn;
+
+        public void Connect()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                serverCommunicator.ConnectToServer(this);
-            }
+            serverCommunicator.ConnectToServer(this);
+            buttn.active = false;
+        }
+
+        public void Restart()
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         public void InitPlayer(PlayerInitData playerInitData)
         {
-            this.playerId = playerInitData.playerId;
+            this.playerId = playerInitData.playerID;
+            cameraPositioner.PosCamera(playerId);
             CatData[,] gameField = ArrayTransformer.Expand(playerInitData.gameField);
             List<Cat> cats = gameBuilder.PlaceCats(gameField);
-            carpetBuilder.BuildGameField(gameField, playerInitData.playerId);
+            carpetBuilder.BuildGameField(gameField);
             gameController.Init(
                 gameField,
-                playerInitData.playerId,
+                playerInitData.playerID,
                 cats,
                 carpetBuilder.GetHandlersMap(),
                 this
@@ -95,6 +106,12 @@ namespace PCTC.Managers
         private void OnMoveError()
         {
             Debug.Log("NoMoves for this cat");
+        }
+
+        internal void OnServerCloseConnect(object sender, CloseEventArgs e)
+        {
+            Debug.Log($"connection closed, {e.Reason}");
+            Restart();
         }
     }
 }

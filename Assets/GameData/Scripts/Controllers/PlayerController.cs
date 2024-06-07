@@ -72,7 +72,7 @@ namespace PCTC.Controllers
             Cat theCat = new Cat();
             foreach (var cat in cats)
             {
-                if (cat.catData == catData)
+                if (cat.catData.id == catData.id)
                 {
                     theCat = cat;
                 }

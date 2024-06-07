@@ -2,7 +2,7 @@
 using DG.Tweening;
 using PCTC.Handlers;
 using PCTC.Structs;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -15,16 +15,24 @@ namespace PCTC.CatScripts
         [SerializeField]
         private Material orangeCat,
             blackCat;
-        public CatData catData { get; private set; }
+        public CatData catData;
         public event UnityAction<Cat> catTouched;
         public ClickInputHandler clickHandler { get; private set; }
         private MoveController moveController;
+        private TextMeshPro label;
 
         public void Init(CatData catData)
         {
             this.catData = catData;
             InitCat();
             MakeSubscribes();
+            label = GetComponentInChildren<TextMeshPro>();
+            label.text = $"ID: {catData.id}\npos: {catData.position}";
+            transform.forward = new Vector3(
+                catData.team == Enums.CatsType.Team.Orange ? 1 : -1,
+                0,
+                0
+            );
         }
 
         private void InitCat()
@@ -48,6 +56,11 @@ namespace PCTC.CatScripts
         private void OnClick(ClickInputHandler inputHandler)
         {
             this.catTouched?.Invoke(this);
+            Sequence catJump = DOTween.Sequence();
+            catJump
+                .Append(transform.DOMoveY(0.5f, 0.15f))
+                .Append(transform.DOMoveY(0, 0.1f))
+                .Restart();
         }
 
         private void MakeSubscribes()
@@ -66,6 +79,7 @@ namespace PCTC.CatScripts
         {
             Vector3 position = new Vector3(destination.x, 0, destination.y);
             this.catData.position = destination;
+            label.text = $"ID: {catData.id}\npos: {catData.position}";
             Tween tween = moveController.MoveTo(position);
             return tween;
         }

@@ -32,7 +32,7 @@ namespace PCTC.Server
             this.playersCommunicator = playersCommunicator;
             playersCommunicator.Init(this);
             moveChecker = new MoveChecker(gameField);
-            moveMaker = new MoveMaker(gameField);
+            moveMaker = new MoveMaker(gameField, moveChecker);
             InitPlayers();
             StartGame();
         }
@@ -51,12 +51,14 @@ namespace PCTC.Server
 
         public void OnPlayerCatSelect(CatData cat)
         {
+            cat = gameField.GetElementById(cat.id);
             Moves moves = moveChecker.GetPossibleMoves(cat);
             playersCommunicator.playerDataSender.SendPlayerPossibleMoves(currentPlayerId, moves);
         }
 
         public void OnPlayerMove(MoveData move)
         {
+            move.catData = gameField.GetElementById(move.catData.id);
             if (moveChecker.IsCorrectMove(move))
             {
                 MoveResult moveResult = moveMaker.MakeMove(move);

@@ -10,10 +10,7 @@ namespace PCTC.Server
     public class PlayerDataHandler
     {
         private ServerGameManager gameManager;
-        private Dictionary<
-            RequestTypes.ClientRequests,
-            Action<ClientServerMessage>
-        > requestHandlers;
+        private Dictionary<RequestTypes.ClientRequests, Action<DataFromPlayer>> requestHandlers;
         private HashSet<RequestTypes.ClientRequests> requestsRequireActivePlayer;
 
         public PlayerDataHandler()
@@ -25,10 +22,7 @@ namespace PCTC.Server
         private void InitializeHandlers()
         {
             #region Handlers
-            requestHandlers = new Dictionary<
-                RequestTypes.ClientRequests,
-                Action<ClientServerMessage>
-            >
+            requestHandlers = new Dictionary<RequestTypes.ClientRequests, Action<DataFromPlayer>>
             {
                 { RequestTypes.ClientRequests.PLAYER_CHOOSED_CAT, HandlePlayerChoosedCat },
                 { RequestTypes.ClientRequests.PLAYER_MOVE, HandlePlayerMove },
@@ -50,30 +44,30 @@ namespace PCTC.Server
             this.gameManager = gameManager;
         }
 
-        public void ProcessUserData(string data)
+        public void ProcessUserData(string data, int playerId)
         {
             ClientServerMessage userMessage = JsonUtility.FromJson<ClientServerMessage>(data);
+            DataFromPlayer dataFromPlayer = new DataFromPlayer(userMessage, playerId);
 
-            InvokeHandler(userMessage);
+            InvokeHandler(dataFromPlayer);
         }
 
-        private void InvokeHandler(ClientServerMessage message)
+        private void InvokeHandler(DataFromPlayer dataFromPlayer)
         {
-            RequestTypes.ClientRequests type = (RequestTypes.ClientRequests)message.type;
-            int playerId = message.playerId;
-
-            if (requestHandlers.TryGetValue(type, out Action<ClientServerMessage> handler))
+            RequestTypes.ClientRequests type = (RequestTypes.ClientRequests)
+                dataFromPlayer.message.type;
+            if (requestHandlers.TryGetValue(type, out Action<DataFromPlayer> handler))
             {
                 if (
                     requestsRequireActivePlayer.Contains(type)
-                    && !gameManager.IsCurrentPlayer(playerId)
+                    && !gameManager.IsCurrentPlayer(dataFromPlayer.playerID)
                 )
                 {
                     Console.WriteLine("Player is not active");
                     return;
                 }
 
-                handler(message);
+                handler(dataFromPlayer);
             }
             else
             {
@@ -82,21 +76,21 @@ namespace PCTC.Server
             }
         }
 
-        private void HandlePlayerChoosedCat(ClientServerMessage message)
+        private void HandlePlayerChoosedCat(DataFromPlayer dft)
         {
-            CatData catData = JsonUtility.FromJson<CatData>(message.data);
+            CatData catData = JsonUtility.FromJson<CatData>(dft.message.data);
             gameManager.OnPlayerCatSelect(catData);
         }
 
-        private void HandlePlayerMove(ClientServerMessage message)
+        private void HandlePlayerMove(DataFromPlayer dft)
         {
-            MoveData moveData = JsonUtility.FromJson<MoveData>(message.data);
+            MoveData moveData = JsonUtility.FromJson<MoveData>(dft.message.data);
             gameManager.OnPlayerMove(moveData);
         }
 
-        private void HandlePlayerMoveFinish(ClientServerMessage message)
+        private void HandlePlayerMoveFinish(DataFromPlayer dft)
         {
-            gameManager.OnPlayerMoveFinish(message.playerId);
+            gameManager.OnPlayerMoveFinish(dft.playerID);
         }
     }
 }

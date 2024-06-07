@@ -3,57 +3,29 @@ using System.Runtime.CompilerServices;
 using DG.Tweening;
 using UnityEngine;
 
-namespace PCTC.Camera
+namespace PCTC.CameraControl
 {
     public class CameraPositioner : MonoBehaviour
     {
         [SerializeField]
-        private float angle;
+        private float moveTime = 1.5f;
 
         [SerializeField]
-        private float animLength;
+        private Transform startPos;
 
-        private int currentside = 1;
+        [SerializeField]
+        private Transform[] playerCamPos;
 
-        private Vector3 gameFieldCenter;
-        private int fieldSize = 8;
-
-        public void PlaceCamera(Vector3 gameFieldCenter, int playerId)
+        private void Start()
         {
-            Debug.Log("playerID " + playerId);
-            this.gameFieldCenter = gameFieldCenter;
+            this.transform.position = startPos.position;
+            this.transform.rotation = startPos.rotation;
+        }
 
-            int playerSit = playerId == 0 ? -1 : 1;
-
-            float viewZoneSize = fieldSize * 1.5f;
-            Debug.Log($"center {gameFieldCenter}");
-            // Угол в радианах
-            float angleInRadians = angle * Mathf.Deg2Rad;
-
-            // Рассчитываем горизонтальное расстояние от камеры до объекта
-            float horizontalDistance = (viewZoneSize / 2) / Mathf.Tan(angleInRadians);
-
-            // Рассчитываем высоту камеры
-            float height = Mathf.Tan(angleInRadians) * horizontalDistance;
-            Vector3 cameraPosition =
-                gameFieldCenter
-                + new Vector3(horizontalDistance * playerSit * currentside, height, 0);
-
-            Transform cameraPlaceHolder = new GameObject("cameraPlaceHolder").transform;
-            cameraPlaceHolder.position = cameraPosition;
-            cameraPlaceHolder.LookAt(gameFieldCenter);
-
-            cameraPosition = cameraPlaceHolder.position;
-
-            Quaternion cameraEndRotation = cameraPlaceHolder.transform.rotation;
-            Destroy(cameraPlaceHolder.gameObject);
-
-            transform.DOMove(cameraPosition, animLength).SetEase(Ease.InOutQuad).Play();
-
-            transform
-                .DORotateQuaternion(cameraEndRotation, animLength)
-                .SetEase(Ease.InOutQuad)
-                .Play();
+        public void PosCamera(int playerId)
+        {
+            this.transform.DOMove(playerCamPos[playerId].position, moveTime).Play();
+            this.transform.DORotateQuaternion(playerCamPos[playerId].rotation, moveTime).Play();
         }
     }
 }
