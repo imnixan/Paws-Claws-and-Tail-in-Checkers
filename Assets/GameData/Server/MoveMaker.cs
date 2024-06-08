@@ -11,6 +11,7 @@ namespace PCTC.Server
     {
         private GameField gameField;
         private MoveChecker moveChecker;
+        System.Random random = new System.Random();
 
         public MoveMaker(GameField gameField, MoveChecker moveChecker)
         {
@@ -51,7 +52,6 @@ namespace PCTC.Server
                         newMove.possibleMoves,
                         currentMove.catData.position
                     );
-                    List<CatData> comboCats = new List<CatData>();
                     List<MoveData> movesWithCombo = new List<MoveData>();
 
                     foreach (var move in newMove.possibleMoves)
@@ -61,28 +61,18 @@ namespace PCTC.Server
                         if (catchedCat != null)
                         {
                             movesWithCombo.Add(newMoveData);
-                            comboCats.Add(catchedCat);
                         }
                     }
-                    Debug.Log($"COMBO {comboCats.Count}");
-                    if (comboCats.Count != 1)
+                    Debug.Log($"COMBO {movesWithCombo.Count}");
+                    if (movesWithCombo.Count > 0)
                     {
-                        if (comboCats.Count > 1)
-                        {
-                            Debug.Log("MULTICHOISE");
-                            currentMove = movesWithCombo[0];
-                            moves.Add(currentMove);
-                            needChoice = true; //TODO передача управления игроку на моменте где он может выбрать кого хавать следующим
-                            findNewPaths = false;
-                        }
-                        else
-                        {
-                            findNewPaths = false;
-                        }
+                        int nextMoveNum = random.Next(0, movesWithCombo.Count);
+                        Debug.Log($"nextRandom {nextMoveNum}");
+                        currentMove = movesWithCombo[nextMoveNum];
                     }
                     else
-                    { //идем по единственному пути в комбо
-                        currentMove = movesWithCombo[0];
+                    {
+                        findNewPaths = false;
                     }
                 }
                 else
