@@ -76,13 +76,14 @@ namespace PCTC.Server
             SendAllPlayers(type, "Game Started!");
         }
 
-        public void SendMessage<T>(int playerID, CSMRequest.Type type, T body, bool needAck = true)
+        public void SendMessage<T>(int playerID, CSMRequest.Type type, T body, bool needAck = false)
         {
             playerListeners[playerID].SendMessage(type, body, needAck);
         }
 
-        private void SendAllPlayers<T>(CSMRequest.Type type, T body, bool needAck = true)
+        private void SendAllPlayers<T>(CSMRequest.Type type, T body, bool needAck = false)
         {
+            Debug.Log($"SEND ALL {playerListeners.Count} LISTENERS");
             for (int i = 0; i < playerListeners.Count; i++)
             {
                 SendMessage(i, type, body, needAck);

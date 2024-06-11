@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using GameData.Managers;
 using PCTC.Enums;
 using PCTC.Managers;
+using PCTC.Server;
 using PCTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
@@ -15,6 +18,7 @@ namespace GameData.Scripts
         private ClientGameManager gameManager;
         public ServerDataSender serverDataSender { get; private set; }
         public ServerDataHandler serverDataHandler { get; private set; }
+        public int messageCount = 0;
 
         public ServerCommunicator(ClientGameManager gm, string ip = "localhost")
         {
@@ -27,11 +31,18 @@ namespace GameData.Scripts
             ws = new WebSocket($"ws://{ip}:8080/checkers");
             serverDataHandler = new ServerDataHandler(ws, gameManager);
             serverDataSender = new ServerDataSender(ws, gameManager);
-            ws.OnMessage += serverDataHandler.ProcessServerData;
+            ws.OnMessage += OnMessage;
             ws.OnOpen += OnConnected;
             ws.OnError += OnError;
             ws.OnClose += OnConnectionClosed;
             ws.Connect();
+        }
+
+        private void OnMessage(object sender, MessageEventArgs e)
+        {
+            ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
+            Debug.Log($"Client {gameManager.playerID} got message {csm.messageID}");
+            HandleMessage(csm);
         }
 
         public void Disconnect()
@@ -58,13 +69,39 @@ namespace GameData.Scripts
 
         private void OnConnectionClosed(object sender, System.EventArgs e)
         {
-            Debug.Log("SERVER END CONNECTION");
             gameManager.OnServerEndConnection();
         }
 
         void OnDestroy()
         {
             Disconnect();
+        }
+
+        private void Send(string message)
+        {
+            ws.Send(message);
+        }
+
+        private void HandleMessage(ClientServerMessage csm)
+        {
+            serverDataHandler.ProcessServerData(csm);
+        }
+
+        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
+        {
+            ClientServerMessage csm = BuildMessage(type, body);
+            csm.messageID = messageCount;
+            messageCount++;
+            Debug.Log($"Client {gameManager.playerID} send message {csm.messageID}");
+            string message = JsonUtility.ToJson(csm);
+            Send(message);
+        }
+
+        private ClientServerMessage BuildMessage<T>(CSMRequest.Type type, T body)
+        {
+            string data = JsonUtility.ToJson(body);
+            ClientServerMessage csm = new ClientServerMessage((int)type, data);
+            return csm;
         }
     }
 }

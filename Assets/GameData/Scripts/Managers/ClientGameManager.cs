@@ -22,7 +22,7 @@ namespace PCTC.Managers
         [SerializeField]
         private CarpetBuilder carpetBuilder;
 
-        private ServerCommunicator serverCommunicator;
+        public ServerCommunicator serverCommunicator { get; private set; }
 
         [SerializeField]
         private GameBuilder gameBuilder;
@@ -62,7 +62,6 @@ namespace PCTC.Managers
 
         public void RestartScene()
         {
-            Debug.Log("reloadScene");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
@@ -149,10 +148,9 @@ namespace PCTC.Managers
             switch (gameState)
             {
                 case Enums.GameData.GameState.GameEnd:
-                    Debug.Log("self Restart");
+
                     break;
                 case Enums.GameData.GameState.Game:
-                    Debug.Log("restart of server disconnect");
                     RestartScene();
                     break;
                 default:

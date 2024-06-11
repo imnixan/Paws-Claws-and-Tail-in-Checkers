@@ -38,14 +38,13 @@ namespace GameData.Managers
 
         public void OnGameEnd(ClientServerMessage message)
         {
-            Debug.Log("GAMEEND");
+            Debug.Log("GAME END");
             GameResult result = JsonUtility.FromJson<GameResult>(message.data);
             gameManager.OnGameEnd(result);
         }
 
-        public void ProcessServerData(object sender, MessageEventArgs e)
+        public void ProcessServerData(ClientServerMessage serverMessage)
         {
-            ClientServerMessage serverMessage = JsonUtility.FromJson<ClientServerMessage>(e.Data);
             UnityMainThreadDispatcher.Instance.Enqueue(() => InvokeHandler(serverMessage));
         }
 

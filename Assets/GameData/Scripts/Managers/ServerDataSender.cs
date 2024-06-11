@@ -2,12 +2,13 @@
 using PCTC.Enums;
 using PCTC.Server;
 using PCTC.Structs;
+using PTCP.Scripts;
 using UnityEngine;
 using WebSocketSharp;
 
 namespace PCTC.Managers
 {
-    public class ServerDataSender
+    public class ServerDataSender : MessageSender
     {
         private WebSocket ws;
         private ClientGameManager gameManager;
@@ -20,37 +21,25 @@ namespace PCTC.Managers
 
         public void SendPlayerChooseCat(CatData catData)
         {
-            Debug.Log("send that i choose cat");
             CSMRequest.Type type = CSMRequest.Type.POSSIBLE_MOVES;
-            string message = BuildMessage(type, catData);
-            SendMessage(message);
+            SendMessage(type, catData);
         }
 
         public void SendPlayerReady(string mapHash)
         {
             CSMRequest.Type type = CSMRequest.Type.PLAYER_READY;
-            string message = BuildMessage(type, new MapHash(mapHash));
-            SendMessage(message);
+            SendMessage(type, new MapHash(mapHash));
         }
 
         public void SendPlayerMove(MoveData moveData)
         {
             CSMRequest.Type type = CSMRequest.Type.MAKE_MOVE;
-            string message = BuildMessage(type, moveData);
-            SendMessage(message);
+            SendMessage(type, moveData);
         }
 
-        public void SendMessage(string message, int playerId = -1)
+        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck = false)
         {
-            this.ws.Send(message);
-        }
-
-        private string BuildMessage<T>(CSMRequest.Type type, T body)
-        {
-            string data = JsonUtility.ToJson(body);
-            ClientServerMessage csm = new ClientServerMessage((int)type, data);
-            string message = JsonUtility.ToJson(csm);
-            return message;
+            gameManager.serverCommunicator.SendMessage(type, body, needAck);
         }
     }
 }

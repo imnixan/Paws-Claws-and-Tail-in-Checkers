@@ -30,7 +30,7 @@ namespace PCTC.Server
             #region Handlers
             requestHandlers = new Dictionary<CSMRequest.Type, Action<DataFromPlayer>>
             {
-                { CSMRequest.Type.PROCESS_MOVE, HandlePlayerChoosedCat },
+                { CSMRequest.Type.POSSIBLE_MOVES, HandlePlayerChoosedCat },
                 { CSMRequest.Type.MAKE_MOVE, HandlePlayerMove },
                 { CSMRequest.Type.PLAYER_READY, HandlePlayerReady }
             };

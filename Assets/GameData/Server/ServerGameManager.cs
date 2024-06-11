@@ -73,6 +73,10 @@ namespace PCTC.Server
 
         public void OnPlayerDisconnect(int playerID)
         {
+            if (gameState == Enums.GameData.GameState.GameEnd)
+            {
+                return;
+            }
             Enums.GameData.EndGameReason reason = Enums.GameData.EndGameReason.Disconnect;
             int winnerID = playerID == 0 ? 1 : 0;
             GameResult gameResult = new GameResult(winnerID, (int)reason);
@@ -116,6 +120,7 @@ namespace PCTC.Server
 
         private void OnGameEnd(GameResult gameResult)
         {
+            gameState = Enums.GameData.GameState.GameEnd;
             currentPlayer = -1;
             playersCommunicator.playerDataSender.SendAllGameEnd(gameResult);
         }
