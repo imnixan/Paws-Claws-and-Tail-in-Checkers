@@ -36,10 +36,18 @@ namespace GameData.Managers
                 { RequestTypes.ServerRequests.PLAYER_INIT, OnPlayerInit },
                 { RequestTypes.ServerRequests.SET_PLAYER_ORDER, OnChangeOrder },
                 { RequestTypes.ServerRequests.POSSIBLE_MOVES, OnPossibleMovesCatch },
-                { RequestTypes.ServerRequests.MOVE_RESULT, OnPlayerMoveResultCatch }
+                { RequestTypes.ServerRequests.MOVE_RESULT, OnPlayerMoveResultCatch },
+                { RequestTypes.ServerRequests.START_GAME, OnGameStart },
+                { RequestTypes.ServerRequests.GAME_RESULT, OnGameEnd }
             };
         }
         #endregion
+
+        public void OnGameEnd(ClientServerMessage message)
+        {
+            GameResult result = JsonUtility.FromJson<GameResult>(message.data);
+            gameManager.OnGameEnd(result);
+        }
 
         public void ProcessServerData(object sender, MessageEventArgs e)
         {
@@ -59,6 +67,11 @@ namespace GameData.Managers
                 // Обработка неизвестного типа запроса, если требуется
                 Console.WriteLine("Unknown request type");
             }
+        }
+
+        private void OnGameStart(ClientServerMessage message)
+        {
+            gameManager.OnGameStart();
         }
 
         private void OnPlayerInit(ClientServerMessage message)

@@ -10,7 +10,7 @@ namespace PCTC.Enums
             PLAYER_CLICK_ITEM,
             PLAYER_CHOOSED_CAT,
             PLAYER_MOVE,
-            PlAYER_MOVE_FINISH
+            PLAYER_READY
         }
 
         public enum ServerRequests
@@ -21,7 +21,8 @@ namespace PCTC.Enums
             ITEM_CLICK,
             GAME_RESULT,
             PLAYER_INIT,
-            SET_PLAYER_ORDER
+            SET_PLAYER_ORDER,
+            START_GAME
         }
     }
 
@@ -39,6 +40,17 @@ namespace PCTC.Enums
             None,
             Normal,
             Chonky
+        }
+    }
+
+    public static class GameEnd
+    {
+        public enum EndGameReason
+        {
+            Disconnect,
+            GiveUp,
+            Clear,
+            Stuck
         }
     }
 }

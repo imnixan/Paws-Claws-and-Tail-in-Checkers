@@ -29,11 +29,17 @@ namespace PCTC.Builders
 
         private ClickInputHandler[,] handlersMap;
 
+        private GameObject carpet;
+
         public void BuildGameField(CatData[,] catData)
         {
+            if (carpet != null)
+            {
+                Destroy(carpet);
+            }
+            carpet = new GameObject("Carpet");
+            carpet.transform.SetParent(transform);
             BuildCarpet(catData);
-            float center = (float)(fieldSize - 1) / 2;
-            Vector3 fieldCenter = new Vector3(center, floorY, center);
         }
 
         private void BuildCarpet(CatData[,] gameField)
@@ -52,7 +58,7 @@ namespace PCTC.Builders
                             floorPrefab,
                             cellPosition,
                             new Quaternion(),
-                            transform
+                            carpet.transform
                         )
                         .GetComponentInChildren<MeshRenderer>();
 

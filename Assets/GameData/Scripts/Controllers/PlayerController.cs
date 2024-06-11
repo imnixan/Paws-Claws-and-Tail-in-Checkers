@@ -12,15 +12,19 @@ namespace PCTC.Controllers
 {
     public class PlayerController : MonoBehaviour
     {
-        private List<Cat> cats = new List<Cat>();
+        private List<Cat> cats;
         private GameController gameController;
         CatsType.Team currentTeam;
 
-        public void InitController(List<Cat> gameField, int playerId, GameController gameController)
+        public void InitController(List<Cat> gameField, int playerID, GameController gameController)
         {
+            if (cats != null)
+            {
+                UnsubFromCats();
+            }
             this.cats = gameField;
             this.gameController = gameController;
-            currentTeam = (CatsType.Team)playerId + 1;
+            currentTeam = (CatsType.Team)playerID + 1;
             SubOnCats();
         }
 
@@ -31,6 +35,8 @@ namespace PCTC.Controllers
 
         private void SubOnCats()
         {
+            if (cats == null)
+                return;
             foreach (var cat in cats)
             {
                 cat.catTouched += OnCatClick;
@@ -39,9 +45,15 @@ namespace PCTC.Controllers
 
         private void UnsubFromCats()
         {
+            if (cats == null)
+                return;
+
             foreach (var cat in cats)
             {
-                cat.catTouched -= OnCatClick;
+                if (cat != null)
+                {
+                    cat.catTouched -= OnCatClick;
+                }
             }
         }
 
@@ -49,6 +61,7 @@ namespace PCTC.Controllers
         {
             if (cat.catData.team == currentTeam)
             {
+                Debug.Log("CAT CLICKED");
                 CatData catData = cat.catData;
                 gameController.OnCatClick(catData);
             }

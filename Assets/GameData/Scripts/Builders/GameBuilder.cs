@@ -14,13 +14,19 @@ namespace PCTC.Managers
     public class GameBuilder : MonoBehaviour
     {
         [SerializeField]
-        private GameController gameController;
-
-        [SerializeField]
         private PCTC.CatScripts.Cat catPrefab;
+
+        private GameObject field;
 
         public List<Cat> PlaceCats(CatData[,] catData)
         {
+            if (field != null)
+            {
+                Destroy(field);
+                Debug.Log("REBUILD FIELD");
+            }
+            field = new GameObject("catsField");
+            field.transform.SetParent(transform);
             List<Cat> catsList = new List<Cat>();
             int fieldSize = catData.GetLength(0);
             Vector3 catPosition = new Vector3();
@@ -37,7 +43,7 @@ namespace PCTC.Managers
                             catPrefab,
                             catPosition,
                             new Quaternion(),
-                            transform
+                            field.transform
                         );
                         newCat.Init(catData[x, y]);
                         catsList.Add(newCat);

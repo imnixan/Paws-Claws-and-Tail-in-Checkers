@@ -22,10 +22,10 @@ namespace PCTC.CameraControl
             this.transform.rotation = startPos.rotation;
         }
 
-        public void PosCamera(int playerId)
+        public void PosCamera(int playerID)
         {
-            this.transform.DOMove(playerCamPos[playerId].position, moveTime).Play();
-            this.transform.DORotateQuaternion(playerCamPos[playerId].rotation, moveTime).Play();
+            this.transform.DOMove(playerCamPos[playerID].position, moveTime).Play();
+            this.transform.DORotateQuaternion(playerCamPos[playerID].rotation, moveTime).Play();
         }
     }
 }

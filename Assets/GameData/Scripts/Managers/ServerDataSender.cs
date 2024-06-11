@@ -22,30 +22,35 @@ namespace PCTC.Managers
         {
             Debug.Log("send that i choose cat");
             RequestTypes.ClientRequests type = RequestTypes.ClientRequests.PLAYER_CHOOSED_CAT;
-            string message = JsonUtility.ToJson(catData);
-            SendMessage(type, message);
+            string message = BuildMessage(type, catData);
+            SendMessage(message);
         }
 
-        public void SendPlayerFinishedMove()
+        public void SendPlayerReady(string mapHash)
         {
-            RequestTypes.ClientRequests type = RequestTypes.ClientRequests.PlAYER_MOVE_FINISH;
-            string message = "";
-            SendMessage(type, message);
+            RequestTypes.ClientRequests type = RequestTypes.ClientRequests.PLAYER_READY;
+            string message = BuildMessage(type, new MapHash(mapHash));
+            SendMessage(message);
         }
 
         public void SendPlayerMove(MoveData moveData)
         {
             RequestTypes.ClientRequests type = RequestTypes.ClientRequests.PLAYER_MOVE;
-            string message = JsonUtility.ToJson(moveData);
-            SendMessage(type, message);
+            string message = BuildMessage(type, moveData);
+            SendMessage(message);
         }
 
-        private void SendMessage(RequestTypes.ClientRequests type, string message)
+        private void SendMessage(string message)
         {
-            ClientServerMessage csm = new ClientServerMessage((int)type, message);
-            string data = JsonUtility.ToJson(csm);
+            this.ws.Send(message);
+        }
 
-            this.ws.Send(data);
+        private string BuildMessage<T>(RequestTypes.ClientRequests type, T body)
+        {
+            string data = JsonUtility.ToJson(body);
+            ClientServerMessage csm = new ClientServerMessage((int)type, data);
+            string message = JsonUtility.ToJson(csm);
+            return message;
         }
     }
 }

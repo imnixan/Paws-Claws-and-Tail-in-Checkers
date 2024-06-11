@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using PCTC.Enums;
 using PCTC.Scripts;
 using PCTC.Structs;
@@ -18,6 +19,11 @@ namespace PCTC.Server
             InitializeHandlers();
         }
 
+        public void OnPlayerDisconnect(int playerID)
+        {
+            gameManager.OnPlayerDisconnect(playerID);
+        }
+
         #region Initialization
         private void InitializeHandlers()
         {
@@ -26,7 +32,7 @@ namespace PCTC.Server
             {
                 { RequestTypes.ClientRequests.PLAYER_CHOOSED_CAT, HandlePlayerChoosedCat },
                 { RequestTypes.ClientRequests.PLAYER_MOVE, HandlePlayerMove },
-                { RequestTypes.ClientRequests.PlAYER_MOVE_FINISH, HandlePlayerMoveFinish }
+                { RequestTypes.ClientRequests.PLAYER_READY, HandlePlayerReady }
             };
             #endregion
             #region ActivePlayerRequests
@@ -44,10 +50,10 @@ namespace PCTC.Server
             this.gameManager = gameManager;
         }
 
-        public void ProcessUserData(string data, int playerId)
+        public void ProcessUserData(string data, int playerID)
         {
             ClientServerMessage userMessage = JsonUtility.FromJson<ClientServerMessage>(data);
-            DataFromPlayer dataFromPlayer = new DataFromPlayer(userMessage, playerId);
+            DataFromPlayer dataFromPlayer = new DataFromPlayer(userMessage, playerID);
 
             InvokeHandler(dataFromPlayer);
         }
@@ -88,9 +94,10 @@ namespace PCTC.Server
             gameManager.OnPlayerMove(moveData);
         }
 
-        private void HandlePlayerMoveFinish(DataFromPlayer dft)
+        private void HandlePlayerReady(DataFromPlayer dft)
         {
-            gameManager.OnPlayerMoveFinish(dft.playerID);
+            MapHash playerMap = JsonUtility.FromJson<MapHash>(dft.message.data);
+            gameManager.OnPlayerReady(playerMap, dft.playerID);
         }
     }
 }

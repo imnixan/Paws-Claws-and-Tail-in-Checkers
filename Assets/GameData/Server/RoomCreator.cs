@@ -8,7 +8,7 @@ namespace PCTC.Server
 {
     public static class RoomCreator
     {
-        private static int roomSize = 2;
+        private const int ROOM_SIZE = 2;
         private static ConcurrentBag<PlayerListener> playersQueue =
             new ConcurrentBag<PlayerListener>();
 
@@ -20,19 +20,19 @@ namespace PCTC.Server
 
         private static void TryBuildRoom()
         {
-            if (playersQueue.Count >= roomSize)
+            if (playersQueue.Count >= ROOM_SIZE)
             {
                 Guid roomId = Guid.NewGuid();
-                PlayerListener[] playerListeners = new PlayerListener[roomSize];
-                for (int i = 0; i < roomSize; i++)
+                List<PlayerListener> playerListeners = new List<PlayerListener>();
+                for (int i = 0; i < ROOM_SIZE; i++)
                 {
                     PlayerListener listener;
                     playersQueue.TryTake(out listener);
                     if (listener != null)
                     {
-                        playerListeners[i] = listener;
+                        playerListeners.Add(listener);
                         listener.roomNumber = roomId;
-                        listener.playerId = i;
+                        listener.playerID = i;
                     }
                     else
                     {
@@ -48,7 +48,7 @@ namespace PCTC.Server
 
                 if (RoomStorage.rooms.TryAdd(roomId, playersCommunicator))
                 {
-                    new ServerGameManager(playersCommunicator);
+                    new ServerGameManager(playersCommunicator, playerListeners.Count);
                 }
             }
         }
@@ -60,7 +60,15 @@ namespace PCTC.Server
                 PlayerListener delListener;
                 playersQueue.TryTake(out delListener);
             }
-            RoomStorage.rooms.TryRemove(listener.roomNumber, out _);
+            else
+            {
+                PlayersCommunicator room;
+                RoomStorage.rooms.TryGetValue(listener.roomNumber, out room);
+                if (room.RemovePlayer(listener.playerID) == 0)
+                {
+                    RoomStorage.rooms.TryRemove(listener.roomNumber, out _);
+                }
+            }
         }
     }
 }

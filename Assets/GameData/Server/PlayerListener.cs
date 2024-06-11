@@ -9,7 +9,7 @@ namespace PCTC.Server
     public class PlayerListener : WebSocketBehavior
     {
         public Guid roomNumber;
-        public int playerId;
+        public int playerID;
 
         protected override void OnOpen()
         {
@@ -20,24 +20,23 @@ namespace PCTC.Server
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
+            GlobalMessageHandler.OnPlayerDisconnect(roomNumber, playerID);
             RoomCreator.OnPlayerDisconnect(this);
         }
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            GlobalMessageHandler.OnMessage(e, roomNumber, playerId);
+            GlobalMessageHandler.OnMessage(e, roomNumber, playerID);
         }
 
         protected override void OnError(ErrorEventArgs e)
         {
             base.OnError(e);
-            Debug.Log($"Error: {e.Exception.Message}");
+            Debug.Log($"Error: {e.Exception.Message} {e.Exception.StackTrace}");
         }
 
         public void SendPlayerMessage(string message)
         {
-            Debug.Log($"send data {message} to player");
-
             Send(message);
         }
     }

@@ -12,17 +12,32 @@ namespace PCTC.Game
 
         public CatData[,] matrix { get; private set; }
         private int fieldSize = 8;
+        public string mapHash { get; private set; }
 
         public GameField()
         {
             matrix = new CatData[fieldSize, fieldSize];
             BuildField();
             FillField();
+            UpdateHash();
         }
 
         public GameField(CatData[,] gameField)
         {
             this.matrix = gameField;
+            UpdateHash();
+        }
+
+        private void UpdateHash()
+        {
+            Hash128 hash = new Hash128();
+
+            foreach (var item in matrix)
+            {
+                hash.Append(item.id);
+            }
+            mapHash = hash.ToString();
+            return;
         }
 
         private void BuildField()
@@ -51,6 +66,7 @@ namespace PCTC.Game
             }
             RemoveCats(moveResult);
             UpgradeCats(moveResult);
+            UpdateHash();
         }
 
         private void UpgradeCats(MoveResult moveResult)
@@ -101,48 +117,49 @@ namespace PCTC.Game
 
         #region testnormal
         //test normals
-        //private void FillField()
-        //{
-        //    int catId = 2;
-        //    Enums.CatsType.Type defaultType = Enums.CatsType.Type.Normal;
+        private void FillField()
+        {
+            int catId = 2;
+            Enums.CatsType.Type defaultType = Enums.CatsType.Type.Normal;
 
-        //    // Расставляем фишки для тестового поля
-        //    // Оранжевая команда
-        //    matrix[3, 6] = new CatData(
-        //        catId++,
-        //        new Vector2Int(3, 6),
-        //        defaultType,
-        //        Enums.CatsType.Team.Orange
-        //    );
+            // Расставляем фишки для тестового поля
+            // Оранжевая команда
+            matrix[3, 6] = new CatData(
+                catId++,
+                new Vector2Int(3, 6),
+                defaultType,
+                Enums.CatsType.Team.Orange
+            );
 
-        //    matrix[5, 6] = new CatData(
-        //        catId++,
-        //        new Vector2Int(5, 6),
-        //        defaultType,
-        //        Enums.CatsType.Team.Orange
-        //    );
+            matrix[5, 6] = new CatData(
+                catId++,
+                new Vector2Int(5, 6),
+                defaultType,
+                Enums.CatsType.Team.Orange
+            );
 
-        //    // Черная команда
-        //    matrix[4, 3] = new CatData(
-        //        catId++,
-        //        new Vector2Int(4, 3),
-        //        defaultType,
-        //        Enums.CatsType.Team.Black
-        //    );
-        //    matrix[4, 1] = new CatData(
-        //        catId++,
-        //        new Vector2Int(4, 1),
-        //        defaultType,
-        //        Enums.CatsType.Team.Black
-        //    );
-        //    matrix[4, 5] = new CatData(
-        //        catId++,
-        //        new Vector2Int(4, 5),
-        //        defaultType,
-        //        Enums.CatsType.Team.Black
-        //    );
-        //}
+            // Черная команда
+            matrix[4, 3] = new CatData(
+                catId++,
+                new Vector2Int(4, 3),
+                defaultType,
+                Enums.CatsType.Team.Black
+            );
+            matrix[4, 1] = new CatData(
+                catId++,
+                new Vector2Int(4, 1),
+                defaultType,
+                Enums.CatsType.Team.Black
+            );
+            matrix[4, 5] = new CatData(
+                catId++,
+                new Vector2Int(4, 5),
+                defaultType,
+                Enums.CatsType.Team.Black
+            );
+        }
         #endregion
+
         #region testnormalMOREWAYS
         //test normals
         //private void FillField()
@@ -181,49 +198,51 @@ namespace PCTC.Game
         //    );
         //}
         #endregion
+
+
         #region testChonky
-        //test chonky
-        private void FillField()
-        {
-            int catId = 2;
-            Enums.CatsType.Type defaultType = Enums.CatsType.Type.Chonky;
+        //    //test chonky
+        //    private void FillField()
+        //    {
+        //        int catId = 2;
+        //        Enums.CatsType.Type defaultType = Enums.CatsType.Type.Chonky;
 
-            // Расставляем фишки для тестового поля
-            // Оранжевая команда
-            matrix[2, 7] = new CatData(
-                catId++,
-                new Vector2Int(2, 7),
-                defaultType,
-                Enums.CatsType.Team.Orange
-            );
+        //        // Расставляем фишки для тестового поля
+        //        // Оранжевая команда
+        //        matrix[2, 7] = new CatData(
+        //            catId++,
+        //            new Vector2Int(2, 7),
+        //            defaultType,
+        //            Enums.CatsType.Team.Orange
+        //        );
 
-            matrix[6, 7] = new CatData(
-                catId++,
-                new Vector2Int(6, 7),
-                defaultType,
-                Enums.CatsType.Team.Orange
-            );
+        //        matrix[6, 7] = new CatData(
+        //            catId++,
+        //            new Vector2Int(6, 7),
+        //            defaultType,
+        //            Enums.CatsType.Team.Orange
+        //        );
 
-            // Черная команда
-            matrix[4, 3] = new CatData(
-                catId++,
-                new Vector2Int(4, 3),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-            matrix[4, 1] = new CatData(
-                catId++,
-                new Vector2Int(4, 1),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-            matrix[4, 5] = new CatData(
-                catId++,
-                new Vector2Int(4, 5),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-        }
+        //        // Черная команда
+        //        matrix[4, 3] = new CatData(
+        //            catId++,
+        //            new Vector2Int(4, 3),
+        //            defaultType,
+        //            Enums.CatsType.Team.Black
+        //        );
+        //        matrix[4, 1] = new CatData(
+        //            catId++,
+        //            new Vector2Int(4, 1),
+        //            defaultType,
+        //            Enums.CatsType.Team.Black
+        //        );
+        //        matrix[4, 5] = new CatData(
+        //            catId++,
+        //            new Vector2Int(4, 5),
+        //            defaultType,
+        //            Enums.CatsType.Team.Black
+        //        );
+        //    }
         #endregion
 
         public CatData GetElement(Vector2Int coords)

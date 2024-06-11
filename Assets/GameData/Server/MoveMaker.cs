@@ -89,8 +89,33 @@ namespace PCTC.Server
                 catsForUpgrade.ToArray()
             );
             gameField.UpdateField(moveResult);
+            moveResult.catsCount = CountCats();
 
             return moveResult;
+        }
+
+        private CatsCount CountCats()
+        {
+            CatsCount cats = new CatsCount();
+            foreach (var cat in gameField.matrix)
+            {
+                switch (cat.type)
+                {
+                    case CatsType.Type.Chonky:
+                        if (cat.team == CatsType.Team.Orange)
+                            cats.orangeChonkyCats++;
+                        if (cat.team == CatsType.Team.Black)
+                            cats.blackChonkyCats++;
+                        break;
+                    case CatsType.Type.Normal:
+                        if (cat.team == CatsType.Team.Orange)
+                            cats.orangeCats++;
+                        if (cat.team == CatsType.Team.Black)
+                            cats.blackCats++;
+                        break;
+                }
+            }
+            return cats;
         }
 
         private Vector2Int[] CropStartPoint(Vector2Int[] moves, Vector2Int startMove)

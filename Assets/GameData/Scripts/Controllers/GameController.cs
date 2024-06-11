@@ -28,16 +28,17 @@ namespace PCTC.Controllers
 
         public void Init(
             CatData[,] catData,
-            int playerId,
+            int playerID,
             List<Cat> cats,
             ClickInputHandler[,] cellHandlers,
             ClientGameManager gameManager
         )
         {
             this.gameField = new GameField(catData);
-            playerController.InitController(cats, playerId, this);
+            playerController.InitController(cats, playerID, this);
             this.carpetController.Init(cellHandlers, this);
             this.gameManager = gameManager;
+            gameManager.OnReady(gameField.mapHash);
         }
 
         public void ShowPossibleMoves(Moves moves)
@@ -51,6 +52,7 @@ namespace PCTC.Controllers
             {
                 choosedCat = cat;
                 gameManager.RequestPossibleMoves(cat);
+                carpetController.ActiveCells(new Vector2Int[0]);
             }
         }
 
@@ -81,7 +83,8 @@ namespace PCTC.Controllers
                 {
                     RemoveCats(moveResult.catsForRemove);
                     UpgradeCats(moveResult.catsForUpgrade);
-                    gameManager.FinishMove();
+                    gameField.UpdateField(moveResult);
+                    gameManager.OnReady(gameField.mapHash);
                 })
                 .Restart();
         }

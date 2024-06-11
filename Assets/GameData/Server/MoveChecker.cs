@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using NUnit.Framework;
 using PCTC.CatScripts;
+using PCTC.Enums;
 using PCTC.Game;
 using PCTC.Structs;
 using Unity.VisualScripting;
@@ -34,6 +35,19 @@ namespace PCTC.Server
             Moves moves = GetPossibleMoves(move.catData);
             bool correctMove = moves.possibleMoves.Contains(move.moveEnd);
             return correctMove;
+        }
+
+        public bool CheckPlayerStuck(CatsType.Team team)
+        {
+            int count = 0;
+            foreach (var cat in gameField.matrix)
+            {
+                if (cat.team == team)
+                {
+                    count += GetPossibleMoves(cat).possibleMoves.Length;
+                }
+            }
+            return count == 0;
         }
 
         //orange move x++, black move x--;

@@ -8,13 +8,18 @@ using WebSocketSharp;
 
 namespace GameData.Scripts
 {
-    public class ServerCommunicator : MonoBehaviour
+    public class ServerCommunicator
     {
-        public string ip = "";
+        private string ip;
         private WebSocket ws;
         private ClientGameManager gameManager;
         public ServerDataSender serverDataSender { get; private set; }
         public ServerDataHandler serverDataHandler { get; private set; }
+
+        public ServerCommunicator(string ip = "localhost")
+        {
+            this.ip = ip;
+        }
 
         public void ConnectToServer(ClientGameManager gm)
         {
@@ -29,6 +34,14 @@ namespace GameData.Scripts
             ws.Connect();
         }
 
+        public void Disconnect()
+        {
+            if (ws != null)
+            {
+                ws.Close();
+            }
+        }
+
         private void OnError(object sender, ErrorEventArgs e)
         {
             Debug.Log("error" + e);
@@ -36,16 +49,12 @@ namespace GameData.Scripts
 
         private void OnConnected(object sender, System.EventArgs e)
         {
-            Debug.Log("Connect to server");
+            gameManager.OnConnect();
         }
 
         void OnDestroy()
         {
-            if (ws != null)
-            {
-                ws.Close();
-            }
-            Debug.Log("CloseServer");
+            Disconnect();
         }
     }
 }

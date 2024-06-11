@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using PCTC.Enums;
+using PCTC.Server;
 using UnityEngine;
 
 namespace PCTC.Structs
@@ -24,10 +25,10 @@ namespace PCTC.Structs
         public ClientServerMessage message;
         public int playerID;
 
-        public DataFromPlayer(ClientServerMessage message, int playerId)
+        public DataFromPlayer(ClientServerMessage message, int playerID)
         {
             this.message = message;
-            this.playerID = playerId;
+            this.playerID = playerID;
         }
     }
 
@@ -37,9 +38,9 @@ namespace PCTC.Structs
         public int playerID;
         public CatData[] gameField;
 
-        public PlayerInitData(int playerId, CatData[] gameField)
+        public PlayerInitData(int playerID, CatData[] gameField)
         {
-            this.playerID = playerId;
+            this.playerID = playerID;
             this.gameField = gameField;
         }
     }
@@ -53,13 +54,13 @@ namespace PCTC.Structs
         public CatsType.Team team;
 
         public CatData(
-            int catId,
+            int catID,
             Vector2Int position,
             CatsType.Type type = CatsType.Type.None,
             CatsType.Team team = CatsType.Team.None
         )
         {
-            this.id = catId;
+            this.id = catID;
             this.position = position;
             this.type = type;
             this.team = team;
@@ -82,7 +83,7 @@ namespace PCTC.Structs
     {
         public Vector2Int[] possibleMoves;
 
-        public Moves(Vector2Int[] possibleMoves)
+        public Moves(Vector2Int[] possibleMoves = null)
         {
             this.possibleMoves = possibleMoves;
         }
@@ -92,29 +93,43 @@ namespace PCTC.Structs
     public class MoveResult
     {
         public MoveData[] moves;
-
         public CatData[] catsForRemove;
         public CatData[] catsForUpgrade;
+        public CatsCount catsCount;
 
-        public MoveResult(MoveData[] moves, CatData[] catsForRemove, CatData[] catsForUpgrade)
+        public MoveResult(
+            MoveData[] moves,
+            CatData[] catsForRemove = null,
+            CatData[] catsForUpgrade = null,
+            CatsCount catsCount = null
+        )
         {
             this.moves = moves;
             this.catsForRemove = catsForRemove;
             this.catsForUpgrade = catsForUpgrade;
+            this.catsCount = catsCount;
         }
+    }
 
-        public MoveResult(MoveData[] moves)
-        {
-            this.moves = moves;
-            this.catsForRemove = new CatData[0];
-            this.catsForUpgrade = new CatData[0];
-        }
+    [System.Serializable]
+    public class CatsCount
+    {
+        public int orangeCats;
+        public int orangeChonkyCats;
+        public int blackCats;
+        public int blackChonkyCats;
 
-        public MoveResult(MoveData[] moves, CatData[] catsForRemove)
+        public CatsCount(
+            int orangeCats = 0,
+            int orangeChonkyCats = 0,
+            int blackCats = 0,
+            int orangeBlackCats = 0
+        )
         {
-            this.moves = moves;
-            this.catsForRemove = catsForRemove;
-            this.catsForUpgrade = new CatData[0];
+            this.orangeCats = orangeCats;
+            this.blackCats = blackCats;
+            this.orangeChonkyCats = orangeChonkyCats;
+            this.blackChonkyCats = blackChonkyCats;
         }
     }
 
@@ -130,6 +145,30 @@ namespace PCTC.Structs
             this.catData = catData;
             this.moveEnd = moveEnd;
             this.battleAnimationId = battleAnimationId;
+        }
+    }
+
+    [System.Serializable]
+    public class GameResult
+    {
+        public int winnerID;
+        public int reason;
+
+        public GameResult(int winnerID, int reason)
+        {
+            this.winnerID = winnerID;
+            this.reason = reason;
+        }
+    }
+
+    [System.Serializable]
+    public class MapHash
+    {
+        public string maphash;
+
+        public MapHash(string maphash)
+        {
+            this.maphash = maphash;
         }
     }
 }

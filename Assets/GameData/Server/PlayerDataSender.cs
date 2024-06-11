@@ -9,64 +9,88 @@ namespace PCTC.Server
 {
     public class PlayerDataSender
     {
-        private PlayerListener[] playerListeners;
+        private List<PlayerListener> playerListeners;
 
-        public PlayerDataSender(PlayerListener[] listeners)
+        public PlayerDataSender(List<PlayerListener> listeners)
         {
             this.playerListeners = listeners;
         }
 
-        public void InitUsers(CatData[,] gameField)
+        public int RemoveListener(int playerID)
+        {
+            playerListeners.RemoveAt(playerID);
+            return playerListeners.Count;
+        }
+
+        public void InitPlayer(int playerID, CatData[,] gameField)
         {
             RequestTypes.ServerRequests type = RequestTypes.ServerRequests.PLAYER_INIT;
             CatData[] field = ArrayTransformer.Flatten(gameField);
-            for (int i = 0; i < 2; i++)
-            {
-                PlayerInitData initData = new PlayerInitData(i, field);
-                string data = JsonUtility.ToJson(initData);
-                ClientServerMessage clientServerMessage = new ClientServerMessage((int)type, data);
-                string message = JsonUtility.ToJson(clientServerMessage);
-                SendPlayerMessage(i, message);
-            }
+            PlayerInitData initData = new PlayerInitData(playerID, field);
+            string message = BuildMessage(type, initData);
+            SendPlayerMessage(playerID, message);
         }
 
-        public void ChangePlayerMoveOrder(bool firstPlayerMove)
+        public void SendAllGameEnd(GameResult gameResult)
         {
-            for (int i = 0; i < 2; i++)
+            RequestTypes.ServerRequests type = RequestTypes.ServerRequests.GAME_RESULT;
+            string message = BuildMessage(type, gameResult);
+            SendAllPlayers(message);
+        }
+
+        private string BuildMessage<T>(RequestTypes.ServerRequests type, T body)
+        {
+            string data = JsonUtility.ToJson(body);
+            ClientServerMessage csm = new ClientServerMessage((int)type, data);
+            string message = JsonUtility.ToJson(csm);
+            return message;
+        }
+
+        public void SendAllCurrentPlayerNotification(int currentPlayer)
+        {
+            for (int playerID = 0; playerID < playerListeners.Count; playerID++)
             {
                 RequestTypes.ServerRequests type = RequestTypes.ServerRequests.SET_PLAYER_ORDER;
-                string data = JsonUtility.ToJson(new PlayerOrder(firstPlayerMove));
-                ClientServerMessage csm = new ClientServerMessage((int)type, data);
-                string message = JsonUtility.ToJson(csm);
-                SendPlayerMessage(i, message);
-                firstPlayerMove = !firstPlayerMove;
+                bool playersTurn = currentPlayer == playerID;
+                PlayerOrder plyerOrder = new PlayerOrder(playersTurn);
+                string message = BuildMessage(type, plyerOrder);
+                SendPlayerMessage(playerID, message);
             }
         }
 
-        public void SendPlayerPossibleMoves(int playerId, Moves moves)
+        public void SendPlayerPossibleMoves(int playerID, Moves moves)
         {
             RequestTypes.ServerRequests type = RequestTypes.ServerRequests.POSSIBLE_MOVES;
-            string data = JsonUtility.ToJson(moves);
-            ClientServerMessage csm = new ClientServerMessage((int)type, data);
-            string message = JsonUtility.ToJson(csm);
-            SendPlayerMessage(playerId, message);
+
+            string message = BuildMessage(type, moves);
+            SendPlayerMessage(playerID, message);
         }
 
-        public void SendPlayerMove(MoveResult moveResult)
+        public void SendAllPlayerMove(MoveResult moveResult)
         {
             RequestTypes.ServerRequests type = RequestTypes.ServerRequests.MOVE_RESULT;
-            string data = JsonUtility.ToJson(moveResult);
-            ClientServerMessage csm = new ClientServerMessage((int)type, data);
-            string message = JsonUtility.ToJson(csm);
-            for (int i = 0; i < playerListeners.Length; i++)
+            string message = BuildMessage(type, moveResult);
+            SendAllPlayers(message);
+        }
+
+        public void SendAllGameStart()
+        {
+            RequestTypes.ServerRequests type = RequestTypes.ServerRequests.START_GAME;
+            string message = BuildMessage(type, "Game Started!");
+            SendAllPlayers(message);
+        }
+
+        private void SendPlayerMessage(int playerID, string message)
+        {
+            playerListeners[playerID].SendPlayerMessage(message);
+        }
+
+        private void SendAllPlayers(string message)
+        {
+            for (int i = 0; i < playerListeners.Count; i++)
             {
                 SendPlayerMessage(i, message);
             }
-        }
-
-        private void SendPlayerMessage(int playerId, string message)
-        {
-            playerListeners[playerId].SendPlayerMessage(message);
         }
     }
 }

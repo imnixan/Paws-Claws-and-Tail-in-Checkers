@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Policy;
 using GameData.Scripts;
 using PCTC.Builders;
 using PCTC.CameraControl;
 using PCTC.CatScripts;
 using PCTC.Controllers;
+using PCTC.Enums;
 using PCTC.Handlers;
 using PCTC.Scripts;
 using PCTC.Structs;
@@ -20,7 +22,6 @@ namespace PCTC.Managers
         [SerializeField]
         private CarpetBuilder carpetBuilder;
 
-        [SerializeField]
         private ServerCommunicator serverCommunicator;
 
         [SerializeField]
@@ -32,24 +33,35 @@ namespace PCTC.Managers
         [SerializeField]
         private CameraPositioner cameraPositioner;
 
-        public int playerId { get; private set; }
-        public GameObject buttn;
+        [SerializeField]
+        private UIManager uiManager;
+        public int playerID { get; private set; }
+        private bool gameEnded = false;
 
         public void Connect()
         {
+            serverCommunicator = new ServerCommunicator();
             serverCommunicator.ConnectToServer(this);
-            buttn.active = false;
         }
 
-        public void Restart()
+        public void OnConnect()
+        {
+            uiManager.OnConnect();
+        }
+
+        public void RestartGame()
+        {
+            RestartScene();
+        }
+
+        private void RestartScene()
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
         public void InitPlayer(PlayerInitData playerInitData)
         {
-            this.playerId = playerInitData.playerID;
-            cameraPositioner.PosCamera(playerId);
+            this.playerID = playerInitData.playerID;
             CatData[,] gameField = ArrayTransformer.Expand(playerInitData.gameField);
             List<Cat> cats = gameBuilder.PlaceCats(gameField);
             carpetBuilder.BuildGameField(gameField);
@@ -60,6 +72,21 @@ namespace PCTC.Managers
                 carpetBuilder.GetHandlersMap(),
                 this
             );
+        }
+
+        public void OnGameEnd(GameResult gameResult)
+        {
+            bool win = playerID == gameResult.winnerID;
+            uiManager.OnGameEnd(win, (GameEnd.EndGameReason)gameResult.reason);
+            gameEnded = true;
+            serverCommunicator.Disconnect();
+            gameEnded = true;
+        }
+
+        public void OnGameStart()
+        {
+            cameraPositioner.PosCamera(playerID);
+            uiManager.OnGameStart();
         }
 
         public void ChangePlayerOrder(bool playerOrder)
@@ -91,6 +118,7 @@ namespace PCTC.Managers
             {
                 gameController.ProcessMove(moveResult);
             }
+            uiManager.UpdateScores(moveResult.catsCount);
         }
 
         public void MakeMove(MoveData moveData)
@@ -98,9 +126,9 @@ namespace PCTC.Managers
             serverCommunicator.serverDataSender.SendPlayerMove(moveData);
         }
 
-        public void FinishMove()
+        public void OnReady(string mapHash)
         {
-            serverCommunicator.serverDataSender.SendPlayerFinishedMove();
+            serverCommunicator.serverDataSender.SendPlayerReady(mapHash);
         }
 
         private void OnMoveError()
@@ -110,8 +138,10 @@ namespace PCTC.Managers
 
         internal void OnServerCloseConnect(object sender, CloseEventArgs e)
         {
-            Debug.Log($"connection closed, {e.Reason}");
-            Restart();
+            if (!gameEnded)
+            {
+                RestartGame();
+            }
         }
     }
 }

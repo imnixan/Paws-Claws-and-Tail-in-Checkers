@@ -19,15 +19,12 @@ namespace PCTC.CatScripts
         public event UnityAction<Cat> catTouched;
         public ClickInputHandler clickHandler { get; private set; }
         private MoveController moveController;
-        private TextMeshPro label;
 
         public void Init(CatData catData)
         {
             this.catData = catData;
             InitCat();
             MakeSubscribes();
-            label = GetComponentInChildren<TextMeshPro>();
-            label.text = $"ID: {catData.id}\npos: {catData.position}";
             transform.forward = new Vector3(
                 catData.team == Enums.CatsType.Team.Orange ? 1 : -1,
                 0,
@@ -79,7 +76,6 @@ namespace PCTC.CatScripts
         {
             Vector3 position = new Vector3(destination.x, 0, destination.y);
             this.catData.position = destination;
-            label.text = $"ID: {catData.id}\npos: {catData.position}";
             Tween tween = moveController.MoveTo(position);
             return tween;
         }

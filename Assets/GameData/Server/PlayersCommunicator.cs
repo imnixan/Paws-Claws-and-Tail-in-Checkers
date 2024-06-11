@@ -22,5 +22,10 @@ namespace PCTC.Server
         {
             this.playerDataHandler.SetGameManager(gameManager);
         }
+
+        public int RemovePlayer(int playerID)
+        {
+            return playerDataSender.RemoveListener(playerID);
+        }
     }
 }
