@@ -10,7 +10,8 @@ namespace PCTC.Enums
             PLAYER_CLICK_ITEM,
             PLAYER_CHOOSED_CAT,
             PLAYER_MOVE,
-            PLAYER_READY
+            PLAYER_READY,
+            PLAYER_DISCONNECTED
         }
 
         public enum ServerRequests
@@ -43,8 +44,16 @@ namespace PCTC.Enums
         }
     }
 
-    public static class GameEnd
+    public static class GameData
     {
+        public enum GameState
+        {
+            Idle,
+            GameStart,
+            Game,
+            GameEnd
+        }
+
         public enum EndGameReason
         {
             Disconnect,

@@ -25,7 +25,7 @@ namespace PCTC.Server
 
         public int RemovePlayer(int playerID)
         {
-            return playerDataSender.RemoveListener(playerID);
+            return playerDataSender.GetActiveListenersCount(playerID);
         }
     }
 }

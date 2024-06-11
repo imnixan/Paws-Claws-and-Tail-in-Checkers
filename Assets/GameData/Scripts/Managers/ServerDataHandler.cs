@@ -45,6 +45,7 @@ namespace GameData.Managers
 
         public void OnGameEnd(ClientServerMessage message)
         {
+            Debug.Log("GAMEEND");
             GameResult result = JsonUtility.FromJson<GameResult>(message.data);
             gameManager.OnGameEnd(result);
         }

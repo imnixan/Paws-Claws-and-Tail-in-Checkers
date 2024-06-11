@@ -22,14 +22,7 @@ namespace PCTC.Server
         private CatsCount catsCount;
         public GameField gameField { get; private set; }
 
-        private GameState gameState;
-
-        private enum GameState
-        {
-            PlayerInit,
-            Game,
-            GameEnd
-        }
+        private Enums.GameData.GameState gameState;
 
         private int currentPlayer
         {
@@ -43,7 +36,7 @@ namespace PCTC.Server
 
         public ServerGameManager(PlayersCommunicator playersCommunicator, int playersCount)
         {
-            gameState = GameState.PlayerInit;
+            gameState = Enums.GameData.GameState.GameStart;
             this.playersCount = playersCount;
             playerReadyMarks = new bool[playersCount];
             gameField = new GameField();
@@ -57,7 +50,7 @@ namespace PCTC.Server
         private void StartGame()
         {
             currentPlayer = 0;
-            gameState = GameState.Game;
+            gameState = Enums.GameData.GameState.Game;
             playersCommunicator.playerDataSender.SendAllCurrentPlayerNotification(currentPlayer);
             playersCommunicator.playerDataSender.SendAllGameStart();
         }
@@ -80,7 +73,7 @@ namespace PCTC.Server
 
         public void OnPlayerDisconnect(int playerID)
         {
-            GameEnd.EndGameReason reason = GameEnd.EndGameReason.Disconnect;
+            Enums.GameData.EndGameReason reason = Enums.GameData.EndGameReason.Disconnect;
             int winnerID = playerID == 0 ? 1 : 0;
             GameResult gameResult = new GameResult(winnerID, (int)reason);
             OnGameEnd(gameResult);
@@ -108,10 +101,10 @@ namespace PCTC.Server
                 orangeWinsByClear || blackWinsByClear || orangeWinsByStuck || blackWindByStuck;
 
             int winnerID = orangeWinsByClear || orangeWinsByStuck ? 0 : 1;
-            GameEnd.EndGameReason reason =
+            Enums.GameData.EndGameReason reason =
                 orangeWinsByClear || blackWinsByClear
-                    ? GameEnd.EndGameReason.Clear
-                    : GameEnd.EndGameReason.Stuck;
+                    ? Enums.GameData.EndGameReason.Clear
+                    : Enums.GameData.EndGameReason.Stuck;
             if (gameEnd)
             {
                 GameResult gameResult = new GameResult(winnerID, (int)reason);
@@ -151,11 +144,11 @@ namespace PCTC.Server
         {
             switch (gameState)
             {
-                case GameState.PlayerInit:
+                case Enums.GameData.GameState.GameStart:
                     Debug.Log("starting game");
                     StartGame();
                     break;
-                case GameState.Game:
+                case Enums.GameData.GameState.Game:
                     Debug.Log("continue game");
                     if (!CheckEndGame())
                     {
@@ -167,7 +160,7 @@ namespace PCTC.Server
 
         private void NextPlayerTurn()
         {
-            this.gameState = GameState.Game;
+            this.gameState = Enums.GameData.GameState.Game;
             currentPlayer++;
             playersCommunicator.playerDataSender.SendAllCurrentPlayerNotification(currentPlayer);
         }

@@ -36,12 +36,17 @@ namespace PCTC.Managers
         [SerializeField]
         private UIManager uiManager;
         public int playerID { get; private set; }
-        private bool gameEnded = false;
+
+        private Enums.GameData.GameState gameState;
+
+        public void Start()
+        {
+            serverCommunicator = new ServerCommunicator(this);
+        }
 
         public void Connect()
         {
-            serverCommunicator = new ServerCommunicator();
-            serverCommunicator.ConnectToServer(this);
+            serverCommunicator.ConnectToServer();
         }
 
         public void OnConnect()
@@ -52,10 +57,12 @@ namespace PCTC.Managers
         public void RestartGame()
         {
             RestartScene();
+            //serverCommunicator.Disconnect();
         }
 
-        private void RestartScene()
+        public void RestartScene()
         {
+            Debug.Log("reloadScene");
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
@@ -76,21 +83,22 @@ namespace PCTC.Managers
 
         public void OnGameEnd(GameResult gameResult)
         {
+            gameState = Enums.GameData.GameState.GameEnd;
             bool win = playerID == gameResult.winnerID;
-            uiManager.OnGameEnd(win, (GameEnd.EndGameReason)gameResult.reason);
-            gameEnded = true;
+            uiManager.OnGameEnd(win, (Enums.GameData.EndGameReason)gameResult.reason);
             serverCommunicator.Disconnect();
-            gameEnded = true;
         }
 
         public void OnGameStart()
         {
+            gameState = Enums.GameData.GameState.GameStart;
             cameraPositioner.PosCamera(playerID);
             uiManager.OnGameStart();
         }
 
         public void ChangePlayerOrder(bool playerOrder)
         {
+            gameState = Enums.GameData.GameState.Game;
             this.gameController.playerOrder = playerOrder;
         }
 
@@ -136,11 +144,17 @@ namespace PCTC.Managers
             Debug.Log("NoMoves for this cat");
         }
 
-        internal void OnServerCloseConnect(object sender, CloseEventArgs e)
+        public void OnServerEndConnection()
         {
-            if (!gameEnded)
+            switch (gameState)
             {
-                RestartGame();
+                case Enums.GameData.GameState.GameEnd:
+                    Debug.Log("self Restart");
+                    break;
+                case Enums.GameData.GameState.Game:
+                    Debug.Log("restart of server disconnect");
+                    RestartScene();
+                    break;
             }
         }
     }

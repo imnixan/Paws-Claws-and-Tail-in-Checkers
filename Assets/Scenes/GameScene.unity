@@ -3333,7 +3333,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 612151598}
         m_TargetAssemblyTypeName: PCTC.Managers.ClientGameManager, Assembly-CSharp
-        m_MethodName: RestartGame
+        m_MethodName: RestartScene
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

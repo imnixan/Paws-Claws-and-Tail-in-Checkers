@@ -53,7 +53,7 @@ namespace PCTC.Server
             }
         }
 
-        public static void OnPlayerDisconnect(PlayerListener listener)
+        public static void OnListenerRemove(PlayerListener listener)
         {
             if (listener.roomNumber == null)
             {

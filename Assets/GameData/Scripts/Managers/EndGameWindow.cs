@@ -21,7 +21,7 @@ namespace PCTC.Managers
             endGameField.gameObject.SetActive(false);
         }
 
-        public void OnGameEnd(bool win, GameEnd.EndGameReason reason)
+        public void OnGameEnd(bool win, Enums.GameData.EndGameReason reason)
         {
             endGameField.gameObject.SetActive(true);
             endGameField.DOLocalMoveX(0, 0.5f).Play();
@@ -29,16 +29,16 @@ namespace PCTC.Managers
             string gameEndReason = "";
             switch (reason)
             {
-                case GameEnd.EndGameReason.Disconnect:
+                case Enums.GameData.EndGameReason.Disconnect:
                     gameEndReason = "Disconnect";
                     break;
-                case GameEnd.EndGameReason.GiveUp:
+                case Enums.GameData.EndGameReason.GiveUp:
                     gameEndReason = "Give up";
                     break;
-                case GameEnd.EndGameReason.Clear:
+                case Enums.GameData.EndGameReason.Clear:
                     gameEndReason = "Defeated all the cats";
                     break;
-                case GameEnd.EndGameReason.Stuck:
+                case Enums.GameData.EndGameReason.Stuck:
                     gameEndReason = "The cats have no moves left";
                     break;
             }

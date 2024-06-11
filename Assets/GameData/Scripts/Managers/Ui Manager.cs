@@ -27,9 +27,10 @@ namespace PCTC.Managers
             scoreManager.OnGameStart();
         }
 
-        public void OnGameEnd(bool win, GameEnd.EndGameReason reason)
+        public void OnGameEnd(bool win, Enums.GameData.EndGameReason reason)
         {
             gameEndManager.OnGameEnd(win, reason);
+            restartBtn.SetActive(false);
             scoreManager.OnGameEnd();
         }
 

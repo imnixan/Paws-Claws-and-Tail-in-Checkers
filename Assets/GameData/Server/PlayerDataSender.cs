@@ -16,9 +16,16 @@ namespace PCTC.Server
             this.playerListeners = listeners;
         }
 
-        public int RemoveListener(int playerID)
+        public int GetActiveListenersCount(int playerID)
         {
-            playerListeners.RemoveAt(playerID);
+            int activeListenersCount = 0;
+            foreach (PlayerListener listener in playerListeners)
+            {
+                if (listener.active)
+                {
+                    activeListenersCount++;
+                }
+            }
             return playerListeners.Count;
         }
 
