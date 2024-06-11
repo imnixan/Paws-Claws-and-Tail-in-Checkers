@@ -56,8 +56,8 @@ namespace PCTC.Managers
 
         public void RestartGame()
         {
-            RestartScene();
-            //serverCommunicator.Disconnect();
+            //RestartScene();
+            serverCommunicator.Disconnect();
         }
 
         public void RestartScene()
@@ -153,6 +153,9 @@ namespace PCTC.Managers
                     break;
                 case Enums.GameData.GameState.Game:
                     Debug.Log("restart of server disconnect");
+                    RestartScene();
+                    break;
+                default:
                     RestartScene();
                     break;
             }

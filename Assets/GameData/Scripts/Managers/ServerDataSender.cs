@@ -21,31 +21,31 @@ namespace PCTC.Managers
         public void SendPlayerChooseCat(CatData catData)
         {
             Debug.Log("send that i choose cat");
-            RequestTypes.ClientRequests type = RequestTypes.ClientRequests.PLAYER_CHOOSED_CAT;
+            CSMRequest.Type type = CSMRequest.Type.POSSIBLE_MOVES;
             string message = BuildMessage(type, catData);
             SendMessage(message);
         }
 
         public void SendPlayerReady(string mapHash)
         {
-            RequestTypes.ClientRequests type = RequestTypes.ClientRequests.PLAYER_READY;
+            CSMRequest.Type type = CSMRequest.Type.PLAYER_READY;
             string message = BuildMessage(type, new MapHash(mapHash));
             SendMessage(message);
         }
 
         public void SendPlayerMove(MoveData moveData)
         {
-            RequestTypes.ClientRequests type = RequestTypes.ClientRequests.PLAYER_MOVE;
+            CSMRequest.Type type = CSMRequest.Type.MAKE_MOVE;
             string message = BuildMessage(type, moveData);
             SendMessage(message);
         }
 
-        private void SendMessage(string message)
+        public void SendMessage(string message, int playerId = -1)
         {
             this.ws.Send(message);
         }
 
-        private string BuildMessage<T>(RequestTypes.ClientRequests type, T body)
+        private string BuildMessage<T>(CSMRequest.Type type, T body)
         {
             string data = JsonUtility.ToJson(body);
             ClientServerMessage csm = new ClientServerMessage((int)type, data);

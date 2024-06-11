@@ -10,6 +10,7 @@ namespace PCTC.Structs
     {
         public int type;
         public string data;
+        public int messageID;
 
         public ClientServerMessage(int type, string data)
         {
@@ -169,6 +170,29 @@ namespace PCTC.Structs
         public MapHash(string maphash)
         {
             this.maphash = maphash;
+        }
+    }
+
+    [System.Serializable]
+    public class StringData
+    {
+        public string data;
+
+        public StringData(string data)
+        {
+            this.data = data;
+        }
+    }
+
+    public class AckWaiter
+    {
+        public ClientServerMessage csm;
+        public float timeStamp;
+
+        public AckWaiter(ClientServerMessage csm, float timeStamp)
+        {
+            this.csm = csm;
+            this.timeStamp = timeStamp;
         }
     }
 }

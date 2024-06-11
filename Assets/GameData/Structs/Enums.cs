@@ -3,27 +3,21 @@ using UnityEngine;
 
 namespace PCTC.Enums
 {
-    public static class RequestTypes
+    public static class CSMRequest
     {
-        public enum ClientRequests
+        public enum Type
         {
-            PLAYER_CLICK_ITEM,
-            PLAYER_CHOOSED_CAT,
-            PLAYER_MOVE,
-            PLAYER_READY,
-            PLAYER_DISCONNECTED
-        }
-
-        public enum ServerRequests
-        {
-            POSSIBLE_MOVES,
-            MANDATORY_MOVES,
-            MOVE_RESULT,
-            ITEM_CLICK,
-            GAME_RESULT,
             PLAYER_INIT,
+            GAME_START,
             SET_PLAYER_ORDER,
-            START_GAME
+            POSSIBLE_MOVES,
+            MAKE_MOVE,
+            PROCESS_MOVE,
+            PLAYER_READY,
+            ITEM_CLICK,
+            ACK,
+            MESSAGE_REQUEST,
+            GAME_END
         }
     }
 

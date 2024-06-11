@@ -82,7 +82,7 @@ namespace PCTC.Controllers
 
         public void RemoveCat(CatData catData)
         {
-            Cat theCat = new Cat();
+            Cat theCat = null;
             foreach (var cat in cats)
             {
                 if (cat.catData.id == catData.id)
@@ -90,7 +90,7 @@ namespace PCTC.Controllers
                     theCat = cat;
                 }
             }
-            theCat.RemoveCat();
+            theCat?.RemoveCat();
             cats.Remove(theCat);
         }
 

@@ -11,8 +11,8 @@ namespace PCTC.Server
     public class PlayerDataHandler
     {
         private ServerGameManager gameManager;
-        private Dictionary<RequestTypes.ClientRequests, Action<DataFromPlayer>> requestHandlers;
-        private HashSet<RequestTypes.ClientRequests> requestsRequireActivePlayer;
+        private Dictionary<CSMRequest.Type, Action<DataFromPlayer>> requestHandlers;
+        private HashSet<CSMRequest.Type> requestsRequireActivePlayer;
 
         public PlayerDataHandler()
         {
@@ -28,18 +28,18 @@ namespace PCTC.Server
         private void InitializeHandlers()
         {
             #region Handlers
-            requestHandlers = new Dictionary<RequestTypes.ClientRequests, Action<DataFromPlayer>>
+            requestHandlers = new Dictionary<CSMRequest.Type, Action<DataFromPlayer>>
             {
-                { RequestTypes.ClientRequests.PLAYER_CHOOSED_CAT, HandlePlayerChoosedCat },
-                { RequestTypes.ClientRequests.PLAYER_MOVE, HandlePlayerMove },
-                { RequestTypes.ClientRequests.PLAYER_READY, HandlePlayerReady }
+                { CSMRequest.Type.PROCESS_MOVE, HandlePlayerChoosedCat },
+                { CSMRequest.Type.MAKE_MOVE, HandlePlayerMove },
+                { CSMRequest.Type.PLAYER_READY, HandlePlayerReady }
             };
             #endregion
             #region ActivePlayerRequests
-            requestsRequireActivePlayer = new HashSet<RequestTypes.ClientRequests>
+            requestsRequireActivePlayer = new HashSet<CSMRequest.Type>
             {
-                RequestTypes.ClientRequests.PLAYER_CHOOSED_CAT,
-                RequestTypes.ClientRequests.PLAYER_MOVE,
+                CSMRequest.Type.POSSIBLE_MOVES,
+                CSMRequest.Type.MAKE_MOVE,
             };
             #endregion
         }
@@ -50,18 +50,16 @@ namespace PCTC.Server
             this.gameManager = gameManager;
         }
 
-        public void ProcessUserData(string data, int playerID)
+        public void ProcessUserData(ClientServerMessage scm, int playerID)
         {
-            ClientServerMessage userMessage = JsonUtility.FromJson<ClientServerMessage>(data);
-            DataFromPlayer dataFromPlayer = new DataFromPlayer(userMessage, playerID);
+            DataFromPlayer dataFromPlayer = new DataFromPlayer(scm, playerID);
 
             InvokeHandler(dataFromPlayer);
         }
 
         private void InvokeHandler(DataFromPlayer dataFromPlayer)
         {
-            RequestTypes.ClientRequests type = (RequestTypes.ClientRequests)
-                dataFromPlayer.message.type;
+            CSMRequest.Type type = (CSMRequest.Type)dataFromPlayer.message.type;
             if (requestHandlers.TryGetValue(type, out Action<DataFromPlayer> handler))
             {
                 if (

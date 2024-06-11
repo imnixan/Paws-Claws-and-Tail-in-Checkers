@@ -31,72 +31,61 @@ namespace PCTC.Server
 
         public void InitPlayer(int playerID, CatData[,] gameField)
         {
-            RequestTypes.ServerRequests type = RequestTypes.ServerRequests.PLAYER_INIT;
+            CSMRequest.Type type = CSMRequest.Type.PLAYER_INIT;
             CatData[] field = ArrayTransformer.Flatten(gameField);
             PlayerInitData initData = new PlayerInitData(playerID, field);
-            string message = BuildMessage(type, initData);
-            SendPlayerMessage(playerID, message);
+
+            SendMessage(playerID, type, initData);
         }
 
         public void SendAllGameEnd(GameResult gameResult)
         {
-            RequestTypes.ServerRequests type = RequestTypes.ServerRequests.GAME_RESULT;
-            string message = BuildMessage(type, gameResult);
-            SendAllPlayers(message);
-        }
-
-        private string BuildMessage<T>(RequestTypes.ServerRequests type, T body)
-        {
-            string data = JsonUtility.ToJson(body);
-            ClientServerMessage csm = new ClientServerMessage((int)type, data);
-            string message = JsonUtility.ToJson(csm);
-            return message;
+            CSMRequest.Type type = CSMRequest.Type.GAME_END;
+            SendAllPlayers(type, gameResult);
         }
 
         public void SendAllCurrentPlayerNotification(int currentPlayer)
         {
             for (int playerID = 0; playerID < playerListeners.Count; playerID++)
             {
-                RequestTypes.ServerRequests type = RequestTypes.ServerRequests.SET_PLAYER_ORDER;
+                CSMRequest.Type type = CSMRequest.Type.SET_PLAYER_ORDER;
                 bool playersTurn = currentPlayer == playerID;
                 PlayerOrder plyerOrder = new PlayerOrder(playersTurn);
-                string message = BuildMessage(type, plyerOrder);
-                SendPlayerMessage(playerID, message);
+
+                SendMessage(playerID, type, plyerOrder);
             }
         }
 
         public void SendPlayerPossibleMoves(int playerID, Moves moves)
         {
-            RequestTypes.ServerRequests type = RequestTypes.ServerRequests.POSSIBLE_MOVES;
+            CSMRequest.Type type = CSMRequest.Type.POSSIBLE_MOVES;
 
-            string message = BuildMessage(type, moves);
-            SendPlayerMessage(playerID, message);
+            SendMessage(playerID, type, moves);
         }
 
         public void SendAllPlayerMove(MoveResult moveResult)
         {
-            RequestTypes.ServerRequests type = RequestTypes.ServerRequests.MOVE_RESULT;
-            string message = BuildMessage(type, moveResult);
-            SendAllPlayers(message);
+            CSMRequest.Type type = CSMRequest.Type.PROCESS_MOVE;
+            SendAllPlayers(type, moveResult);
         }
 
         public void SendAllGameStart()
         {
-            RequestTypes.ServerRequests type = RequestTypes.ServerRequests.START_GAME;
-            string message = BuildMessage(type, "Game Started!");
-            SendAllPlayers(message);
+            CSMRequest.Type type = CSMRequest.Type.GAME_START;
+
+            SendAllPlayers(type, "Game Started!");
         }
 
-        private void SendPlayerMessage(int playerID, string message)
+        public void SendMessage<T>(int playerID, CSMRequest.Type type, T body, bool needAck = true)
         {
-            playerListeners[playerID].SendPlayerMessage(message);
+            playerListeners[playerID].SendMessage(type, body, needAck);
         }
 
-        private void SendAllPlayers(string message)
+        private void SendAllPlayers<T>(CSMRequest.Type type, T body, bool needAck = true)
         {
             for (int i = 0; i < playerListeners.Count; i++)
             {
-                SendPlayerMessage(i, message);
+                SendMessage(i, type, body, needAck);
             }
         }
     }

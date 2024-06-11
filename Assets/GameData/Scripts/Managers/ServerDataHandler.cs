@@ -12,11 +12,7 @@ namespace GameData.Managers
     {
         private WebSocket ws;
         private ClientGameManager gameManager;
-
-        private Dictionary<
-            RequestTypes.ServerRequests,
-            Action<ClientServerMessage>
-        > requestHandlers;
+        private Dictionary<CSMRequest.Type, Action<ClientServerMessage>> requestHandlers;
 
         public ServerDataHandler(WebSocket ws, ClientGameManager gameManager)
         {
@@ -28,17 +24,14 @@ namespace GameData.Managers
         #region Init
         private void InitHandler()
         {
-            requestHandlers = new Dictionary<
-                RequestTypes.ServerRequests,
-                Action<ClientServerMessage>
-            >
+            requestHandlers = new Dictionary<CSMRequest.Type, Action<ClientServerMessage>>
             {
-                { RequestTypes.ServerRequests.PLAYER_INIT, OnPlayerInit },
-                { RequestTypes.ServerRequests.SET_PLAYER_ORDER, OnChangeOrder },
-                { RequestTypes.ServerRequests.POSSIBLE_MOVES, OnPossibleMovesCatch },
-                { RequestTypes.ServerRequests.MOVE_RESULT, OnPlayerMoveResultCatch },
-                { RequestTypes.ServerRequests.START_GAME, OnGameStart },
-                { RequestTypes.ServerRequests.GAME_RESULT, OnGameEnd }
+                { CSMRequest.Type.PLAYER_INIT, OnPlayerInit },
+                { CSMRequest.Type.SET_PLAYER_ORDER, OnChangeOrder },
+                { CSMRequest.Type.POSSIBLE_MOVES, OnPossibleMovesCatch },
+                { CSMRequest.Type.PROCESS_MOVE, OnPlayerMoveResultCatch },
+                { CSMRequest.Type.GAME_START, OnGameStart },
+                { CSMRequest.Type.GAME_END, OnGameEnd }
             };
         }
         #endregion
@@ -58,7 +51,7 @@ namespace GameData.Managers
 
         private void InvokeHandler(ClientServerMessage message)
         {
-            RequestTypes.ServerRequests type = (RequestTypes.ServerRequests)message.type;
+            CSMRequest.Type type = (CSMRequest.Type)message.type;
             if (requestHandlers.TryGetValue(type, out Action<ClientServerMessage> handler))
             {
                 handler(message);
