@@ -12,7 +12,6 @@ namespace PCTC.Enums
             SET_PLAYER_ORDER,
             POSSIBLE_MOVES,
             MAKE_MOVE,
-            PROCESS_MOVE,
             PLAYER_READY,
             ITEM_CLICK,
             ACK,

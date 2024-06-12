@@ -65,7 +65,8 @@ namespace PCTC.Server
 
         public void SendAllPlayerMove(MoveResult moveResult)
         {
-            CSMRequest.Type type = CSMRequest.Type.PROCESS_MOVE;
+            CSMRequest.Type type = CSMRequest.Type.MAKE_MOVE;
+
             SendAllPlayers(type, moveResult, true);
         }
 
@@ -78,7 +79,6 @@ namespace PCTC.Server
 
         public void SendMessage<T>(int playerID, CSMRequest.Type type, T body, bool needAck = false)
         {
-            Debug.Log($"send message to {playerID} inside sendmessage player data sender");
             if (playerListeners[playerID].active)
             {
                 playerListeners[playerID].SendMessage(type, body, needAck);
@@ -87,10 +87,8 @@ namespace PCTC.Server
 
         private void SendAllPlayers<T>(CSMRequest.Type type, T body, bool needAck = false)
         {
-            Debug.Log($"SEND ALL {playerListeners.Count} LISTENERS");
             for (int i = 0; i < playerListeners.Count; i++)
             {
-                Debug.Log($"send message to {i} inside sendallplayers");
                 SendMessage(i, type, body, needAck);
             }
         }

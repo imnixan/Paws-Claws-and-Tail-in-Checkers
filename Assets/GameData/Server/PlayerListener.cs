@@ -52,8 +52,6 @@ namespace PCTC.Server
 
         private void HandleMessage(ClientServerMessage csm)
         {
-            Debug.Log($"Server got message {csm.messageID} from player {playerID}");
-
             if (csm.type == (int)CSMRequest.Type.ACK)
             {
                 // Подтверждение получено, удаляем сообщение из списка ожидающих подтверждения
@@ -85,7 +83,10 @@ namespace PCTC.Server
             ClientServerMessage csm = BuildMessage(type, body);
             csm.messageID = messageCount;
             messageCount++;
-            Debug.Log($"Server send message {csm.messageID} to player {playerID} ack {needAck}");
+            if (type == CSMRequest.Type.MAKE_MOVE)
+            {
+                Debug.Log($"Process move {csm.data}");
+            }
             string message = JsonUtility.ToJson(csm);
             Send(message);
 

@@ -29,7 +29,7 @@ namespace GameData.Managers
                 { CSMRequest.Type.PLAYER_INIT, OnPlayerInit },
                 { CSMRequest.Type.SET_PLAYER_ORDER, OnChangeOrder },
                 { CSMRequest.Type.POSSIBLE_MOVES, OnPossibleMovesCatch },
-                { CSMRequest.Type.PROCESS_MOVE, OnPlayerMoveResultCatch },
+                { CSMRequest.Type.MAKE_MOVE, OnPlayerMoveResultCatch },
                 { CSMRequest.Type.GAME_START, OnGameStart },
                 { CSMRequest.Type.GAME_END, OnGameEnd }
             };

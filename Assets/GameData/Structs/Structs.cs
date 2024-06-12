@@ -15,7 +15,6 @@ namespace PCTC.Structs
         public ClientServerMessage(int type, string data, int messageID = -1)
         {
             this.type = type;
-
             this.data = data;
             this.messageID = messageID;
         }

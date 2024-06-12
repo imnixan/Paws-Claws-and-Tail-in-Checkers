@@ -41,7 +41,6 @@ namespace GameData.Scripts
         private void OnMessage(object sender, MessageEventArgs e)
         {
             ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
-            Debug.Log($"Client {gameManager.playerID} got message {csm.messageID}");
             SendAck(csm.messageID);
             HandleMessage(csm);
         }

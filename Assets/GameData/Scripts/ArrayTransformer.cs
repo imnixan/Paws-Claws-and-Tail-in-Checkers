@@ -1,4 +1,5 @@
 ﻿using System;
+using PCTC.Game;
 using UnityEngine;
 
 namespace PCTC.Scripts
@@ -21,7 +22,7 @@ namespace PCTC.Scripts
             return arrFlattened;
         }
 
-        public static T[,] Expand<T>(T[] arr, int rows0 = 8)
+        public static T[,] Expand<T>(T[] arr, int rows0 = GameField.fieldSize)
         {
             int length = arr.GetLength(0);
             int rows1 = length / rows0;

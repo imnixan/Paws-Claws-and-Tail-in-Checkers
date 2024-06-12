@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using NUnit.Framework;
-using PCTC.CatScripts;
 using PCTC.Enums;
 using PCTC.Game;
 using PCTC.Structs;
 using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 namespace PCTC.Server
 {
@@ -54,15 +50,15 @@ namespace PCTC.Server
         private List<Vector2Int> GetWalkCells(CatData cat)
         {
             bool isChonky = cat.type == Enums.CatsType.Type.Chonky;
-            bool canMoveUp = cat.team == Enums.CatsType.Team.Orange || isChonky;
-            bool canMoveDown = cat.team == Enums.CatsType.Team.Black || isChonky;
+            bool canMoveForward = cat.team == Enums.CatsType.Team.Orange || isChonky;
+            bool canMoveBack = cat.team == Enums.CatsType.Team.Black || isChonky;
 
-            int minX = canMoveDown ? -1 : 0;
-            int maxX = canMoveUp ? 1 : 0;
+            int minX = canMoveBack ? -1 : 0;
+            int maxX = canMoveForward ? 1 : 0;
+            //field size
+            int maxMoveLenghth = isChonky ? GameField.fieldSize - 1 : 1;
 
-            int moveLenghth = isChonky ? 7 : 1;
-
-            return GetDiagonalMoves(cat, minX, maxX, moveLenghth);
+            return GetDiagonalMoves(cat, minX, maxX, maxMoveLenghth);
         }
 
         private List<Vector2Int> GetDiagonalMoves(
@@ -74,60 +70,103 @@ namespace PCTC.Server
         {
             Vector2Int nullPoint = catData.position;
             List<Vector2Int> diagonalMoves = new List<Vector2Int>();
-
-            for (int xMod = -1; xMod <= 1; xMod++)
+            //named macroses
+            for (int xDir = -1; xDir <= 1; xDir++)
             {
-                if (xMod == 0)
+                if (xDir == 0)
                     continue;
                 for (int yMod = -1; yMod <= 1; yMod++)
                 {
                     if (yMod == 0)
                         continue;
-                    bool secondJump = false;
+                    bool haveEnemyOnDirection = false;
                     for (int step = 1; step <= moveLength; step++)
                     {
-                        int xMove = xMod * step;
+                        int xMove = xDir * step;
                         int yMove = yMod * step;
                         Vector2Int checkedCell = new Vector2Int(
                             nullPoint.x + xMove,
                             nullPoint.y + yMove
                         );
-                        bool canMoveLikeThis = xMod >= minX && xMod <= maxX;
-                        if (gameField.GetElement(checkedCell).id == 1)
-                        {
-                            if (canMoveLikeThis)
-                            {
-                                diagonalMoves.Add(checkedCell);
-                            }
-                        }
-                        else if (gameField.GetElement(checkedCell).team == catData.team)
+
+                        CatData checkedCat = gameField.GetElement(checkedCell);
+
+                        bool validDirection = xDir >= minX && xDir <= maxX;
+
+                        if (validDirection == false)
                         {
                             break;
                         }
-                        else if (!secondJump)
+                        if (!CellIsValid(checkedCat))
                         {
-                            checkedCell.x += xMod;
-                            checkedCell.y += yMod;
-                            if (gameField.GetElement(checkedCell).id == 1)
-                            {
-                                diagonalMoves.Add(checkedCell);
-                                step++;
-                                secondJump = true;
-                            }
-                            else
+                            break;
+                        }
+
+                        if (IsSameTeam(catData, checkedCat))
+                        {
+                            break;
+                        }
+                        if (CanBeEaten(catData, checkedCat))
+                        {
+                            if (haveEnemyOnDirection)
                             {
                                 break;
                             }
+                            haveEnemyOnDirection = true;
                         }
-                        else
+                        if (CellIsEmpty(checkedCat))
                         {
-                            break;
+                            diagonalMoves.Add(checkedCell);
+                        }
+                    }
+
+                    int edgePosX = xDir * moveLength;
+                    int edgePosY = yMod * moveLength;
+                    Vector2Int edgeCell = new Vector2Int(
+                        nullPoint.x + edgePosX,
+                        nullPoint.y + edgePosY
+                    );
+
+                    CatData edgeCat = gameField.GetElement(edgeCell);
+                    if (CellIsValid(edgeCat) && CanBeEaten(catData, edgeCat))
+                    {
+                        edgeCell.x += xDir;
+                        edgeCell.y += yMod;
+                        CatData nextCat = gameField.GetElement(edgeCell);
+                        if (CellIsValid(nextCat) && CellIsEmpty(nextCat))
+                        {
+                            diagonalMoves.Add(edgeCell);
                         }
                     }
                 }
             }
 
             return diagonalMoves;
+        }
+
+        private bool CellIsEmpty(CatData checkedCat)
+        {
+            return checkedCat.id == 1;
+        }
+
+        private bool CellIsValid(CatData checkedCat)
+        {
+            bool validId = checkedCat.id != -1;
+            return validId;
+        }
+
+        private bool IsSameTeam(CatData checkedCat1, CatData checkedCat2)
+        {
+            bool sameTeam = checkedCat1.team == checkedCat2.team;
+            return sameTeam;
+        }
+
+        private bool CanBeEaten(CatData attacker, CatData defender)
+        {
+            bool defenderIsCat = defender.id > 1;
+            bool oppositeTeam = attacker.team != defender.team;
+            bool canBeat = true; //check win in pctc
+            return defenderIsCat && oppositeTeam && canBeat;
         }
     }
 }

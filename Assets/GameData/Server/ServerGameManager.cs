@@ -73,6 +73,7 @@ namespace PCTC.Server
         {
             cat = gameField.GetElementById(cat.id);
             Moves moves = moveChecker.GetPossibleMoves(cat);
+
             playersCommunicator.playerDataSender.SendPlayerPossibleMoves(currentPlayer, moves);
         }
 

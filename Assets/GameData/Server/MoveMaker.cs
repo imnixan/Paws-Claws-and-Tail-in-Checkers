@@ -63,11 +63,12 @@ namespace PCTC.Server
                             movesWithCombo.Add(newMoveData);
                         }
                     }
-                    Debug.Log($"COMBO {movesWithCombo.Count}");
                     if (movesWithCombo.Count > 0)
                     {
                         int nextMoveNum = random.Next(0, movesWithCombo.Count);
-                        Debug.Log($"nextRandom {nextMoveNum}");
+                        gameField.UpdateField(
+                            new MoveResult(moves.ToArray(), new CatData[0], new CatData[0])
+                        );
                         currentMove = movesWithCombo[nextMoveNum];
                     }
                     else
@@ -77,7 +78,6 @@ namespace PCTC.Server
                 }
                 else
                 {
-                    Debug.Log("no cats catched");
                     findNewPaths = false;
                 }
             }
