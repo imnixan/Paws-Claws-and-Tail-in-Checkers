@@ -31,7 +31,7 @@ namespace PCTC.Server
             {
                 moves.Add(currentMove);
                 CatData catData = TryCatchCat(currentMove);
-                if (catData != null)
+                if (catData.id > 1)
                 {
                     if (catsForRemove.Contains(catData))
                     {
@@ -58,7 +58,7 @@ namespace PCTC.Server
                     {
                         MoveData newMoveData = new MoveData(newCatData, move);
                         CatData catchedCat = TryCatchCat(newMoveData);
-                        if (catchedCat != null)
+                        if (catchedCat.id > 1)
                         {
                             movesWithCombo.Add(newMoveData);
                         }
@@ -94,7 +94,7 @@ namespace PCTC.Server
             return moveResult;
         }
 
-        private CatsCount CountCats()
+        public CatsCount CountCats()
         {
             CatsCount cats = new CatsCount();
             foreach (var cat in gameField.matrix)
@@ -133,7 +133,7 @@ namespace PCTC.Server
 
         private CatData TryCatchCat(MoveData move)
         {
-            CatData catchedCat = null;
+            CatData catchedCat = new CatData();
 
             List<Vector2Int> path = GetPath(move.catData.position, move.moveEnd);
             foreach (var cellCoords in path)

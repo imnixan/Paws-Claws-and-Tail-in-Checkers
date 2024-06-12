@@ -52,7 +52,7 @@ namespace PCTC.Server
         {
             currentPlayer = 0;
             gameState = Enums.GameData.GameState.Game;
-            playersCommunicator.playerDataSender.SendAllCurrentPlayerNotification(currentPlayer);
+            playersCommunicator.playerDataSender.SendAllPlayersOrder(currentPlayer);
             playersCommunicator.playerDataSender.SendAllGameStart();
         }
 
@@ -61,7 +61,11 @@ namespace PCTC.Server
             Debug.Log("Server init all players");
             for (int playerID = 0; playerID < playersCount; playerID++)
             {
-                playersCommunicator.playerDataSender.InitPlayer(playerID, gameField.matrix);
+                playersCommunicator.playerDataSender.InitPlayer(
+                    playerID,
+                    gameField.matrix,
+                    catsCount
+                );
             }
         }
 
@@ -143,7 +147,11 @@ namespace PCTC.Server
                 Debug.Log(
                     $"WRONG HASH\nserver: {gameField.mapHash}\nplayer[{playerID}]: {playerHash.maphash}"
                 );
-                playersCommunicator.playerDataSender.InitPlayer(playerID, gameField.matrix);
+                playersCommunicator.playerDataSender.InitPlayer(
+                    playerID,
+                    gameField.matrix,
+                    moveMaker.CountCats()
+                );
             }
         }
 
@@ -169,7 +177,7 @@ namespace PCTC.Server
         {
             this.gameState = Enums.GameData.GameState.Game;
             currentPlayer++;
-            playersCommunicator.playerDataSender.SendAllCurrentPlayerNotification(currentPlayer);
+            playersCommunicator.playerDataSender.SendAllPlayersOrder(currentPlayer);
         }
 
         private bool CheckAllReady()

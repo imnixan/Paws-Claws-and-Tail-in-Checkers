@@ -28,7 +28,7 @@ namespace PCTC.Managers
 
         public void OnGameStart()
         {
-            scoresBoard.SetActive(false);
+            scoresBoard.SetActive(true);
         }
 
         public void UpdateScores(CatsCount catsCount)

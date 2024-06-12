@@ -78,6 +78,7 @@ namespace PCTC.Managers
                 carpetBuilder.GetHandlersMap(),
                 this
             );
+            uiManager.UpdateScores(playerInitData.catsCount);
         }
 
         public void OnGameEnd(GameResult gameResult)

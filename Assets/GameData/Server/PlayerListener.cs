@@ -24,6 +24,7 @@ namespace PCTC.Server
         private const int maxRetries = 3; // Максимальное количество попыток повторной отправки
         private Thread retryThread;
         private bool running = true;
+        private readonly object lockObject = new object();
 
         protected override void OnOpen()
         {
@@ -56,7 +57,10 @@ namespace PCTC.Server
             if (csm.type == (int)CSMRequest.Type.ACK)
             {
                 // Подтверждение получено, удаляем сообщение из списка ожидающих подтверждения
-                pendingMessages.Remove(csm.messageID);
+                lock (lockObject)
+                {
+                    pendingMessages.Remove(csm.messageID);
+                }
             }
             else
             {
@@ -87,7 +91,7 @@ namespace PCTC.Server
 
             if (needAck)
             {
-                lock (pendingMessages)
+                lock (lockObject)
                 {
                     pendingMessages[csm.messageID] = (message, DateTime.UtcNow, 0);
                 }
@@ -138,6 +142,7 @@ namespace PCTC.Server
                         }
                     }
 
+                    // Удаление элементов после завершения перечисления
                     foreach (int key in toRemove)
                     {
                         pendingMessages.Remove(key);

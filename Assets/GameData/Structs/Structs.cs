@@ -6,22 +6,23 @@ using UnityEngine;
 namespace PCTC.Structs
 {
     [System.Serializable]
-    public class ClientServerMessage
+    public struct ClientServerMessage
     {
         public int type;
         public string data;
         public int messageID;
 
-        public ClientServerMessage(int type, string data)
+        public ClientServerMessage(int type, string data, int messageID = -1)
         {
             this.type = type;
 
             this.data = data;
+            this.messageID = messageID;
         }
     }
 
     [System.Serializable]
-    public class DataFromPlayer
+    public struct DataFromPlayer
     {
         public ClientServerMessage message;
         public int playerID;
@@ -34,20 +35,22 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class PlayerInitData
+    public struct PlayerInitData
     {
         public int playerID;
         public CatData[] gameField;
+        public CatsCount catsCount;
 
-        public PlayerInitData(int playerID, CatData[] gameField)
+        public PlayerInitData(int playerID, CatData[] gameField, CatsCount catsCount)
         {
             this.playerID = playerID;
             this.gameField = gameField;
+            this.catsCount = catsCount;
         }
     }
 
     [System.Serializable]
-    public class CatData
+    public struct CatData
     {
         public int id;
         public Vector2Int position;
@@ -69,7 +72,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class PlayerOrder
+    public struct PlayerOrder
     {
         public bool playerOrder;
 
@@ -80,7 +83,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class Moves
+    public struct Moves
     {
         public Vector2Int[] possibleMoves;
 
@@ -91,7 +94,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class MoveResult
+    public struct MoveResult
     {
         public MoveData[] moves;
         public CatData[] catsForRemove;
@@ -102,7 +105,7 @@ namespace PCTC.Structs
             MoveData[] moves,
             CatData[] catsForRemove = null,
             CatData[] catsForUpgrade = null,
-            CatsCount catsCount = null
+            CatsCount catsCount = new CatsCount()
         )
         {
             this.moves = moves;
@@ -113,7 +116,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class CatsCount
+    public struct CatsCount
     {
         public int orangeCats;
         public int orangeChonkyCats;
@@ -124,7 +127,7 @@ namespace PCTC.Structs
             int orangeCats = 0,
             int orangeChonkyCats = 0,
             int blackCats = 0,
-            int orangeBlackCats = 0
+            int blackChonkyCats = 0
         )
         {
             this.orangeCats = orangeCats;
@@ -135,7 +138,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class MoveData
+    public struct MoveData
     {
         public CatData catData;
         public Vector2Int moveEnd;
@@ -150,7 +153,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class GameResult
+    public struct GameResult
     {
         public int winnerID;
         public int reason;
@@ -163,7 +166,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class MapHash
+    public struct MapHash
     {
         public string maphash;
 
@@ -174,7 +177,7 @@ namespace PCTC.Structs
     }
 
     [System.Serializable]
-    public class StringData
+    public struct StringData
     {
         public string data;
 

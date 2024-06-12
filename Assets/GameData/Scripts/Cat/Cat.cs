@@ -12,18 +12,15 @@ namespace PCTC.CatScripts
     [RequireComponent(typeof(MoveController))]
     public class Cat : MonoBehaviour
     {
-        [SerializeField]
-        private Material orangeCat,
-            blackCat;
         public CatData catData;
         public event UnityAction<Cat> catTouched;
         public ClickInputHandler clickHandler { get; private set; }
         private MoveController moveController;
 
-        public void Init(CatData catData)
+        public void Init(CatData catData, Material mat)
         {
             this.catData = catData;
-            InitCat();
+            InitCat(mat);
             MakeSubscribes();
             transform.forward = new Vector3(
                 catData.team == Enums.CatsType.Team.Orange ? 1 : -1,
@@ -32,19 +29,16 @@ namespace PCTC.CatScripts
             );
         }
 
-        private void InitCat()
+        public Material mat
         {
+            get { return GetComponent<MeshRenderer>().material; }
+        }
+
+        private void InitCat(Material mat)
+        {
+            GetComponentInChildren<MeshRenderer>().material = mat;
             this.moveController = GetComponent<MoveController>();
             this.clickHandler = GetComponent<ClickInputHandler>();
-            switch (catData.team)
-            {
-                case Enums.CatsType.Team.Black:
-                    GetComponentInChildren<MeshRenderer>().material = blackCat;
-                    break;
-                case Enums.CatsType.Team.Orange:
-                    GetComponentInChildren<MeshRenderer>().material = orangeCat;
-                    break;
-            }
             this.clickHandler.position = catData.position;
         }
 
@@ -75,7 +69,7 @@ namespace PCTC.CatScripts
         public Tween MoveTo(Vector2Int destination)
         {
             Vector3 position = new Vector3(destination.x, 0, destination.y);
-            this.catData.position = destination;
+            catData.position = destination;
             Tween tween = moveController.MoveTo(position);
             return tween;
         }
@@ -88,12 +82,6 @@ namespace PCTC.CatScripts
         public void RemoveCat()
         {
             Destroy(gameObject);
-        }
-
-        public void UpgradeCat()
-        {
-            this.catData.type = Enums.CatsType.Type.Chonky;
-            Debug.Log("cat upgraded");
         }
     }
 }

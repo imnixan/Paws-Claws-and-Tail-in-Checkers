@@ -1,5 +1,7 @@
 using PCTC.CatScripts;
+using PCTC.Scripts;
 using PCTC.Structs;
+using UnityEditor;
 using UnityEngine;
 
 namespace PCTC.Game
@@ -14,8 +16,11 @@ namespace PCTC.Game
         private int fieldSize = 8;
         public string mapHash { get; private set; }
 
+        private bool server;
+
         public GameField()
         {
+            server = true;
             matrix = new CatData[fieldSize, fieldSize];
             BuildField();
             FillField();
@@ -28,7 +33,7 @@ namespace PCTC.Game
             UpdateHash();
         }
 
-        private void UpdateHash()
+        private void UpdateHash(bool rebuild = false)
         {
             Hash128 hash = new Hash128();
 
@@ -37,7 +42,9 @@ namespace PCTC.Game
                 hash.Append(item.id);
             }
             mapHash = hash.ToString();
-            return;
+            Debug.Log(
+                $"server:{server}; rebuild:{rebuild}; update hash {mapHash} rawField {JsonUtility.ToJson(new PlayerInitData(0, ArrayTransformer.Flatten(matrix), new CatsCount()))}"
+            );
         }
 
         private void BuildField()
@@ -57,6 +64,9 @@ namespace PCTC.Game
 
         public void UpdateField(MoveResult moveResult)
         {
+            Debug.Log(
+                $"moves Server?{server} length{moveResult.moves.Length} first start {moveResult.moves[0].catData.position} end {moveResult.moves[0].moveEnd}"
+            );
             foreach (var move in moveResult.moves)
             {
                 RemoveElementAt(move.catData.position);
@@ -268,6 +278,7 @@ namespace PCTC.Game
 
         public void RemoveElementAt(Vector2Int elementCoords)
         {
+            Debug.Log($"Server?{server} remove cat at {elementCoords}");
             matrix[elementCoords.x, elementCoords.y] = new CatData(1, elementCoords);
         }
 

@@ -29,11 +29,11 @@ namespace PCTC.Server
             return playerListeners.Count;
         }
 
-        public void InitPlayer(int playerID, CatData[,] gameField)
+        public void InitPlayer(int playerID, CatData[,] gameField, CatsCount catsCount)
         {
             CSMRequest.Type type = CSMRequest.Type.PLAYER_INIT;
             CatData[] field = ArrayTransformer.Flatten(gameField);
-            PlayerInitData initData = new PlayerInitData(playerID, field);
+            PlayerInitData initData = new PlayerInitData(playerID, field, catsCount);
 
             SendMessage(playerID, type, initData, true);
         }
@@ -44,7 +44,7 @@ namespace PCTC.Server
             SendAllPlayers(type, gameResult, true);
         }
 
-        public void SendAllCurrentPlayerNotification(int currentPlayer)
+        public void SendAllPlayersOrder(int currentPlayer)
         {
             for (int playerID = 0; playerID < playerListeners.Count; playerID++)
             {

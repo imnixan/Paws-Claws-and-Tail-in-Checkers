@@ -2280,6 +2280,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d80602231be3c644d987d9c84b2bd466, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameBuilder: {fileID: 1721084981}
 --- !u!1 &1197821648
 GameObject:
   m_ObjectHideFlags: 0
@@ -2976,6 +2977,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   catPrefab: {fileID: 3353764196649784024, guid: c84104dd841915c4da65abab340c168b, type: 3}
+  chonkyCatPrefab: {fileID: 3353764196649784024, guid: 1dd60df9a40255c4cbecef1eb36d0d26, type: 3}
+  orangeMat: {fileID: 2100000, guid: a9ec416bf506e7d41963e67f05d932ed, type: 2}
+  blackMat: {fileID: 2100000, guid: fcad70a3f2662e049a6fdca59d49ce7a, type: 2}
+  field: {fileID: 0}
 --- !u!1 &1797947545
 GameObject:
   m_ObjectHideFlags: 0

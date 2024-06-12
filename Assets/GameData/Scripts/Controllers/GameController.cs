@@ -23,7 +23,7 @@ namespace PCTC.Controllers
 
         public bool playerOrder;
 
-        private CatData choosedCat;
+        private CatData choosedCat = new CatData();
         private ClientGameManager gameManager;
 
         public void Init(
@@ -58,12 +58,12 @@ namespace PCTC.Controllers
 
         public void OnCarpetClick(Vector2Int position)
         {
-            if (choosedCat != null)
+            if (choosedCat.id > 1)
             {
                 MoveData moveData = new MoveData(choosedCat, position);
                 gameManager.MakeMove(moveData);
                 carpetController.DeactivateCells();
-                choosedCat = null;
+                choosedCat.id = 0;
             }
         }
 
@@ -81,9 +81,9 @@ namespace PCTC.Controllers
             }
             move.AppendCallback(() =>
                 {
+                    gameField.UpdateField(moveResult);
                     RemoveCats(moveResult.catsForRemove);
                     UpgradeCats(moveResult.catsForUpgrade);
-                    gameField.UpdateField(moveResult);
                     gameManager.OnReady(gameField.mapHash);
                 })
                 .Restart();

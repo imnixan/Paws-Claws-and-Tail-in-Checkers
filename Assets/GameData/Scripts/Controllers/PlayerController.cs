@@ -12,6 +12,8 @@ namespace PCTC.Controllers
 {
     public class PlayerController : MonoBehaviour
     {
+        [SerializeField]
+        private GameBuilder gameBuilder;
         private List<Cat> cats;
         private GameController gameController;
         CatsType.Team currentTeam;
@@ -99,12 +101,30 @@ namespace PCTC.Controllers
             Cat theCat = new Cat();
             foreach (var cat in cats)
             {
-                if (cat.catData == catData)
+                if (cat.catData.id == catData.id)
                 {
                     theCat = cat;
                 }
             }
-            theCat.UpgradeCat();
+            if (theCat == null)
+            {
+                return;
+            }
+            theCat.catData.type = CatsType.Type.Chonky;
+            Cat upgradedCat = Instantiate(gameBuilder.chonkyCatPrefab);
+            upgradedCat.transform.position = theCat.transform.position;
+            upgradedCat.transform.transform.rotation = theCat.transform.rotation;
+            upgradedCat.transform.parent = theCat.transform.parent;
+            upgradedCat.Init(theCat.catData, theCat.mat);
+            if (theCat.catData.team == currentTeam)
+            {
+                theCat.catTouched -= OnCatClick;
+                upgradedCat.catTouched += OnCatClick;
+            }
+            Debug.Log("rebuildCat");
+            cats.Remove(theCat);
+            cats.Add(upgradedCat);
+            Destroy(theCat.gameObject);
         }
     }
 }
