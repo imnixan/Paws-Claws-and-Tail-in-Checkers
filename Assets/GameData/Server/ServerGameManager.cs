@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using GameData.Scripts;
 using JetBrains.Annotations;
 using PCTC.Enums;
 using PCTC.Game;
@@ -77,6 +78,7 @@ namespace PCTC.Server
             {
                 return;
             }
+            playersCommunicator.playerDataSender.playerListeners[playerID].active = false;
             Enums.GameData.EndGameReason reason = Enums.GameData.EndGameReason.Disconnect;
             int winnerID = playerID == 0 ? 1 : 0;
             GameResult gameResult = new GameResult(winnerID, (int)reason);

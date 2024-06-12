@@ -52,23 +52,5 @@ namespace PCTC.Server
                 }
             }
         }
-
-        public static void OnListenerRemove(PlayerListener listener)
-        {
-            if (listener.roomNumber == null)
-            {
-                PlayerListener delListener;
-                playersQueue.TryTake(out delListener);
-            }
-            else
-            {
-                PlayersCommunicator room;
-                RoomStorage.rooms.TryGetValue(listener.roomNumber, out room);
-                if (room.RemovePlayer(listener.playerID) == 0)
-                {
-                    RoomStorage.rooms.TryRemove(listener.roomNumber, out _);
-                }
-            }
-        }
     }
 }

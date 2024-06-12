@@ -42,7 +42,17 @@ namespace GameData.Scripts
         {
             ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
             Debug.Log($"Client {gameManager.playerID} got message {csm.messageID}");
+            SendAck(csm.messageID);
             HandleMessage(csm);
+        }
+
+        private void SendAck(int messageID)
+        {
+            CSMRequest.Type type = CSMRequest.Type.ACK;
+            ClientServerMessage csm = new ClientServerMessage((int)type, "Ack");
+            csm.messageID = messageID;
+            string message = JsonUtility.ToJson(csm);
+            Send(message);
         }
 
         public void Disconnect()

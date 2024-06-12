@@ -9,7 +9,7 @@ namespace PCTC.Server
 {
     public class PlayerDataSender
     {
-        private List<PlayerListener> playerListeners;
+        public List<PlayerListener> playerListeners { get; private set; }
 
         public PlayerDataSender(List<PlayerListener> listeners)
         {
@@ -35,13 +35,13 @@ namespace PCTC.Server
             CatData[] field = ArrayTransformer.Flatten(gameField);
             PlayerInitData initData = new PlayerInitData(playerID, field);
 
-            SendMessage(playerID, type, initData);
+            SendMessage(playerID, type, initData, true);
         }
 
         public void SendAllGameEnd(GameResult gameResult)
         {
             CSMRequest.Type type = CSMRequest.Type.GAME_END;
-            SendAllPlayers(type, gameResult);
+            SendAllPlayers(type, gameResult, true);
         }
 
         public void SendAllCurrentPlayerNotification(int currentPlayer)
@@ -52,7 +52,7 @@ namespace PCTC.Server
                 bool playersTurn = currentPlayer == playerID;
                 PlayerOrder plyerOrder = new PlayerOrder(playersTurn);
 
-                SendMessage(playerID, type, plyerOrder);
+                SendMessage(playerID, type, plyerOrder, true);
             }
         }
 
@@ -66,19 +66,23 @@ namespace PCTC.Server
         public void SendAllPlayerMove(MoveResult moveResult)
         {
             CSMRequest.Type type = CSMRequest.Type.PROCESS_MOVE;
-            SendAllPlayers(type, moveResult);
+            SendAllPlayers(type, moveResult, true);
         }
 
         public void SendAllGameStart()
         {
             CSMRequest.Type type = CSMRequest.Type.GAME_START;
 
-            SendAllPlayers(type, "Game Started!");
+            SendAllPlayers(type, "Game Started!", true);
         }
 
         public void SendMessage<T>(int playerID, CSMRequest.Type type, T body, bool needAck = false)
         {
-            playerListeners[playerID].SendMessage(type, body, needAck);
+            Debug.Log($"send message to {playerID} inside sendmessage player data sender");
+            if (playerListeners[playerID].active)
+            {
+                playerListeners[playerID].SendMessage(type, body, needAck);
+            }
         }
 
         private void SendAllPlayers<T>(CSMRequest.Type type, T body, bool needAck = false)
@@ -86,6 +90,7 @@ namespace PCTC.Server
             Debug.Log($"SEND ALL {playerListeners.Count} LISTENERS");
             for (int i = 0; i < playerListeners.Count; i++)
             {
+                Debug.Log($"send message to {i} inside sendallplayers");
                 SendMessage(i, type, body, needAck);
             }
         }
