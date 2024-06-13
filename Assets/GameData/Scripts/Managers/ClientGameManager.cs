@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Security.Policy;
 using GameData.Scripts;
-using PCTC.Builders;
-using PCTC.CameraControl;
-using PCTC.CatScripts;
-using PCTC.Controllers;
-using PCTC.Enums;
-using PCTC.Handlers;
-using PCTC.Scripts;
-using PCTC.Structs;
+using PJTC.Builders;
+using PJTC.CameraControl;
+using PJTC.CatScripts;
+using PJTC.Controllers;
+using PJTC.Enums;
+using PJTC.Handlers;
+using PJTC.Scripts;
+using PJTC.Structs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WebSocketSharp;
 
-namespace PCTC.Managers
+namespace PJTC.Managers
 {
     public class ClientGameManager : MonoBehaviour
     {
@@ -79,6 +79,7 @@ namespace PCTC.Managers
                 this
             );
             uiManager.UpdateScores(playerInitData.catsCount);
+            uiManager.ShowUIField(gameField);
         }
 
         public void OnGameEnd(GameResult gameResult)

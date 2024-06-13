@@ -1,8 +1,8 @@
 ﻿using System;
-using PCTC.Game;
+using PJTC.Game;
 using UnityEngine;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public class PlayersCommunicator
     {

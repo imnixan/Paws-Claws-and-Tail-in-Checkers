@@ -1,13 +1,14 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PCTC.Enums
+namespace PJTC.Enums
 {
     public static class CSMRequest
     {
         public enum Type
         {
             PLAYER_INIT,
+            FILL_ATTACKS,
             GAME_START,
             SET_PLAYER_ORDER,
             POSSIBLE_MOVES,
@@ -35,6 +36,14 @@ namespace PCTC.Enums
             Normal,
             Chonky
         }
+
+        public enum Attack
+        {
+            None,
+            Paws,
+            Jaws,
+            Tail
+        }
     }
 
     public static class GameData
@@ -43,6 +52,8 @@ namespace PCTC.Enums
         {
             Idle,
             GameStart,
+            PlayerInit,
+            AttackInit,
             Game,
             GameEnd
         }

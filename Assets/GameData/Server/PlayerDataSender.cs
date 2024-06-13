@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using PCTC.Enums;
-using PCTC.Scripts;
-using PCTC.Structs;
+using PJTC.Enums;
+using PJTC.Scripts;
+using PJTC.Structs;
 using UnityEngine;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public class PlayerDataSender
     {

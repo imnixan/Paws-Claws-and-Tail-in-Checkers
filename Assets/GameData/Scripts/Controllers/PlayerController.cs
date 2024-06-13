@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using NUnit.Framework;
-using PCTC.CatScripts;
-using PCTC.Enums;
-using PCTC.Handlers;
-using PCTC.Managers;
-using PCTC.Structs;
+using PJTC.CatScripts;
+using PJTC.Enums;
+using PJTC.Handlers;
+using PJTC.Managers;
+using PJTC.Scripts;
+using PJTC.Structs;
 using UnityEngine;
 
-namespace PCTC.Controllers
+namespace PJTC.Controllers
 {
     public class PlayerController : MonoBehaviour
     {
@@ -111,20 +111,10 @@ namespace PCTC.Controllers
                 return;
             }
             theCat.catData.type = CatsType.Type.Chonky;
-            Cat upgradedCat = Instantiate(gameBuilder.chonkyCatPrefab);
-            upgradedCat.transform.position = theCat.transform.position;
-            upgradedCat.transform.transform.rotation = theCat.transform.rotation;
-            upgradedCat.transform.parent = theCat.transform.parent;
-            upgradedCat.Init(theCat.catData, theCat.mat);
-            if (theCat.catData.team == currentTeam)
-            {
-                theCat.catTouched -= OnCatClick;
-                upgradedCat.catTouched += OnCatClick;
-            }
-            Debug.Log("rebuildCat");
-            cats.Remove(theCat);
-            cats.Add(upgradedCat);
-            Destroy(theCat.gameObject);
+            Material mat = theCat.mat;
+
+            VisualModel newModel = Instantiate(gameBuilder.chonkyModel, theCat.transform);
+            newModel.Init(mat);
         }
     }
 }

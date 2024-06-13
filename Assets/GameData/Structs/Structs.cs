@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
-using PCTC.Enums;
-using PCTC.Server;
+using PJTC.Enums;
+using PJTC.Server;
 using UnityEngine;
 
-namespace PCTC.Structs
+namespace PJTC.Structs
 {
     [System.Serializable]
     public struct ClientServerMessage
@@ -55,18 +55,21 @@ namespace PCTC.Structs
         public Vector2Int position;
         public CatsType.Type type;
         public CatsType.Team team;
+        public CatsType.Attack attackType;
 
         public CatData(
             int catID,
             Vector2Int position,
             CatsType.Type type = CatsType.Type.None,
-            CatsType.Team team = CatsType.Team.None
+            CatsType.Team team = CatsType.Team.None,
+            CatsType.Attack attacType = CatsType.Attack.None
         )
         {
             this.id = catID;
             this.position = position;
             this.type = type;
             this.team = team;
+            this.attackType = attacType;
         }
     }
 
@@ -86,7 +89,7 @@ namespace PCTC.Structs
     {
         public Vector2Int[] possibleMoves;
 
-        public Moves(Vector2Int[] possibleMoves = null)
+        public Moves(Vector2Int[] possibleMoves)
         {
             this.possibleMoves = possibleMoves;
         }
@@ -102,9 +105,9 @@ namespace PCTC.Structs
 
         public MoveResult(
             MoveData[] moves,
-            CatData[] catsForRemove = null,
-            CatData[] catsForUpgrade = null,
-            CatsCount catsCount = new CatsCount()
+            CatData[] catsForRemove,
+            CatData[] catsForUpgrade,
+            CatsCount catsCount
         )
         {
             this.moves = moves;

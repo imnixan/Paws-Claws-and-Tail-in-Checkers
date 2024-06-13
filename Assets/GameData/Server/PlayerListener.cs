@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using PCTC.Enums;
-using PCTC.Structs;
-using PTCP.Scripts;
+using PJTC.Enums;
+using PJTC.Scripts;
+using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public class PlayerListener : WebSocketBehavior, MessageSender
     {

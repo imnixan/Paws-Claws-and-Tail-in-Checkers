@@ -1,8 +1,8 @@
 ﻿using System;
-using PCTC.Game;
+using PJTC.Game;
 using UnityEngine;
 
-namespace PCTC.Scripts
+namespace PJTC.Scripts
 {
     public static class ArrayTransformer
     {

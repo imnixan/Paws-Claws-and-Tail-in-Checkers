@@ -1,11 +1,11 @@
 ﻿using System;
 using DG.Tweening;
-using PCTC.Enums;
-using PCTC.Structs;
+using PJTC.Enums;
+using PJTC.Structs;
 using TMPro;
 using UnityEngine;
 
-namespace PCTC.Managers
+namespace PJTC.Managers
 {
     public class EndGameWindow : MonoBehaviour
     {

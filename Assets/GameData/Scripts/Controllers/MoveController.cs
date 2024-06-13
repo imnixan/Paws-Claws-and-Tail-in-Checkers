@@ -3,7 +3,7 @@ using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace PCTC.Controllers
+namespace PJTC.Controllers
 {
     public abstract class MoveController : MonoBehaviour
     {

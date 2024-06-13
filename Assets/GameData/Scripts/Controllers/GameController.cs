@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using PCTC.Builders;
-using PCTC.CatScripts;
-using PCTC.Game;
-using PCTC.Handlers;
-using PCTC.Managers;
-using PCTC.Structs;
+using PJTC.Builders;
+using PJTC.CatScripts;
+using PJTC.Game;
+using PJTC.Handlers;
+using PJTC.Managers;
+using PJTC.Structs;
 using UnityEngine;
 
-namespace PCTC.Controllers
+namespace PJTC.Controllers
 {
     public class GameController : MonoBehaviour
     {

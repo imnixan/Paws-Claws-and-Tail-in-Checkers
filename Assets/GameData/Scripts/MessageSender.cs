@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PCTC.Enums;
+using PJTC.Enums;
 
-namespace PTCP.Scripts
+namespace PJTC.Scripts
 {
     public interface MessageSender
     {

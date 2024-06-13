@@ -1,9 +1,9 @@
 ﻿using System;
-using PCTC.Structs;
+using PJTC.Structs;
 using TMPro;
 using UnityEngine;
 
-namespace PCTC.Managers
+namespace PJTC.Managers
 {
     public class ScoreManager : MonoBehaviour
     {

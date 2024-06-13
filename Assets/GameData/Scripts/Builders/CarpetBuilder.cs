@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Text;
-using PCTC.CameraControl;
-using PCTC.Game;
-using PCTC.Handlers;
-using PCTC.Structs;
-using Unity.VisualScripting;
+﻿using PJTC.Handlers;
+using PJTC.Structs;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-namespace PCTC.Builders
+namespace PJTC.Builders
 {
     public class CarpetBuilder : MonoBehaviour
     {
@@ -69,7 +60,7 @@ namespace PCTC.Builders
                     {
                         carpetMaterial = blackCarpet;
                         ClickInputHandler cellHandler =
-                            carpetCell.AddComponent<ClickInputHandler>();
+                            carpetCell.gameObject.AddComponent<ClickInputHandler>();
                         cellHandler.position = new Vector2Int(x, y);
 
                         cellColor = "(BLACK)";

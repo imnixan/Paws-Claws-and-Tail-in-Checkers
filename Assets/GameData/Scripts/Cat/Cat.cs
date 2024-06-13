@@ -1,12 +1,13 @@
 ﻿using System;
 using DG.Tweening;
-using PCTC.Handlers;
-using PCTC.Structs;
+using PJTC.Handlers;
+using PJTC.Scripts;
+using PJTC.Structs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace PCTC.CatScripts
+namespace PJTC.CatScripts
 {
     [RequireComponent(typeof(ClickInputHandler))]
     [RequireComponent(typeof(MoveController))]
@@ -16,27 +17,31 @@ namespace PCTC.CatScripts
         public event UnityAction<Cat> catTouched;
         public ClickInputHandler clickHandler { get; private set; }
         private MoveController moveController;
+        public VisualModel visualModel;
+        private AttackViewer attackViewer;
 
-        public void Init(CatData catData, Material mat)
+        public void Init(CatData catData)
         {
             this.catData = catData;
-            InitCat(mat);
+            InitCat();
             MakeSubscribes();
             transform.forward = new Vector3(
                 catData.team == Enums.CatsType.Team.Orange ? 1 : -1,
                 0,
                 0
             );
+            visualModel = GetComponentInChildren<VisualModel>();
+            attackViewer = GetComponentInChildren<AttackViewer>();
+            attackViewer.SetAttackBanner(catData.attackType);
         }
 
         public Material mat
         {
-            get { return GetComponent<MeshRenderer>().material; }
+            get { return visualModel.GetMaterial(); }
         }
 
-        private void InitCat(Material mat)
+        private void InitCat()
         {
-            GetComponentInChildren<MeshRenderer>().material = mat;
             this.moveController = GetComponent<MoveController>();
             this.clickHandler = GetComponent<ClickInputHandler>();
             this.clickHandler.position = catData.position;
@@ -56,13 +61,11 @@ namespace PCTC.CatScripts
 
         private void MakeSubscribes()
         {
-            this.moveController.destinationReached += this.OnDestinationReached;
             this.clickHandler.Click += this.OnClick;
         }
 
         private void MakeUnSubscrubs()
         {
-            this.moveController.destinationReached -= this.OnDestinationReached;
             this.clickHandler.Click -= this.OnClick;
         }
 

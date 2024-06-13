@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using GameData.Scripts;
 using JetBrains.Annotations;
-using PCTC.Enums;
-using PCTC.Game;
-using PCTC.Server;
-using PCTC.Structs;
+using PJTC.Enums;
+using PJTC.Game;
+using PJTC.Server;
+using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public class ServerGameManager
     {
         private PlayersCommunicator playersCommunicator;
-        private MoveChecker moveChecker;
-        private MoveMaker moveMaker;
+        public MoveChecker moveChecker { get; private set; }
+        public MoveMaker moveMaker { get; private set; }
         private bool[] playerReadyMarks;
         private int _currentPlayer;
         private int playersCount;
@@ -43,8 +43,9 @@ namespace PCTC.Server
             gameField = new GameField();
             this.playersCommunicator = playersCommunicator;
             playersCommunicator.Init(this);
-            moveChecker = new MoveChecker(gameField);
+            moveChecker = new MoveChecker(this, gameField);
             moveMaker = new MoveMaker(gameField, moveChecker);
+            catsCount = moveMaker.CountCats();
             InitAllPlayers();
         }
 
@@ -59,6 +60,7 @@ namespace PCTC.Server
         private void InitAllPlayers()
         {
             Debug.Log("Server init all players");
+            gameState = Enums.GameData.GameState.PlayerInit;
             for (int playerID = 0; playerID < playersCount; playerID++)
             {
                 playersCommunicator.playerDataSender.InitPlayer(
@@ -97,17 +99,19 @@ namespace PCTC.Server
             {
                 return;
             }
+            Debug.Log($"build move to {move.moveEnd}");
             MoveResult moveResult = moveMaker.MakeMove(move);
+            gameField.UpdateField(moveResult);
             playersCommunicator.playerDataSender.SendAllPlayerMove(moveResult);
             catsCount = moveResult.catsCount;
         }
 
         private bool CheckEndGame()
         {
-            bool orangeWinsByClear = catsCount.blackCats == 0;
-            bool blackWinsByClear = catsCount.orangeCats == 0;
-            bool orangeWinsByStuck = moveChecker.CheckPlayerStuck(Enums.CatsType.Team.Black);
-            bool blackWindByStuck = moveChecker.CheckPlayerStuck(Enums.CatsType.Team.Orange);
+            bool orangeWinsByClear = catsCount.blackCats == 0 && catsCount.blackChonkyCats == 0;
+            bool blackWinsByClear = catsCount.orangeCats == 0 && catsCount.orangeChonkyCats == 0;
+            bool orangeWinsByStuck = moveChecker.IsPlayerStuck(Enums.CatsType.Team.Black);
+            bool blackWindByStuck = moveChecker.IsPlayerStuck(Enums.CatsType.Team.Orange);
             bool gameEnd =
                 orangeWinsByClear || blackWinsByClear || orangeWinsByStuck || blackWindByStuck;
 
@@ -160,7 +164,7 @@ namespace PCTC.Server
         {
             switch (gameState)
             {
-                case Enums.GameData.GameState.GameStart:
+                case Enums.GameData.GameState.PlayerInit:
                     Debug.Log("starting game");
                     StartGame();
                     break;

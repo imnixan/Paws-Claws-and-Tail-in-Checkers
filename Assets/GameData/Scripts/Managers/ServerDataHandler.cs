@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using PCTC.Enums;
-using PCTC.Managers;
-using PCTC.Structs;
+using PJTC.Enums;
+using PJTC.Managers;
+using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
 

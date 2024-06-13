@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using PCTC.Enums;
-using PCTC.Game;
-using PCTC.Structs;
-using Unity.VisualScripting;
+using PJTC.Enums;
+using PJTC.Game;
+using PJTC.Structs;
 using UnityEngine;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public class MoveChecker
     {
         public GameField gameField;
+        private ServerGameManager gameManager;
 
-        public MoveChecker(GameField gameField)
+        public MoveChecker(ServerGameManager gameManager, GameField gameField)
         {
+            this.gameManager = gameManager;
             this.gameField = gameField;
         }
 
-        public Moves GetPossibleMoves(CatData catData)
+        public Moves GetPossibleMoves(CatData catData, bool checkAttack = true)
         {
             List<Vector2Int> possibleMoves = new List<Vector2Int>();
             possibleMoves.AddRange(GetWalkCells(catData));
@@ -33,17 +34,34 @@ namespace PCTC.Server
             return correctMove;
         }
 
-        public bool CheckPlayerStuck(CatsType.Team team)
+        public bool IsPlayerStuck(CatsType.Team team)
         {
             int count = 0;
             foreach (var cat in gameField.matrix)
             {
                 if (cat.team == team)
                 {
-                    count += GetPossibleMoves(cat).possibleMoves.Length;
+                    Moves moves = GetPossibleMoves(cat);
+                    count += GetSuccesMovesCount(cat, moves);
                 }
             }
             return count == 0;
+        }
+
+        private int GetSuccesMovesCount(CatData cat, Moves uncuttedMoves)
+        {
+            List<Vector2Int> moves = new List<Vector2Int>();
+            foreach (var move in uncuttedMoves.possibleMoves)
+            {
+                CatData catchedCat = gameManager.moveMaker.TryCatchCat(new MoveData(cat, move));
+                bool canBeat =
+                    cat.attackType == gameManager.moveMaker.attackMap[catchedCat.attackType];
+                if (catchedCat.id <= 1 || canBeat)
+                {
+                    moves.Add(move);
+                }
+            }
+            return moves.Count;
         }
 
         //orange move x++, black move x--;
@@ -161,12 +179,12 @@ namespace PCTC.Server
             return sameTeam;
         }
 
-        private bool CanBeEaten(CatData attacker, CatData defender)
+        public bool CanBeEaten(CatData attacker, CatData defender)
         {
             bool defenderIsCat = defender.id > 1;
             bool oppositeTeam = attacker.team != defender.team;
-            bool canBeat = true; //check win in pctc
-            return defenderIsCat && oppositeTeam && canBeat;
+
+            return defenderIsCat && oppositeTeam;
         }
     }
 }

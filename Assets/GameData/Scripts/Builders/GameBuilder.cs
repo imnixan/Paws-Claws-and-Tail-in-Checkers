@@ -1,22 +1,26 @@
 using System.Collections.Generic;
-using PCTC.Builders;
-using PCTC.CatScripts;
-using PCTC.Controllers;
-using PCTC.Enums;
-using PCTC.Game;
-using PCTC.Handlers;
-using PCTC.Structs;
+using PJTC.Builders;
+using PJTC.CatScripts;
+using PJTC.Controllers;
+using PJTC.Enums;
+using PJTC.Game;
+using PJTC.Handlers;
+using PJTC.Scripts;
+using PJTC.Structs;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace PCTC.Managers
+namespace PJTC.Managers
 {
     public class GameBuilder : MonoBehaviour
     {
         [SerializeField]
-        public PCTC.CatScripts.Cat catPrefab,
-            chonkyCatPrefab;
+        private Cat catPrefab;
+
+        [SerializeField]
+        public VisualModel normalModel,
+            chonkyModel;
 
         [SerializeField]
         private Material orangeMat,
@@ -46,19 +50,22 @@ namespace PCTC.Managers
                     {
                         catPosition.x = x;
                         catPosition.z = y;
-                        Cat prefab =
-                            catData[x, y].type == Enums.CatsType.Type.Normal
-                                ? catPrefab
-                                : chonkyCatPrefab;
+
                         Cat newCat = Instantiate(
                             catPrefab,
                             catPosition,
                             new Quaternion(),
                             field.transform
                         );
+                        VisualModel modelPrefab =
+                            catData[x, y].type == Enums.CatsType.Type.Normal
+                                ? normalModel
+                                : chonkyModel;
                         Material mat =
                             catData[x, y].team == Enums.CatsType.Team.Orange ? orangeMat : blackMat;
-                        newCat.Init(catData[x, y], mat);
+                        VisualModel newModel = Instantiate(modelPrefab, newCat.transform);
+                        newModel.Init(mat);
+                        newCat.Init(catData[x, y]);
                         catsList.Add(newCat);
                     }
                 }

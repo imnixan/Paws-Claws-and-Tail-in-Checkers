@@ -1,12 +1,12 @@
 ﻿using System;
-using PCTC.Enums;
-using PCTC.Server;
-using PCTC.Structs;
-using PTCP.Scripts;
+using PJTC.Enums;
+using PJTC.Scripts;
+using PJTC.Server;
+using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
 
-namespace PCTC.Managers
+namespace PJTC.Managers
 {
     public class ServerDataSender : MessageSender
     {
@@ -34,6 +34,7 @@ namespace PCTC.Managers
         public void SendPlayerMove(MoveData moveData)
         {
             CSMRequest.Type type = CSMRequest.Type.MAKE_MOVE;
+            Debug.Log($"chose cell {moveData.moveEnd}");
             SendMessage(type, moveData);
         }
 

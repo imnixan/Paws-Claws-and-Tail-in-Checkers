@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using PCTC.Server;
+using PJTC.Server;
 using UnityEngine;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public static class RoomCreator
     {

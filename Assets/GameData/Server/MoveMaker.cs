@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Remoting.Messaging;
-using PCTC.Enums;
-using PCTC.Game;
-using PCTC.Structs;
+using PJTC.CatScripts;
+using PJTC.Enums;
+using PJTC.Game;
+using PJTC.Structs;
 using UnityEngine;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public class MoveMaker
     {
@@ -13,83 +14,110 @@ namespace PCTC.Server
         private MoveChecker moveChecker;
         System.Random random = new System.Random();
 
+        public Dictionary<CatsType.Attack, CatsType.Attack> attackMap = new Dictionary<
+            CatsType.Attack,
+            CatsType.Attack
+        >()
+        {
+            { CatsType.Attack.None, CatsType.Attack.None },
+            { CatsType.Attack.Paws, CatsType.Attack.Tail },
+            { CatsType.Attack.Tail, CatsType.Attack.Jaws },
+            { CatsType.Attack.Jaws, CatsType.Attack.Paws },
+        };
+
         public MoveMaker(GameField gameField, MoveChecker moveChecker)
         {
             this.gameField = gameField;
             this.moveChecker = moveChecker;
         }
 
-        public MoveResult MakeMove(MoveData moveData)
+        public MoveResult MakeMove(
+            MoveData moveData,
+            bool firstAttack = true,
+            MoveResult moveResult = new MoveResult()
+        )
         {
-            List<MoveData> moves = new List<MoveData>();
-            List<CatData> catsForRemove = new List<CatData>();
-            List<CatData> catsForUpgrade = new List<CatData>();
-            MoveData currentMove = moveData;
-            bool needChoice = false;
-            bool findNewPaths = true;
-            while (findNewPaths)
-            {
-                moves.Add(currentMove);
-                CatData catData = TryCatchCat(currentMove);
-                if (catData.id > 1)
-                {
-                    if (catsForRemove.Contains(catData))
-                    {
-                        moves.Remove(currentMove);
-                    }
-                    else
-                    {
-                        catsForRemove.Add(catData);
-                    }
-                    CatData newCatData = new CatData(
-                        currentMove.catData.id,
-                        currentMove.moveEnd,
-                        currentMove.catData.type,
-                        currentMove.catData.team
-                    );
-                    Moves newMove = moveChecker.GetPossibleMoves(newCatData);
-                    newMove.possibleMoves = CropStartPoint(
-                        newMove.possibleMoves,
-                        currentMove.catData.position
-                    );
-                    List<MoveData> movesWithCombo = new List<MoveData>();
+            List<MoveData> moves = new List<MoveData>(moveResult.moves ?? new MoveData[0]);
+            List<CatData> catsForRemove = new List<CatData>(
+                moveResult.catsForRemove ?? new CatData[0]
+            );
+            List<CatData> catsForUpgrade = new List<CatData>(
+                moveResult.catsForUpgrade ?? new CatData[0]
+            );
 
-                    foreach (var move in newMove.possibleMoves)
-                    {
-                        MoveData newMoveData = new MoveData(newCatData, move);
-                        CatData catchedCat = TryCatchCat(newMoveData);
-                        if (catchedCat.id > 1)
-                        {
-                            movesWithCombo.Add(newMoveData);
-                        }
-                    }
-                    if (movesWithCombo.Count > 0)
-                    {
-                        int nextMoveNum = random.Next(0, movesWithCombo.Count);
-                        gameField.UpdateField(
-                            new MoveResult(moves.ToArray(), new CatData[0], new CatData[0])
-                        );
-                        currentMove = movesWithCombo[nextMoveNum];
-                    }
-                    else
-                    {
-                        findNewPaths = false;
-                    }
-                }
-                else
+            CatData catchedCat = TryCatchCat(moveData);
+
+            bool canBeat = moveData.catData.attackType == attackMap[catchedCat.attackType];
+
+            if (catchedCat.id > 1)
+            {
+                if (firstAttack && !canBeat)
                 {
-                    findNewPaths = false;
+                    int xDir = System.Math.Sign(
+                        catchedCat.position.x - moveData.catData.position.x
+                    );
+                    int yDir = System.Math.Sign(
+                        catchedCat.position.y - moveData.catData.position.y
+                    );
+                    moveData.moveEnd.x = catchedCat.position.x - xDir;
+                    moveData.moveEnd.y = catchedCat.position.y - yDir;
+                    moves.Add(moveData);
+
+                    return new MoveResult(
+                        moves.ToArray(),
+                        catsForRemove.ToArray(),
+                        catsForUpgrade.ToArray(),
+                        CountCats()
+                    );
                 }
+
+                moves.Add(moveData);
+                catsForRemove.Add(catchedCat);
+            }
+            else
+            {
+                moves.Add(moveData);
+
+                return new MoveResult(
+                    moves.ToArray(),
+                    catsForRemove.ToArray(),
+                    catsForUpgrade.ToArray(),
+                    CountCats()
+                );
             }
 
             catsForUpgrade = UpdgradeCats(moves);
-            MoveResult moveResult = new MoveResult(
+            moveResult = new MoveResult(
                 moves.ToArray(),
                 catsForRemove.ToArray(),
-                catsForUpgrade.ToArray()
+                catsForUpgrade.ToArray(),
+                CountCats()
             );
+
             gameField.UpdateField(moveResult);
-            moveResult.catsCount = CountCats();
+
+            moveData.catData.position = moveData.moveEnd;
+            Moves possibleMoves = moveChecker.GetPossibleMoves(moveData.catData);
+            List<MoveData> possibleAttackMoves = new List<MoveData>();
+
+            foreach (var moveEndCoord in possibleMoves.possibleMoves)
+            {
+                MoveData move = new MoveData(moveData.catData, moveEndCoord);
+                CatData cat = TryCatchCat(move);
+
+                if (cat.id > 1 && !catsForRemove.Contains(cat))
+                {
+                    possibleAttackMoves.Add(move);
+                }
+            }
+
+            if (possibleAttackMoves.Count > 0)
+            {
+                int nextRandomMove = random.Next(possibleAttackMoves.Count);
+                moveData = possibleAttackMoves[nextRandomMove];
+
+                return MakeMove(moveData, false, moveResult);
+            }
 
             return moveResult;
         }
@@ -115,6 +143,7 @@ namespace PCTC.Server
                         break;
                 }
             }
+
             return cats;
         }
 
@@ -131,20 +160,17 @@ namespace PCTC.Server
             return croppedMoves.ToArray();
         }
 
-        private CatData TryCatchCat(MoveData move)
+        public CatData TryCatchCat(MoveData move)
         {
-            CatData catchedCat = new CatData();
-
+            CatData catchedCat = new CatData(-1, new Vector2Int(0, 0));
             List<Vector2Int> path = GetPath(move.catData.position, move.moveEnd);
             foreach (var cellCoords in path)
             {
-                CatData cell = gameField.GetElement(cellCoords);
-                CatsType.Team team = cell.team;
-                bool teamNotNone = team != CatsType.Team.None;
-                bool oppositeTeam = team != move.catData.team;
-                if (teamNotNone && oppositeTeam)
+                CatData catForAttack = gameField.GetElement(cellCoords);
+
+                if (moveChecker.CanBeEaten(move.catData, catForAttack))
                 {
-                    catchedCat = cell;
+                    catchedCat = catForAttack;
                     break;
                 }
             }
@@ -177,8 +203,10 @@ namespace PCTC.Server
             List<CatData> catsForUpgrade = new List<CatData>();
             foreach (var move in moves)
             {
-                bool orangeOnTop = move.moveEnd.x == 7 && move.catData.team == CatsType.Team.Orange;
-                bool blackOnBot = move.moveEnd.x == -7 && move.catData.team == CatsType.Team.Black;
+                bool orangeOnTop =
+                    move.moveEnd.x == GameField.fieldSize - 1
+                    && move.catData.team == CatsType.Team.Orange;
+                bool blackOnBot = move.moveEnd.x == 0 && move.catData.team == CatsType.Team.Black;
                 bool chonky = (orangeOnTop || blackOnBot) && !catsForUpgrade.Contains(move.catData);
                 if (chonky)
                 {

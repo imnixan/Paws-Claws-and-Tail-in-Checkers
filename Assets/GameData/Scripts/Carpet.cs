@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PCTC
+namespace PJTC
 {
     public class Carpet : MonoBehaviour
     {

@@ -5,8 +5,6 @@ using System.Diagnostics;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-
-
 #pragma warning disable IDE0005
 using Serilog = Meryel.UnityCodeAssist.Serilog;
 #pragma warning restore IDE0005
@@ -24,7 +22,8 @@ namespace Meryel.UnityCodeAssist.Editor.Input
     // </summary>
     public class Binary2TextExec : EditorToolExec
     {
-        public Binary2TextExec() : base("binary2text") { }
+        public Binary2TextExec()
+            : base("binary2text") { }
 
         // <summary>
         // bin2text filePath outPath options
@@ -35,7 +34,13 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             return Exec(args);
         }
 
-        public int Exec(string filePath, string outPath, bool detailed = false, bool largeBinaryHashOnly = false, bool hexFloat = false)
+        public int Exec(
+            string filePath,
+            string outPath,
+            bool detailed = false,
+            bool largeBinaryHashOnly = false,
+            bool hexFloat = false
+        )
         {
             //var args = string.Format(@"""{0}"" ""{1}"" {2}", filePath, outPath, options);
             var args = string.Format(@"""{0}"" ""{1}""", filePath, outPath);
@@ -102,7 +107,11 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             mToolsPath = Path.Combine(mEditorPath, @"Data/Tools");
             this.mExecFname = mExecFname;
             //var files = Directory.GetFiles(mToolsPath, mExecFname, SearchOption.AllDirectories);
-            var files = Directory.GetFiles(mEditorPath, mExecFname + "*", SearchOption.AllDirectories);
+            var files = Directory.GetFiles(
+                mEditorPath,
+                mExecFname + "*",
+                SearchOption.AllDirectories
+            );
 
             if (files.Length == 0)
                 Serilog.Log.Error("{App} app couldn't be found at {Path}", mExecFname, mEditorPath);
@@ -110,10 +119,10 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             mExecFullPath = files[0];
         }
 
-        // <summary> 
+        // <summary>
         // コマンドラインツールを実行する
-        // <param> 
-        // arg : コマンドラインツールに渡す引数 
+        // <param>
+        // arg : コマンドラインツールに渡す引数
         // </param>
         // </summary>
         public int Exec(string arg)
@@ -137,7 +146,12 @@ namespace Meryel.UnityCodeAssist.Editor.Input
             catch (Exception e)
             {
                 //UnityEngine.Debug.Log(e);
-                Serilog.Log.Error(e, "Exception while running process at {Scope}.{Location}", nameof(EditorToolExec), nameof(Exec));
+                Serilog.Log.Error(
+                    e,
+                    "Exception while running process at {Scope}.{Location}",
+                    nameof(EditorToolExec),
+                    nameof(Exec)
+                );
             }
 
             return exitCode;

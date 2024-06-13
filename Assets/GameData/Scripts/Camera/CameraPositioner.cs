@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using DG.Tweening;
 using UnityEngine;
 
-namespace PCTC.CameraControl
+namespace PJTC.CameraControl
 {
     public class CameraPositioner : MonoBehaviour
     {

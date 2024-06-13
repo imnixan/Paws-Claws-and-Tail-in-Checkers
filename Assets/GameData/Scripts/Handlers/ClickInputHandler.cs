@@ -3,7 +3,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace PCTC.Handlers
+namespace PJTC.Handlers
 {
     public class ClickInputHandler : MonoBehaviour
     {

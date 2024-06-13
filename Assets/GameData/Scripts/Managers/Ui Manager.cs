@@ -1,9 +1,11 @@
 ﻿using System;
-using PCTC.Enums;
-using PCTC.Structs;
+using PJTC.Builders;
+using PJTC.Enums;
+using PJTC.Game;
+using PJTC.Structs;
 using UnityEngine;
 
-namespace PCTC.Managers
+namespace PJTC.Managers
 {
     public class UIManager : MonoBehaviour
     {
@@ -17,9 +19,20 @@ namespace PCTC.Managers
         [SerializeField]
         private EndGameWindow gameEndManager;
 
+        [SerializeField]
+        private UIFieldBuilder gameFieldBuilder;
+
+        [SerializeField]
+        private ClientGameManager gameManager;
+
         public void OnConnect()
         {
             connectBtn.SetActive(false);
+        }
+
+        public void ShowUIField(CatData[,] field)
+        {
+            gameFieldBuilder.BuildUIField(field, gameManager.playerID);
         }
 
         public void OnGameStart()

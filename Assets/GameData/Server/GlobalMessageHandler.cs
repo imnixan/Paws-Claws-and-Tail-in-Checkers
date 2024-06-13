@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using PCTC.Structs;
+using PJTC.Structs;
 using Unity.VisualScripting;
 using UnityEngine;
 using WebSocketSharp;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     internal class GlobalMessageHandler
     {

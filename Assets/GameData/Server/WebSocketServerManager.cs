@@ -3,7 +3,7 @@ using UnityEngine;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
-namespace PCTC.Server
+namespace PJTC.Server
 {
     public class WebSocketServerManager : MonoBehaviour
     {

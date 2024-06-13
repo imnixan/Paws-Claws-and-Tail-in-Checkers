@@ -1,11 +1,11 @@
 using System.Collections.Generic;
-using PCTC.CatScripts;
-using PCTC.Scripts;
-using PCTC.Structs;
+using PJTC.CatScripts;
+using PJTC.Scripts;
+using PJTC.Structs;
 using UnityEditor;
 using UnityEngine;
 
-namespace PCTC.Game
+namespace PJTC.Game
 {
     public class GameField
     {
@@ -27,7 +27,7 @@ namespace PCTC.Game
             TestChonky
         }
 
-        public GameField(FieldTypes type = FieldTypes.TestChonky)
+        public GameField(FieldTypes type = FieldTypes.TestNormalMulti)
         {
             server = true;
             matrix = new CatData[fieldSize, fieldSize];
@@ -244,14 +244,16 @@ namespace PCTC.Game
                 catId++,
                 new Vector2Int(2, 7),
                 defaultType,
-                Enums.CatsType.Team.Orange
+                Enums.CatsType.Team.Orange,
+                Enums.CatsType.Attack.Paws
             );
 
             matrix[6, 7] = new CatData(
                 catId++,
                 new Vector2Int(6, 7),
                 defaultType,
-                Enums.CatsType.Team.Orange
+                Enums.CatsType.Team.Orange,
+                Enums.CatsType.Attack.Jaws
             );
 
             // Черная команда
@@ -259,19 +261,22 @@ namespace PCTC.Game
                 catId++,
                 new Vector2Int(4, 3),
                 defaultType,
-                Enums.CatsType.Team.Black
+                Enums.CatsType.Team.Black,
+                Enums.CatsType.Attack.Tail
             );
             matrix[4, 1] = new CatData(
                 catId++,
                 new Vector2Int(4, 1),
                 defaultType,
-                Enums.CatsType.Team.Black
+                Enums.CatsType.Team.Black,
+                Enums.CatsType.Attack.Tail
             );
             matrix[4, 5] = new CatData(
                 catId++,
                 new Vector2Int(4, 5),
                 defaultType,
-                Enums.CatsType.Team.Black
+                Enums.CatsType.Team.Black,
+                Enums.CatsType.Attack.Tail
             );
         }
         #endregion
