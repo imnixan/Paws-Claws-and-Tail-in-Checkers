@@ -14,7 +14,7 @@ namespace PJTC.Controllers
     {
         [SerializeField]
         private GameBuilder gameBuilder;
-        private List<Cat> cats;
+        public List<Cat> cats;
         public List<Cat> ownCats { get; private set; }
         private GameController gameController;
 
@@ -108,25 +108,14 @@ namespace PJTC.Controllers
             cats.Remove(theCat);
         }
 
-        public void UpgradeCat(CatData catData)
+        public void MakeCatChonky(Cat cat)
         {
-            Cat theCat = new Cat();
-            foreach (var cat in cats)
-            {
-                if (cat.catData.id == catData.id)
-                {
-                    theCat = cat;
-                }
-            }
-            if (theCat == null)
-            {
-                return;
-            }
-            theCat.catData.type = CatsType.Type.Chonky;
-            Material mat = theCat.mat;
-
-            VisualModel newModel = Instantiate(gameBuilder.chonkyModel, theCat.transform);
+            Material mat = cat.mat;
+            Destroy(cat.visualModel.gameObject);
+            VisualModel newModel = Instantiate(gameBuilder.chonkyModel, cat.transform);
             newModel.Init(mat);
+            cat.visualModel = newModel;
+            cat.catData.type = CatsType.Type.Chonky;
         }
     }
 }

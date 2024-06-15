@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using PJTC.Enums;
+using PJTC.General;
 using PJTC.Server;
 using UnityEngine;
 
@@ -87,13 +88,15 @@ namespace PJTC.Structs
         public CatsType.Type type;
         public CatsType.Team team;
         public CatsType.Attack attackType;
+        public AttackHint attackHints;
 
         public CatData(
             int catID,
             Vector2Int position,
             CatsType.Type type = CatsType.Type.None,
             CatsType.Team team = CatsType.Team.None,
-            CatsType.Attack attackType = CatsType.Attack.None
+            CatsType.Attack attackType = CatsType.Attack.None,
+            AttackHint attackHints = new AttackHint()
         )
         {
             this.id = catID;
@@ -101,6 +104,61 @@ namespace PJTC.Structs
             this.type = type;
             this.team = team;
             this.attackType = attackType;
+            this.attackHints = attackHints;
+        }
+
+        public void UpdateDefenderHints(bool defeated)
+        {
+            CatsType.Attack newExcludedAttack = AttackMap.attackMap[this.attackType];
+            if (
+                defeated
+                || (
+                    attackHints.excludedAttack != CatsType.Attack.None
+                    && attackHints.excludedAttack != newExcludedAttack
+                )
+            )
+            {
+                attackHints.solved = true;
+            }
+            else
+            {
+                attackHints.excludedAttack = newExcludedAttack;
+            }
+        }
+
+        public void UpdateAttackerHints(bool won)
+        {
+            CatsType.Attack newExcludedAttack = AttackMap.defenceMap[this.attackType];
+            if (
+                won
+                || (
+                    attackHints.excludedAttack != CatsType.Attack.None
+                    && attackHints.excludedAttack != newExcludedAttack
+                )
+            )
+            {
+                attackHints.solved = true;
+            }
+            else
+            {
+                attackHints.excludedAttack = newExcludedAttack;
+            }
+        }
+    }
+
+    [System.Serializable]
+    public struct AttackHint
+    {
+        public bool solved;
+        public CatsType.Attack excludedAttack;
+
+        public AttackHint(
+            CatsType.Attack excludedAttack = CatsType.Attack.None,
+            bool solved = false
+        )
+        {
+            this.solved = solved;
+            this.excludedAttack = excludedAttack;
         }
     }
 
@@ -129,24 +187,18 @@ namespace PJTC.Structs
     [System.Serializable]
     public struct MoveResult
     {
-        public MoveData[] moves;
-        public CatData[] catsForRemove;
-        public CatData[] catsForUpgrade;
+        public CompletedMoveData[] moves;
         public CatsCount catsCount;
 
-        public MoveResult(
-            MoveData[] moves,
-            CatData[] catsForRemove,
-            CatData[] catsForUpgrade,
-            CatsCount catsCount
-        )
+        public MoveResult(CompletedMoveData[] moves, CatsCount catsCount)
         {
             this.moves = moves;
-            this.catsForRemove = catsForRemove;
-            this.catsForUpgrade = catsForUpgrade;
             this.catsCount = catsCount;
         }
     }
+
+    [System.Serializable]
+    public struct BattleData { }
 
     [System.Serializable]
     public struct CatsCount
@@ -176,13 +228,35 @@ namespace PJTC.Structs
         public CatData catData;
         public Vector2Int moveEnd;
 
-        public string battleAnimationId;
-
-        public MoveData(CatData catData, Vector2Int moveEnd, string battleAnimationId = "")
+        public MoveData(CatData catData, Vector2Int moveEnd)
         {
             this.catData = catData;
             this.moveEnd = moveEnd;
-            this.battleAnimationId = battleAnimationId;
+        }
+    }
+
+    [System.Serializable]
+    public struct CompletedMoveData
+    {
+        public MoveData moveData;
+        public bool moveWithUpgrade;
+        public bool moveWithBattle;
+        public bool battleWin;
+        public CatData enemy;
+
+        public CompletedMoveData(
+            MoveData moveData,
+            bool moveWithUpgrade = false,
+            bool moveWithBattle = false,
+            bool battlelewin = false,
+            CatData enemy = new CatData()
+        )
+        {
+            this.moveData = moveData;
+            this.moveWithUpgrade = moveWithUpgrade;
+            this.moveWithBattle = moveWithBattle;
+            this.battleWin = battlelewin;
+            this.enemy = enemy;
         }
     }
 

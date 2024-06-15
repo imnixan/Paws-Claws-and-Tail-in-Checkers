@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Xml.Schema;
 using JetBrains.Annotations;
 using PJTC.CatScripts;
 using PJTC.Controllers;
 using PJTC.Enums;
+using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,75 +17,121 @@ namespace PJTC.Scripts
         private Sprite jawIcon,
             pawIcon,
             tailIcon,
-            noneIcon,
+            crossIcon,
             backGround;
 
-        private Transform attackBannerTransform;
+        private Transform attackBanner;
         private Image attackIcon;
+        private GameObject cross;
         float bias = -20f;
 
-        public void SetAttackBanner(CatsType.Attack attackType)
+        private Sprite currentIcon
         {
-            if (attackBannerTransform == null)
+            get { return attackIcon.sprite; }
+            set
+            {
+                attackIcon.sprite = value;
+                if (value == null)
+                {
+                    attackIcon.color = new Color(1, 1, 1, 0);
+                }
+                else
+                {
+                    attackIcon.color = Color.white;
+                }
+            }
+        }
+
+        public void SetAttackBanner(CatData catData)
+        {
+            if (attackBanner == null)
             {
                 CreateBanner();
             }
 
+            if (catData.attackType == CatsType.Attack.None)
+            {
+                cross.SetActive(catData.attackHints.excludedAttack != CatsType.Attack.None);
+                SetBannerIcon(catData.attackHints.excludedAttack);
+            }
+            else
+            {
+                cross.SetActive(false);
+                SetBannerIcon(catData.attackType);
+            }
+        }
+
+        private void SetBannerIcon(CatsType.Attack attackType)
+        {
             switch (attackType)
             {
                 case CatsType.Attack.Jaws:
-                    attackIcon.sprite = jawIcon;
+                    currentIcon = jawIcon;
+
                     break;
                 case CatsType.Attack.Paws:
-                    attackIcon.sprite = pawIcon;
+                    currentIcon = pawIcon;
                     break;
                 case CatsType.Attack.Tail:
-                    attackIcon.sprite = tailIcon;
+                    currentIcon = tailIcon;
                     break;
                 default:
-                    attackIcon.sprite = noneIcon;
+                    currentIcon = null;
+
                     break;
             }
         }
 
         private void Update()
         {
-            if (attackBannerTransform != null)
+            if (attackBanner != null)
             {
                 Vector3 screenPosition = Camera.main.WorldToScreenPoint(transform.position);
                 screenPosition.y += bias;
-                attackBannerTransform.position = screenPosition;
+                attackBanner.position = screenPosition;
             }
         }
 
         private void OnDestroy()
         {
-            if (attackBannerTransform != null)
+            if (attackBanner != null)
             {
-                Destroy(attackBannerTransform.gameObject);
+                Destroy(attackBanner.gameObject);
             }
         }
 
         private void CreateBanner()
         {
             Transform canvas = GameObject.FindGameObjectWithTag("AttackCanvas").transform;
-            GameObject attackBanner = new GameObject("AttackBanner");
-            attackBanner.AddComponent<Image>().sprite = backGround;
-            attackBanner.GetComponent<RectTransform>().sizeDelta = new Vector2(40, 40);
-            attackBannerTransform = attackBanner.transform;
-            attackBannerTransform.transform.SetParent(canvas);
-            attackBannerTransform.transform.localScale = Vector3.one;
 
-            GameObject attackIconObject = new GameObject("AttackBanner");
-            attackIcon = attackIconObject.AddComponent<Image>();
-            attackIcon.GetComponent<RectTransform>().sizeDelta = new Vector2(30, 30);
-            attackIcon.transform.SetParent(attackBannerTransform);
-            attackIcon.transform.localScale = Vector3.one;
-            attackIcon.transform.localPosition = Vector3.zero;
+            Image attackBannerImage = CreateImageObject(
+                "AttackBanner",
+                new Vector2(40, 40),
+                canvas
+            );
+            attackBannerImage.sprite = backGround;
+            attackBanner = attackBannerImage.transform;
+
+            attackIcon = CreateImageObject("AttackIcon", new Vector2(30, 30), attackBanner);
+
             if (GetComponentInParent<Cat>().catData.team != GameController.playerTeam)
             {
                 bias *= -1;
             }
+
+            Image crossImage = CreateImageObject("AttackIcon", new Vector2(40, 40), attackBanner);
+            crossImage.sprite = crossIcon;
+            cross = crossImage.gameObject;
+        }
+
+        private Image CreateImageObject(string name, Vector2 size, Transform parent)
+        {
+            GameObject imageObject = new GameObject(name);
+            Image image = imageObject.AddComponent<Image>();
+            imageObject.GetComponent<RectTransform>().sizeDelta = size;
+            imageObject.transform.SetParent(parent);
+            imageObject.transform.localScale = Vector3.one;
+            return image;
         }
     }
 }

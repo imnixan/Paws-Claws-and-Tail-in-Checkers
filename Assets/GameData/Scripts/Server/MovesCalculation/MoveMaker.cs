@@ -3,6 +3,7 @@ using System.Runtime.Remoting.Messaging;
 using PJTC.CatScripts;
 using PJTC.Enums;
 using PJTC.Game;
+using PJTC.General;
 using PJTC.Structs;
 using UnityEngine;
 
@@ -14,17 +15,6 @@ namespace PJTC.Server
         private MoveChecker moveChecker;
         System.Random random = new System.Random();
 
-        public Dictionary<CatsType.Attack, CatsType.Attack> attackMap = new Dictionary<
-            CatsType.Attack,
-            CatsType.Attack
-        >()
-        {
-            { CatsType.Attack.None, CatsType.Attack.None },
-            { CatsType.Attack.Paws, CatsType.Attack.Tail },
-            { CatsType.Attack.Tail, CatsType.Attack.Jaws },
-            { CatsType.Attack.Jaws, CatsType.Attack.Paws },
-        };
-
         public MoveMaker(GameField gameField, MoveChecker moveChecker)
         {
             this.gameField = gameField;
@@ -32,80 +22,91 @@ namespace PJTC.Server
         }
 
         public MoveResult MakeMove(
-            MoveData moveData,
+            CompletedMoveData completedMove,
             bool firstAttack = true,
             MoveResult moveResult = new MoveResult()
         )
         {
-            List<MoveData> moves = new List<MoveData>(moveResult.moves ?? new MoveData[0]);
-            List<CatData> catsForRemove = new List<CatData>(
-                moveResult.catsForRemove ?? new CatData[0]
+            List<CompletedMoveData> completedMoves = new List<CompletedMoveData>(
+                moveResult.moves ?? new CompletedMoveData[0]
             );
-            List<CatData> catsForUpgrade = new List<CatData>(
-                moveResult.catsForUpgrade ?? new CatData[0]
-            );
+            CatData catchedCat = TryCatchCat(completedMove.moveData);
 
-            CatData catchedCat = TryCatchCat(moveData);
-
-            bool canBeat = moveData.catData.attackType == attackMap[catchedCat.attackType];
+            bool canBeat =
+                completedMove.moveData.catData.attackType
+                == AttackMap.attackMap[catchedCat.attackType];
 
             if (catchedCat.id > 1)
             {
                 if (firstAttack && !canBeat)
                 {
                     int xDir = System.Math.Sign(
-                        catchedCat.position.x - moveData.catData.position.x
+                        catchedCat.position.x - completedMove.moveData.catData.position.x
                     );
                     int yDir = System.Math.Sign(
-                        catchedCat.position.y - moveData.catData.position.y
+                        catchedCat.position.y - completedMove.moveData.catData.position.y
                     );
-                    moveData.moveEnd.x = catchedCat.position.x - xDir;
-                    moveData.moveEnd.y = catchedCat.position.y - yDir;
-                    moves.Add(moveData);
+                    completedMove.moveData.moveEnd.x = catchedCat.position.x - xDir;
+                    completedMove.moveData.moveEnd.y = catchedCat.position.y - yDir;
 
-                    return new MoveResult(
-                        moves.ToArray(),
-                        catsForRemove.ToArray(),
-                        catsForUpgrade.ToArray(),
-                        CountCats()
+                    completedMove.moveData.catData.UpdateAttackerHints(false);
+                    catchedCat.UpdateDefenderHints(false);
+
+                    completedMoves.Add(
+                        new CompletedMoveData(
+                            completedMove.moveData,
+                            false,
+                            true,
+                            false,
+                            catchedCat
+                        )
                     );
+
+                    return new MoveResult(completedMoves.ToArray(), CountCats());
                 }
-
-                moves.Add(moveData);
-                catsForRemove.Add(catchedCat);
+                bool chonky = NeedChonkyUpgrade(
+                    completedMove.moveData.catData,
+                    completedMove.moveData.moveEnd
+                );
+                if (chonky)
+                {
+                    completedMove.moveData.catData.type = CatsType.Type.Chonky;
+                }
+                completedMove.moveData.catData.UpdateAttackerHints(true);
+                catchedCat.UpdateDefenderHints(true);
+                completedMoves.Add(
+                    new CompletedMoveData(completedMove.moveData, chonky, true, true, catchedCat)
+                );
             }
             else
             {
-                moves.Add(moveData);
-
-                return new MoveResult(
-                    moves.ToArray(),
-                    catsForRemove.ToArray(),
-                    catsForUpgrade.ToArray(),
-                    CountCats()
+                bool chonky = NeedChonkyUpgrade(
+                    completedMove.moveData.catData,
+                    completedMove.moveData.moveEnd
                 );
+                if (chonky)
+                {
+                    completedMove.moveData.catData.type = CatsType.Type.Chonky;
+                }
+                completedMoves.Add(new CompletedMoveData(completedMove.moveData, chonky));
+
+                return new MoveResult(completedMoves.ToArray(), CountCats());
             }
 
-            catsForUpgrade = UpdgradeCats(moves);
-            moveResult = new MoveResult(
-                moves.ToArray(),
-                catsForRemove.ToArray(),
-                catsForUpgrade.ToArray(),
-                CountCats()
-            );
+            moveResult = new MoveResult(completedMoves.ToArray(), CountCats());
 
             gameField.UpdateField(moveResult);
 
-            moveData.catData.position = moveData.moveEnd;
-            Moves possibleMoves = moveChecker.GetPossibleMoves(moveData.catData);
+            completedMove.moveData.catData.position = completedMove.moveData.moveEnd;
+            Moves possibleMoves = moveChecker.GetPossibleMoves(completedMove.moveData.catData);
             List<MoveData> possibleAttackMoves = new List<MoveData>();
 
             foreach (var moveEndCoord in possibleMoves.possibleMoves)
             {
-                MoveData move = new MoveData(moveData.catData, moveEndCoord);
+                MoveData move = new MoveData(completedMove.moveData.catData, moveEndCoord);
                 CatData cat = TryCatchCat(move);
 
-                if (cat.id > 1 && !catsForRemove.Contains(cat))
+                if (cat.id > 1 && !DoubleCatch(cat, moveResult))
                 {
                     possibleAttackMoves.Add(move);
                 }
@@ -114,9 +115,9 @@ namespace PJTC.Server
             if (possibleAttackMoves.Count > 0)
             {
                 int nextRandomMove = random.Next(possibleAttackMoves.Count);
-                moveData = possibleAttackMoves[nextRandomMove];
+                completedMove = new CompletedMoveData(possibleAttackMoves[nextRandomMove]);
 
-                return MakeMove(moveData, false, moveResult);
+                return MakeMove(completedMove, false, moveResult);
             }
 
             return moveResult;
@@ -198,23 +199,26 @@ namespace PJTC.Server
             return path;
         }
 
-        private List<CatData> UpdgradeCats(List<MoveData> moves)
+        private bool NeedChonkyUpgrade(CatData cat, Vector2Int finalPos)
         {
-            List<CatData> catsForUpgrade = new List<CatData>();
-            foreach (var move in moves)
+            bool orangeOnTop =
+                finalPos.x == GameField.fieldSize - 1 && cat.team == CatsType.Team.Orange;
+            bool blackOnBot = finalPos.x == 0 && cat.team == CatsType.Team.Black;
+            bool chonky = (orangeOnTop || blackOnBot);
+            return chonky;
+        }
+
+        private bool DoubleCatch(CatData victim, MoveResult moveResult)
+        {
+            foreach (CompletedMoveData completedMoveData in moveResult.moves)
             {
-                bool orangeOnTop =
-                    move.moveEnd.x == GameField.fieldSize - 1
-                    && move.catData.team == CatsType.Team.Orange;
-                bool blackOnBot = move.moveEnd.x == 0 && move.catData.team == CatsType.Team.Black;
-                bool chonky = (orangeOnTop || blackOnBot) && !catsForUpgrade.Contains(move.catData);
-                if (chonky)
+                if (completedMoveData.battleWin && completedMoveData.enemy.id == victim.id)
                 {
-                    catsForUpgrade.Add(move.catData);
+                    return true;
                 }
             }
 
-            return catsForUpgrade;
+            return false;
         }
     }
 }

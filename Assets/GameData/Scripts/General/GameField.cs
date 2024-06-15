@@ -71,7 +71,10 @@ namespace PJTC.Game
                 {
                     if (secureField[x, y].team != playerTeam)
                     {
-                        secureField[x, y].attackType = CatsType.Attack.None;
+                        if (!secureField[x, y].attackHints.solved)
+                        {
+                            secureField[x, y].attackType = CatsType.Attack.None;
+                        }
                     }
                 }
             }
@@ -106,37 +109,59 @@ namespace PJTC.Game
 
         public void UpdateField(MoveResult moveResult)
         {
-            foreach (var move in moveResult.moves)
+            foreach (CompletedMoveData move in moveResult.moves)
             {
-                RemoveElementAt(move.catData.position);
-                CatData catData = move.catData;
-                catData.position = move.moveEnd;
-                SetElement(catData);
+                CatData movedCat = move.moveData.catData;
+                RemoveElementAt(movedCat.position);
+                movedCat.position = move.moveData.moveEnd;
+                if (move.moveWithBattle)
+                {
+                    if (move.battleWin)
+                    {
+                        RemoveElementAt(move.enemy.position);
+                    }
+                    else
+                    {
+                        SetElement(move.enemy);
+                    }
+                }
+
+                if (move.moveWithUpgrade)
+                {
+                    movedCat.type = CatsType.Type.Chonky;
+                }
+
+                SetElement(movedCat);
             }
-            RemoveCats(moveResult);
-            UpgradeCats(moveResult);
+
             UpdateHash();
         }
 
-        private void UpgradeCats(MoveResult moveResult)
+        public MoveResult CensureMoveResultForPlayer(
+            CatsType.Team playerTeam,
+            MoveResult moveResult
+        )
         {
-            foreach (var upgradeCat in moveResult.catsForUpgrade)
+            CompletedMoveData[] moves = moveResult.moves;
+            for (int i = 0; i < moves.Length; i++)
             {
-                CatData catData = GetElementById(upgradeCat.id);
-                if (catData.type == Enums.CatsType.Type.Normal)
+                moves[i].moveData.catData = CensureCat(moves[i].moveData.catData, playerTeam);
+                if (moves[i].moveWithBattle)
                 {
-                    catData.type = Enums.CatsType.Type.Chonky;
+                    moves[i].enemy = CensureCat(moves[i].enemy, playerTeam);
                 }
-                SetElement(catData);
             }
+
+            return moveResult;
         }
 
-        private void RemoveCats(MoveResult moveResult)
+        private CatData CensureCat(CatData catData, CatsType.Team playerTeam)
         {
-            foreach (var carForRemove in moveResult.catsForRemove)
+            if (catData.team != playerTeam && !catData.attackHints.solved)
             {
-                RemoveElementAt(carForRemove.position);
+                catData.attackType = CatsType.Attack.None;
             }
+            return catData;
         }
 
         //normal

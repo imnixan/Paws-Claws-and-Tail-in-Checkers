@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using PJTC.Enums;
 using PJTC.Game;
+using PJTC.General;
 using PJTC.Structs;
 using UnityEngine;
 
@@ -54,8 +55,7 @@ namespace PJTC.Server
             foreach (var move in uncuttedMoves.possibleMoves)
             {
                 CatData catchedCat = gameManager.moveMaker.TryCatchCat(new MoveData(cat, move));
-                bool canBeat =
-                    cat.attackType == gameManager.moveMaker.attackMap[catchedCat.attackType];
+                bool canBeat = cat.attackType == AttackMap.attackMap[catchedCat.attackType];
                 if (catchedCat.id <= 1 || canBeat)
                 {
                     moves.Add(move);

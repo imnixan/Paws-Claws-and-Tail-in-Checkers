@@ -36,14 +36,13 @@ namespace PJTC.CatScripts
             );
             visualModel = GetComponentInChildren<VisualModel>();
             attackViewer = GetComponentInChildren<AttackViewer>();
-            attackViewer.SetAttackBanner(catData.attackType);
+            attackViewer.SetAttackBanner(catData);
         }
 
-        public void UpdateAttackType(CatsType.Attack attackType)
+        public void UpdateAttackType(CatData catData)
         {
-            catData.attackType = attackType;
-            attackViewer.SetAttackBanner(attackType);
-            catData.attackType = attackType;
+            this.catData.attackType = catData.attackType;
+            attackViewer.SetAttackBanner(catData);
         }
 
         public Material mat

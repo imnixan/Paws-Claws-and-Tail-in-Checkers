@@ -100,7 +100,7 @@ namespace PJTC.Server
                 return;
             }
             Debug.Log($"build move to {move.moveEnd}");
-            MoveResult moveResult = moveMaker.MakeMove(move);
+            MoveResult moveResult = moveMaker.MakeMove(new CompletedMoveData(move));
             gameField.UpdateField(moveResult);
             catsCount = moveResult.catsCount;
             playersCommunicator.playerDataSender.SendAllPlayerMove(moveResult);

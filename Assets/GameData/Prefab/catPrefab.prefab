@@ -80,6 +80,9 @@ MonoBehaviour:
     type: 0
     team: 0
     attackType: 0
+    attackHints:
+      solved: 0
+      excludedAttack: 0
   visualModel: {fileID: 0}
 --- !u!65 &8081948067906873118
 BoxCollider:
@@ -149,5 +152,5 @@ MonoBehaviour:
   jawIcon: {fileID: 21300000, guid: 320e08622958e88439c22b856c2e411a, type: 3}
   pawIcon: {fileID: 21300000, guid: 50686e387362e4046ba4d678b6cf54ea, type: 3}
   tailIcon: {fileID: 21300000, guid: 92c66afab3c485d48b2dde925679df3e, type: 3}
-  noneIcon: {fileID: 21300000, guid: c9f0da86efec675459f3fd9ec6de56ea, type: 3}
+  crossIcon: {fileID: 21300000, guid: 36981dedc28279a41bddf2d74f24b4a2, type: 3}
   backGround: {fileID: 21300000, guid: a7a3f56f0f9eede4e87d6d2582325e3c, type: 3}

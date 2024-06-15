@@ -42,11 +42,11 @@ namespace PJTC.Controllers
             ClientGameManager gameManager
         )
         {
+            playerTeam = (CatsType.Team)playerID;
             this.gameField = new GameField(catData);
             playerController.InitController(cats, playerID, this);
             this.carpetController.Init(cellHandlers, this);
             this.gameManager = gameManager;
-            playerTeam = (CatsType.Team)playerID;
         }
 
         public void ShowPossibleMoves(Moves moves)
@@ -79,7 +79,8 @@ namespace PJTC.Controllers
                 currentAttackType = 0;
             }
             CatsType.Attack newAttack = (CatsType.Attack)currentAttackType;
-            cat.UpdateAttackType(newAttack);
+            catData.attackType = newAttack;
+            cat.UpdateAttackType(catData);
             gameField.SetElement(cat.catData);
             AttackChanged?.Invoke(cat.catData, oldAttack);
         }
@@ -87,14 +88,24 @@ namespace PJTC.Controllers
         private void OnRandomChoose(AttacksPool attacks)
         {
             CatsType.Attack[] attackTypes = GetAttacksShuffleArray(attacks);
-            attackTypes = ArrayTransformer.Shuffle(attackTypes);
+
             List<Cat> cats = playerController.ownCats;
             CatsType.Attack currentAttack = CatsType.Attack.None;
             for (int i = 0; i < attackTypes.Length; i++)
             {
                 Cat cat = cats[i];
                 currentAttack = cat.catData.attackType;
-                cats[i].UpdateAttackType(attackTypes[i]);
+                cats[i]
+                    .UpdateAttackType(
+                        new CatData(
+                            cat.catData.id,
+                            cat.catData.position,
+                            cat.catData.type,
+                            cat.catData.team,
+                            attackTypes[i],
+                            cat.catData.attackHints
+                        )
+                    );
                 gameField.SetElement(cat.catData);
                 AttackChanged?.Invoke(cat.catData, currentAttack);
             }
@@ -119,7 +130,7 @@ namespace PJTC.Controllers
                 }
             }
 
-            return attackTypes;
+            return ArrayTransformer.Shuffle(attackTypes);
         }
 
         private void ChooseCat(CatData cat)
@@ -143,42 +154,53 @@ namespace PJTC.Controllers
             }
         }
 
+        private List<CatData> catsForRemove = new List<CatData>();
+
         public void OnPlayerMove(MoveResult moveResult)
         {
             Sequence move = DOTween.Sequence();
 
-            foreach (var moveData in moveResult.moves)
+            foreach (var completedMove in moveResult.moves)
             {
-                Cat cat = playerController.GetCat(moveData.catData.id);
-                if (cat != null)
+                Cat theCat = playerController.GetCat(completedMove.moveData.catData.id);
+
+                if (theCat != null)
                 {
-                    move.Append(cat.MoveTo(moveData.moveEnd));
+                    move.Append(theCat.MoveTo(completedMove.moveData.moveEnd));
+                    move.AppendCallback(() =>
+                    {
+                        if (completedMove.moveWithBattle)
+                        {
+                            theCat.UpdateAttackType(completedMove.moveData.catData);
+                            if (completedMove.battleWin)
+                            {
+                                catsForRemove.Add(completedMove.enemy);
+                            }
+                            else
+                            {
+                                Cat enemyCat = playerController.GetCat(completedMove.enemy.id);
+                                enemyCat.UpdateAttackType(completedMove.enemy);
+                            }
+                        }
+
+                        if (completedMove.moveWithUpgrade)
+                        {
+                            playerController.MakeCatChonky(theCat);
+                        }
+                    });
                 }
             }
             move.AppendCallback(() =>
                 {
+                    foreach (var catForRemove in catsForRemove)
+                    {
+                        playerController.RemoveCat(catForRemove);
+                    }
+                    catsForRemove.Clear();
                     gameField.UpdateField(moveResult);
-                    RemoveCats(moveResult.catsForRemove);
-                    UpgradeCats(moveResult.catsForUpgrade);
                     gameManager.OnReady(gameField.mapHash);
                 })
                 .Restart();
-        }
-
-        private void RemoveCats(CatData[] catsForRemove)
-        {
-            foreach (var catData in catsForRemove)
-            {
-                playerController.RemoveCat(catData);
-            }
-        }
-
-        private void UpgradeCats(CatData[] catsForUpgrade)
-        {
-            foreach (var catData in catsForUpgrade)
-            {
-                playerController.UpgradeCat(catData);
-            }
         }
 
         public void UpdateCatAttackType(CatData catData)
