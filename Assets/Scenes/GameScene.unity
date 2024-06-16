@@ -6786,8 +6786,8 @@ MonoBehaviour:
   moveTime: 1.5
   startPos: {fileID: 686631814}
   playerCamPos:
-  - {fileID: 2115655177}
   - {fileID: 1310610588}
+  - {fileID: 2115655177}
 --- !u!114 &256900106
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16911,6 +16911,7 @@ MonoBehaviour:
   cameraPositioner: {fileID: 256900105}
   uiManager: {fileID: 1479061439}
   _playerID: 0
+  ip: localhost
   _gameState: 0
 --- !u!1 &612635023
 GameObject:

@@ -41,6 +41,10 @@ namespace PJTC.Managers
 
         [SerializeField]
         private int _playerID;
+
+        [SerializeField]
+        private string ip;
+
         public int playerID
         {
             get { return _playerID; }
@@ -61,7 +65,7 @@ namespace PJTC.Managers
 
         public void Start()
         {
-            serverCommunicator = new ServerCommunicator(this);
+            serverCommunicator = new ServerCommunicator(this, ip);
         }
 
         public void Connect()
