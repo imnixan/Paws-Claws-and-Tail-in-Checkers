@@ -18,14 +18,19 @@ namespace PJTC.CameraControl
 
         private void Start()
         {
-            this.transform.position = startPos.position;
-            this.transform.rotation = startPos.rotation;
+            //this.transform.position = startPos.position;
+            //this.transform.rotation = startPos.rotation;
         }
 
         public void PosCamera(int playerID)
         {
-            this.transform.DOMove(playerCamPos[playerID].position, moveTime).Play();
-            this.transform.DORotateQuaternion(playerCamPos[playerID].rotation, moveTime).Play();
+            Sequence cameraMove = DOTween.Sequence();
+            cameraMove
+                .Append(this.transform.DOMove(startPos.position, moveTime / 2))
+                .Join(this.transform.DORotateQuaternion(startPos.rotation, moveTime / 2))
+                .Append(this.transform.DOMove(playerCamPos[playerID].position, moveTime))
+                .Join(this.transform.DORotateQuaternion(playerCamPos[playerID].rotation, moveTime))
+                .Restart();
         }
     }
 }

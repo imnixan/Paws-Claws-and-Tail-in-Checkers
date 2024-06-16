@@ -31,11 +31,13 @@ namespace PJTC.Managers.UI
                 chooseAttackWindow.localPosition.y
             );
             chooseAttackWindow.gameObject.SetActive(false);
+            restartBtn.gameObject.SetActive(false);
         }
 
         public void OnConnect()
         {
             connectBtn.SetActive(false);
+            restartBtn.SetActive(true);
         }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
@@ -58,7 +60,7 @@ namespace PJTC.Managers.UI
                 .Restart();
         }
 
-        private void OnGameEnd(Enums.GameData.EndGameReason reason)
+        private void OnGameEnd(GameResult gameResult)
         {
             restartBtn.SetActive(false);
         }
@@ -67,6 +69,8 @@ namespace PJTC.Managers.UI
         {
             ServerDataHandler.GameStart += OnGameStart;
             ServerDataHandler.PlayerInit += OnPlayerInit;
+            ServerDataHandler.GameEnd += OnGameEnd;
+
             AttackChooseManager.PlayerFinishChoosingAttacks += OnPlayerFinishChooseAttack;
         }
 
@@ -74,6 +78,8 @@ namespace PJTC.Managers.UI
         {
             ServerDataHandler.GameStart -= OnGameStart;
             ServerDataHandler.PlayerInit -= OnPlayerInit;
+            ServerDataHandler.GameEnd -= OnGameEnd;
+
             AttackChooseManager.PlayerFinishChoosingAttacks -= OnPlayerFinishChooseAttack;
         }
 

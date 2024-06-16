@@ -71,7 +71,7 @@ namespace PJTC.Builders
                         carpetMaterial = whiteCarpet;
                         cellColor = "(WHITE)";
                     }
-                    carpetCell.material = carpetMaterial;
+                    carpetCell.material = new Material(carpetMaterial);
                     string cellName = $"Carpet [{x},{y}]({cellColor})";
                     carpetCell.name = cellName;
                 }

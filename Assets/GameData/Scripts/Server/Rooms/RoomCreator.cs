@@ -7,7 +7,7 @@ namespace PJTC.Server
 {
     public static class RoomCreator
     {
-        private const int ROOM_SIZE = 2;
+        private const int ROOM_SIZE = 1;
         private static SynchronizedCollection<PlayerListener> playersQueue =
             new SynchronizedCollection<PlayerListener>();
 
