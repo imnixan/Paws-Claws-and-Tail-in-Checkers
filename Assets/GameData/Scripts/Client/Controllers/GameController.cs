@@ -8,7 +8,7 @@ using PJTC.Enums;
 using PJTC.Game;
 using PJTC.Handlers;
 using PJTC.Managers;
-using PJTC.Scripts;
+using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.Events;
@@ -159,19 +159,21 @@ namespace PJTC.Controllers
         public void OnPlayerMove(MoveResult moveResult)
         {
             Sequence move = DOTween.Sequence();
-
+            Debug.Log(
+                $"GAME CONTROLLER PLAYER {GameController.playerTeam} unpack moves {JsonUtility.ToJson(moveResult)}"
+            );
             foreach (var completedMove in moveResult.moves)
             {
-                Cat theCat = playerController.GetCat(completedMove.moveData.catData.id);
+                Cat movedCat = playerController.GetCat(completedMove.moveData.catData.id);
 
-                if (theCat != null)
+                if (movedCat != null)
                 {
-                    move.Append(theCat.MoveTo(completedMove.moveData.moveEnd));
+                    move.Append(movedCat.MoveTo(completedMove.moveData.moveEnd));
                     move.AppendCallback(() =>
                     {
                         if (completedMove.moveWithBattle)
                         {
-                            theCat.UpdateAttackType(completedMove.moveData.catData);
+                            movedCat.UpdateAttackType(completedMove.moveData.catData);
                             if (completedMove.battleWin)
                             {
                                 catsForRemove.Add(completedMove.enemy);
@@ -185,7 +187,7 @@ namespace PJTC.Controllers
 
                         if (completedMove.moveWithUpgrade)
                         {
-                            playerController.MakeCatChonky(theCat);
+                            playerController.MakeCatChonky(movedCat);
                         }
                     });
                 }

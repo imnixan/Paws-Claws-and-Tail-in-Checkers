@@ -7,7 +7,7 @@ using PJTC.Game;
 using PJTC.Structs;
 using UnityEngine;
 
-namespace PJTC.Managers
+namespace PJTC.Managers.UI
 {
     public class UIManager : MonoBehaviour
     {

@@ -5,7 +5,7 @@ using PJTC.Controllers;
 using PJTC.Enums;
 using PJTC.Game;
 using PJTC.Handlers;
-using PJTC.Scripts;
+using PJTC.Managers;
 using PJTC.Structs;
 using Unity.VisualScripting;
 using UnityEngine;

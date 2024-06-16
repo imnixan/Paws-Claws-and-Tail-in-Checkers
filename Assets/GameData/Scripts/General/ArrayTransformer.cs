@@ -2,7 +2,7 @@
 using PJTC.Game;
 using UnityEngine;
 
-namespace PJTC.Scripts
+namespace PJTC.Managers
 {
     public static class ArrayTransformer
     {

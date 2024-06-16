@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using PJTC.Enums;
-using PJTC.Scripts;
+using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;

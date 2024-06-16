@@ -9,9 +9,8 @@ using PJTC.CatScripts;
 using PJTC.Controllers;
 using PJTC.Enums;
 using PJTC.Handlers;
-using PJTC.Scripts;
+using PJTC.Managers.UI;
 using PJTC.Structs;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
@@ -133,6 +132,7 @@ namespace PJTC.Managers
         private void OnPlayerSync(PlayerInitData playerInitData)
         {
             this.playerID = playerInitData.playerID;
+            GameController.playerTeam = (CatsType.Team)playerInitData.playerID;
             CatData[,] gameField = ArrayTransformer.Expand(playerInitData.gameField);
             List<Cat> cats = gameBuilder.PlaceCats(gameField);
             carpetBuilder.BuildGameField(gameField);

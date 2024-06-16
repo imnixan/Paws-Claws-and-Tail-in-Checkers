@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using System.Runtime.ExceptionServices;
 using GameData.Scripts;
 using JetBrains.Annotations;
 using PJTC.Enums;
@@ -21,6 +22,7 @@ namespace PJTC.Server
         private int _currentPlayer;
         private int playersCount;
         private CatsCount catsCount;
+        private Guid roomNumber;
         public GameField gameField { get; private set; }
 
         private Enums.GameData.GameState gameState;
@@ -35,9 +37,14 @@ namespace PJTC.Server
             }
         }
 
-        public ServerGameManager(PlayersCommunicator playersCommunicator, int playersCount)
+        public ServerGameManager(
+            PlayersCommunicator playersCommunicator,
+            int playersCount,
+            Guid roomNumber
+        )
         {
             this.playersCount = playersCount;
+            this.roomNumber = roomNumber;
             playerReadyMarks = new bool[playersCount];
             gameField = new GameField();
             this.playersCommunicator = playersCommunicator;
@@ -81,6 +88,7 @@ namespace PJTC.Server
 
         public void OnPlayerDisconnect(int playerID)
         {
+            playersCount--;
             if (gameState == Enums.GameData.GameState.GameEnd)
             {
                 return;
@@ -90,6 +98,7 @@ namespace PJTC.Server
             int winnerID = playerID == 0 ? 1 : 0;
             GameResult gameResult = new GameResult(winnerID, (int)reason);
             OnGameEnd(gameResult);
+            if (playersCount == 0) { }
         }
 
         public void OnPlayerMove(MoveData move)
@@ -103,7 +112,17 @@ namespace PJTC.Server
             MoveResult moveResult = moveMaker.MakeMove(new CompletedMoveData(move));
             gameField.UpdateField(moveResult);
             catsCount = moveResult.catsCount;
-            playersCommunicator.playerDataSender.SendAllPlayerMove(moveResult);
+
+            for (int i = 0; i < playersCount; i++)
+            {
+                MoveResult playerResult = gameField.CensureMoveResultForPlayer(
+                    (CatsType.Team)i,
+                    moveResult
+                );
+                Debug.Log($"SERVER GM ORIGINAL move RESULT {JsonUtility.ToJson(moveResult)}");
+
+                playersCommunicator.playerDataSender.SendPlayerMove(playerResult, i);
+            }
         }
 
         private bool CheckEndGame()

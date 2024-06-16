@@ -1,7 +1,7 @@
 ﻿using System;
 using GameData.Scripts;
 using PJTC.Enums;
-using PJTC.Scripts;
+using PJTC.Managers;
 using PJTC.Server;
 using PJTC.Structs;
 using UnityEngine;

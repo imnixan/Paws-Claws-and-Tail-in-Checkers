@@ -434,13 +434,13 @@ AnimatorStateMachine:
     m_Position: {x: 48, y: 240, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 110284060}
-    m_Position: {x: 264, y: 240, z: 0}
+    m_Position: {x: 260, y: 240, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 110215624}
     m_Position: {x: 264, y: 300, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 110210298}
-    m_Position: {x: 48, y: 300, z: 0}
+    m_Position: {x: 50, y: 300, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 110280064}
     m_Position: {x: 264, y: 360, z: 0}

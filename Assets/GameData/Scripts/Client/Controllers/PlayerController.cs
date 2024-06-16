@@ -4,7 +4,7 @@ using PJTC.CatScripts;
 using PJTC.Enums;
 using PJTC.Handlers;
 using PJTC.Managers;
-using PJTC.Scripts;
+using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 

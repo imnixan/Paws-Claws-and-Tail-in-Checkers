@@ -4,6 +4,7 @@ using System.Xml.Schema;
 using GameData.Managers;
 using PJTC.Controllers;
 using PJTC.Enums;
+using PJTC.Managers.UI;
 using PJTC.Structs;
 using TMPro;
 using UnityEngine;
@@ -18,15 +19,7 @@ namespace PJTC.Managers
         public static event UnityAction<AttacksPool> RandomChoose;
 
         [SerializeField]
-        private TextMeshProUGUI maxPawsText,
-            maxJawsText,
-            maxTailsText,
-            currentPawsText,
-            currentJawsText,
-            currentTailsText;
-
-        [SerializeField]
-        private Button finishBtn;
+        private AttackChooseWindow window;
 
         public static event UnityAction AttacksChoosed;
 
@@ -40,7 +33,8 @@ namespace PJTC.Managers
             set
             {
                 _currentPaws = Mathf.Max(0, value);
-                currentPawsText.text = _currentPaws.ToString();
+
+                window.UpdatePaws(_currentPaws);
             }
         }
 
@@ -50,7 +44,8 @@ namespace PJTC.Managers
             set
             {
                 _currentJaws = Mathf.Max(0, value);
-                currentJawsText.text = _currentJaws.ToString();
+
+                window.UpdateJaws(_currentJaws);
             }
         }
 
@@ -60,7 +55,7 @@ namespace PJTC.Managers
             set
             {
                 _currentTails = Mathf.Max(0, value);
-                currentTailsText.text = _currentTails.ToString();
+                window.UpdateTails(_currentTails);
             }
         }
 
@@ -79,13 +74,12 @@ namespace PJTC.Managers
         private void OnPlayerInit(PlayerInitData initData)
         {
             attacksPool = initData.attacksPool;
-            maxPawsText.text = attacksPool.maxPaws.ToString();
-            maxJawsText.text = attacksPool.maxJaws.ToString();
-            maxTailsText.text = attacksPool.maxTails.ToString();
+
+            window.SetMaxValues(attacksPool.maxPaws, attacksPool.maxJaws, attacksPool.maxTails);
+
             currentJaws = 0;
             currentPaws = 0;
             currentTails = 0;
-            finishBtn.interactable = false;
         }
 
         private void OnAttackChanged(CatData catData, CatsType.Attack oldAttack)
@@ -119,7 +113,8 @@ namespace PJTC.Managers
                 currentPaws == attacksPool.maxPaws
                 && currentJaws == attacksPool.maxJaws
                 && currentTails == attacksPool.maxTails;
-            finishBtn.interactable = choosedCorrect;
+
+            window.SetActiveFinishBtn(choosedCorrect);
         }
 
         private void SubOnEvents()

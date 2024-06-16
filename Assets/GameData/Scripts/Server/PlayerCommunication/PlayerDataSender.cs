@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using PJTC.Enums;
-using PJTC.Scripts;
+using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 
@@ -68,11 +68,11 @@ namespace PJTC.Server
             SendMessage(playerID, type, moves);
         }
 
-        public void SendAllPlayerMove(MoveResult moveResult)
+        public void SendPlayerMove(MoveResult moveResult, int playerId)
         {
             CSMRequest.Type type = CSMRequest.Type.MAKE_MOVE;
 
-            SendAllPlayers(type, moveResult, true);
+            SendMessage(playerId, type, moveResult, true);
         }
 
         public void SendAllGameStart()

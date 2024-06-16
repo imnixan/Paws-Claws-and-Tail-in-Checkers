@@ -4,7 +4,7 @@ using PJTC.Structs;
 using TMPro;
 using UnityEngine;
 
-namespace PJTC.Managers
+namespace PJTC.Managers.UI
 {
     public class ScoreManager : MonoBehaviour
     {

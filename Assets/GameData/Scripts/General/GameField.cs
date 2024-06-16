@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using PJTC.CatScripts;
 using PJTC.Enums;
-using PJTC.Scripts;
+using PJTC.Managers;
 using PJTC.Structs;
 using UnityEditor;
 using UnityEngine;
@@ -143,24 +143,35 @@ namespace PJTC.Game
         )
         {
             CompletedMoveData[] moves = moveResult.moves;
+            CompletedMoveData[] censureMoves = new CompletedMoveData[moves.Length];
+
             for (int i = 0; i < moves.Length; i++)
             {
-                moves[i].moveData.catData = CensureCat(moves[i].moveData.catData, playerTeam);
-                if (moves[i].moveWithBattle)
+                censureMoves[i] = moves[i];
+                censureMoves[i].moveData.catData = CensureCat(
+                    moves[i].moveData.catData,
+                    playerTeam
+                );
+                if (censureMoves[i].moveWithBattle)
                 {
-                    moves[i].enemy = CensureCat(moves[i].enemy, playerTeam);
+                    censureMoves[i].enemy = CensureCat(moves[i].enemy, playerTeam);
                 }
             }
 
-            return moveResult;
+            return new MoveResult(censureMoves, moveResult.catsCount);
         }
 
         private CatData CensureCat(CatData catData, CatsType.Team playerTeam)
         {
+            Debug.Log($"CENSURE FOR {playerTeam} CAT {catData.team} BEFORE {catData.attackType}");
             if (catData.team != playerTeam && !catData.attackHints.solved)
             {
+                Debug.Log(
+                    $"CENSURE FOR {playerTeam} TO NONE BECAUSE OF catData.team != playerTeam && !catData.attackHints.solved) {catData.team != playerTeam}&&{!catData.attackHints.solved}"
+                );
                 catData.attackType = CatsType.Attack.None;
             }
+            Debug.Log($"CENSURE FOR {playerTeam} CAT {catData.team} AFTER {catData.attackType}");
             return catData;
         }
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace PJTC.Scripts
+namespace PJTC.Managers
 {
     public class VisualModel : MonoBehaviour
     {

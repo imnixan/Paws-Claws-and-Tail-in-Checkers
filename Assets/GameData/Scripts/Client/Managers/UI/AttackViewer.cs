@@ -9,7 +9,7 @@ using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace PJTC.Scripts
+namespace PJTC.Managers.UI
 {
     public class AttackViewer : MonoBehaviour
     {
@@ -17,13 +17,18 @@ namespace PJTC.Scripts
         private Sprite jawIcon,
             pawIcon,
             tailIcon,
-            crossIcon,
-            backGround;
+            crossIcon;
+
+        [SerializeField]
+        Sprite[] bgIcons;
 
         private Transform attackBanner;
+        private Image attackBannerImage;
         private Image attackIcon;
         private GameObject cross;
-        float bias = -20f;
+
+        //[SerializeField]
+        private float bias = 20f;
 
         private Sprite currentIcon
         {
@@ -39,6 +44,7 @@ namespace PJTC.Scripts
                 {
                     attackIcon.color = Color.white;
                 }
+                attackBannerImage.color = attackIcon.color;
             }
         }
 
@@ -67,7 +73,6 @@ namespace PJTC.Scripts
             {
                 case CatsType.Attack.Jaws:
                     currentIcon = jawIcon;
-
                     break;
                 case CatsType.Attack.Paws:
                     currentIcon = pawIcon;
@@ -102,24 +107,20 @@ namespace PJTC.Scripts
 
         private void CreateBanner()
         {
+            Cat cat = GetComponentInParent<Cat>();
             Transform canvas = GameObject.FindGameObjectWithTag("AttackCanvas").transform;
 
-            Image attackBannerImage = CreateImageObject(
-                "AttackBanner",
-                new Vector2(40, 40),
-                canvas
-            );
-            attackBannerImage.sprite = backGround;
+            attackBannerImage = CreateImageObject("AttackBanner", new Vector2(40, 40), canvas);
+            attackBannerImage.sprite = bgIcons[(int)GameController.playerTeam];
             attackBanner = attackBannerImage.transform;
-
             attackIcon = CreateImageObject("AttackIcon", new Vector2(30, 30), attackBanner);
 
-            if (GetComponentInParent<Cat>().catData.team != GameController.playerTeam)
+            if (cat.catData.team == GameController.playerTeam)
             {
                 bias *= -1;
             }
 
-            Image crossImage = CreateImageObject("AttackIcon", new Vector2(40, 40), attackBanner);
+            Image crossImage = CreateImageObject("Cross", new Vector2(40, 40), attackBanner);
             crossImage.sprite = crossIcon;
             cross = crossImage.gameObject;
         }
@@ -127,10 +128,11 @@ namespace PJTC.Scripts
         private Image CreateImageObject(string name, Vector2 size, Transform parent)
         {
             GameObject imageObject = new GameObject(name);
-            Image image = imageObject.AddComponent<Image>();
-            imageObject.GetComponent<RectTransform>().sizeDelta = size;
             imageObject.transform.SetParent(parent);
             imageObject.transform.localScale = Vector3.one;
+            Image image = imageObject.AddComponent<Image>();
+            imageObject.GetComponent<RectTransform>().sizeDelta = size;
+            Debug.Log(imageObject.transform.parent.name);
             return image;
         }
     }

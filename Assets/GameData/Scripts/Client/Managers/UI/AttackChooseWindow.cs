@@ -1,0 +1,90 @@
+﻿using System;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace PJTC.Managers.UI
+{
+    internal class AttackChooseWindow : MonoBehaviour
+    {
+        [Header("Counters Max")]
+        [SerializeField]
+        private TextMeshProUGUI maxPawsText;
+
+        [SerializeField]
+        private TextMeshProUGUI maxJawsText;
+
+        [SerializeField]
+        private TextMeshProUGUI maxTailsText;
+
+        [Header("Counters Current")]
+        [SerializeField]
+        private TextMeshProUGUI currentPawsText;
+
+        [SerializeField]
+        private TextMeshProUGUI currentJawsText;
+
+        [SerializeField]
+        private TextMeshProUGUI currentTailsText;
+
+        [Header("Changing Images")]
+        [SerializeField]
+        private Image pawCircle;
+
+        [SerializeField]
+        private Image jawCircle;
+
+        [SerializeField]
+        private Image tailCircle;
+
+        [SerializeField]
+        private Image windowBG;
+
+        [Header("Buttons")]
+        [SerializeField]
+        private Button finishBtn;
+
+        [Header("Sprites")]
+        [SerializeField]
+        [Tooltip("Backgrounds for player's team, Orange == 0, Black == 1")]
+        private Sprite[] windowVariants;
+
+        [SerializeField]
+        private Sprite redCircle,
+            greenCircle;
+
+        public void SetMaxValues(int maxPaws, int maxJaws, int maxTails)
+        {
+            maxPawsText.text = maxPaws.ToString();
+            maxJawsText.text = maxJaws.ToString();
+            maxTailsText.text = maxTails.ToString();
+            currentPawsText.text = "0";
+            currentJawsText.text = "0";
+            currentTailsText.text = "0";
+        }
+
+        public void UpdatePaws(int paws)
+        {
+            currentPawsText.text = paws.ToString();
+            pawCircle.sprite = currentPawsText.text == maxPawsText.text ? greenCircle : redCircle;
+        }
+
+        public void UpdateJaws(int jaws)
+        {
+            currentJawsText.text = jaws.ToString();
+            jawCircle.sprite = currentJawsText.text == maxJawsText.text ? greenCircle : redCircle;
+        }
+
+        public void UpdateTails(int tails)
+        {
+            currentTailsText.text = tails.ToString();
+            tailCircle.sprite =
+                currentTailsText.text == maxTailsText.text ? greenCircle : redCircle;
+        }
+
+        public void SetActiveFinishBtn(bool active)
+        {
+            finishBtn.interactable = active;
+        }
+    }
+}

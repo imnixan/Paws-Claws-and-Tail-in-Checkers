@@ -2,7 +2,8 @@
 using DG.Tweening;
 using PJTC.Enums;
 using PJTC.Handlers;
-using PJTC.Scripts;
+using PJTC.Managers;
+using PJTC.Managers.UI;
 using PJTC.Structs;
 using TMPro;
 using UnityEngine;
