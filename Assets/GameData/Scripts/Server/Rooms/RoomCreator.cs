@@ -45,6 +45,7 @@ namespace PJTC.Server
 
                 if (RoomStorage.rooms.TryAdd(roomId, playersCommunicator))
                 {
+                    Debug.Log($"TOTAL ROOMS {RoomStorage.rooms.Count}");
                     new ServerGameManager(playersCommunicator, playerListeners.Count, roomId);
                 }
             }
@@ -54,6 +55,7 @@ namespace PJTC.Server
         {
             Debug.Log("DestroyRoom");
             RoomStorage.rooms.TryRemove(roomID, out _);
+            Debug.Log($"TOTAL ROOMS {RoomStorage.rooms.Count}");
         }
     }
 }

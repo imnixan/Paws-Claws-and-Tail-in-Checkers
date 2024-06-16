@@ -91,14 +91,20 @@ namespace PJTC.Server
             playersCount--;
             if (gameState == Enums.GameData.GameState.GameEnd)
             {
-                return;
+                if (playersCount == 0)
+                {
+                    RoomCreator.DestroyRoom(roomNumber);
+                }
             }
-            playersCommunicator.playerDataSender.playerListeners[playerID].active = false;
-            Enums.GameData.EndGameReason reason = Enums.GameData.EndGameReason.Disconnect;
-            int winnerID = playerID == 0 ? 1 : 0;
-            GameResult gameResult = new GameResult(winnerID, (int)reason);
-            OnGameEnd(gameResult);
-            if (playersCount == 0) { }
+            else
+            {
+                playersCommunicator.playerDataSender.playerListeners[playerID].active = false;
+                Enums.GameData.EndGameReason reason = Enums.GameData.EndGameReason.Disconnect;
+                int winnerID = playerID == 0 ? 1 : 0;
+                GameResult gameResult = new GameResult(winnerID, (int)reason);
+                OnGameEnd(gameResult);
+                Debug.Log($"players count {playersCount}");
+            }
         }
 
         public void OnPlayerMove(MoveData move)

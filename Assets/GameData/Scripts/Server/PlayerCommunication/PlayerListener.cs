@@ -47,7 +47,11 @@ namespace PJTC.Server
 
         private void OnPlayerDisconnect()
         {
-            GlobalMessageHandler.OnPlayerDisconnect(roomNumber, playerID);
+            if (roomNumber != null)
+            {
+                GlobalMessageHandler.OnPlayerDisconnect(roomNumber, playerID);
+            }
+            RoomCreator.OnPlayerDisconnect(this);
         }
 
         private void HandleMessage(ClientServerMessage csm)
