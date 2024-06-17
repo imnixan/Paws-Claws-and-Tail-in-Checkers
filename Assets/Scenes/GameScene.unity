@@ -224,6 +224,9 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1395921966}
+  - {fileID: 1660335253}
+  - {fileID: 1197821649}
+  - {fileID: 1862230331}
   m_Father: {fileID: 198667001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -611,9 +614,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 23570170}
-  - {fileID: 1660335253}
-  - {fileID: 1197821649}
-  - {fileID: 1862230331}
   m_Father: {fileID: 747976495}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
@@ -3804,11 +3804,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 968303802}
-  m_Father: {fileID: 198667001}
+  m_Father: {fileID: 23570170}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -15, y: -24.5}
+  m_AnchoredPosition: {x: -5, y: -14.5}
   m_SizeDelta: {x: 50, y: 125}
   m_Pivot: {x: 1, y: 1}
 --- !u!1 &1211822100
@@ -4599,10 +4599,7 @@ MonoBehaviour:
   turnStatus: {fileID: 1862230332}
   connectBtn: {fileID: 895399977}
   restartBtn: {fileID: 329834729}
-  scoreManager: {fileID: 747976496}
-  gameEndManager: {fileID: 982495773}
   chooseAttackWindow: {fileID: 1354384623}
-  alarmWindow: {fileID: 1724427323}
 --- !u!114 &1484641850 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1912267860528838576, guid: ef24176dae493344cb0eea63e4d9307c, type: 3}
@@ -5242,11 +5239,11 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1428940344}
-  m_Father: {fileID: 198667001}
+  m_Father: {fileID: 23570170}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 15, y: -24.5}
+  m_AnchoredPosition: {x: 5, y: -14.5}
   m_SizeDelta: {x: 50, y: 125}
   m_Pivot: {x: 0, y: 1}
 --- !u!1 &1721084979
@@ -5672,12 +5669,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1862230330}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 198667001}
+  m_Father: {fileID: 23570170}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}

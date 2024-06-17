@@ -18,13 +18,6 @@ namespace PJTC.Managers.UI
         [SerializeField]
         private GameObject restartBtn;
 
-        [Header("Other managers")]
-        [SerializeField]
-        private ScoreManager scoreManager;
-
-        [SerializeField]
-        private EndGameWindow gameEndManager;
-
         [Header("Windows")]
         [SerializeField]
         private Transform chooseAttackWindow;
