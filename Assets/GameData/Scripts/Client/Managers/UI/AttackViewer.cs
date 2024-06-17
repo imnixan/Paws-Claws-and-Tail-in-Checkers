@@ -111,7 +111,7 @@ namespace PJTC.Managers.UI
             Transform canvas = GameObject.FindGameObjectWithTag("AttackCanvas").transform;
 
             attackBannerImage = CreateImageObject("AttackBanner", new Vector2(40, 40), canvas);
-            attackBannerImage.sprite = bgIcons[(int)GameController.playerTeam];
+            attackBannerImage.sprite = bgIcons[(int)cat.catData.team];
             attackBanner = attackBannerImage.transform;
             attackIcon = CreateImageObject("AttackIcon", new Vector2(30, 30), attackBanner);
 
