@@ -109,9 +109,9 @@ namespace PJTC.Managers.UI
 
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
-            windowBG.sprite = windowVariants[playerInitData.playerID];
             windowBG.gameObject.SetActive(true);
-            windowBG.transform.DOMoveX(0, 0.4f).SetEase(Ease.InBack);
+            windowBG.sprite = windowVariants[playerInitData.playerID];
+            windowBG.transform.DOMoveX(0, 0.4f).SetEase(Ease.InBack).Play();
         }
 
         private void SubOnEvents()
