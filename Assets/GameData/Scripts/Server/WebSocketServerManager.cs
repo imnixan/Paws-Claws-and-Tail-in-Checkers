@@ -7,11 +7,13 @@ namespace PJTC.Server
 {
     public class WebSocketServerManager : MonoBehaviour
     {
+        [SerializeField]
+        private string ip;
         private WebSocketServer wss;
 
         void OnEnable()
         {
-            wss = new WebSocketServer("ws://localhost:8080");
+            wss = new WebSocketServer("ws://ip:8080");
             wss.AddWebSocketService<PlayerListener>("/checkers");
             wss.Start();
 
