@@ -6,6 +6,7 @@ using System.Timers;
 using PJTC.Enums;
 using PJTC.Structs;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -24,7 +25,7 @@ namespace PJTC.Server
         > pendingMessages = new Dictionary<int, (string, DateTime, int)>();
         private const int RETRY_INTERVAL = 5; // Интервал повторной отправки сообщения в секундах
         private const int MAX_RETRIES = 3; // Максимальное количество попыток повторной отправки
-        private const int MAX_PING_TIME = 15000;
+        private const int MAX_PING_TIME_SECONDS = 15;
         private const int PING_CHECK_TIME = 5000;
         private Thread retryThread;
         private bool running = true;
@@ -74,8 +75,6 @@ namespace PJTC.Server
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
-            active = false;
-            Debug.Log($"PLAYER {playerID} DISCONNECTED");
             OnPlayerDisconnect();
             running = false;
             retryThread.Join();
@@ -83,8 +82,11 @@ namespace PJTC.Server
 
         private void OnPlayerDisconnect()
         {
+            timer.Stop();
+            Debug.Log($"PLAYER {playerID} DISCONNECTED");
             if (active)
             {
+                active = false;
                 GlobalMessageHandler.OnPlayerDisconnect(roomNumber, playerID);
             }
             else
@@ -130,6 +132,7 @@ namespace PJTC.Server
 
         private void OnPing()
         {
+            Debug.Log($"Got ping from player {playerID}");
             lastPingTime = Time.time;
         }
 
@@ -137,8 +140,10 @@ namespace PJTC.Server
         {
             float currentTime = Time.time;
             float timeSinceLastPing = currentTime - lastPingTime;
-
-            if (timeSinceLastPing > MAX_PING_TIME)
+            Debug.Log(
+                $"Player {playerID} ping check... last {timeSinceLastPing} - {MAX_PING_TIME_SECONDS}"
+            );
+            if (timeSinceLastPing > MAX_PING_TIME_SECONDS)
             {
                 active = false;
                 Debug.Log($"PLAYER {playerID} DISCONNECTED");
@@ -147,6 +152,10 @@ namespace PJTC.Server
 
                 running = false;
                 retryThread.Join();
+            }
+            else
+            {
+                Debug.Log($"Player {playerID} ping check ok");
             }
         }
 

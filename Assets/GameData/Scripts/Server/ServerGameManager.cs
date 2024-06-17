@@ -66,6 +66,7 @@ namespace PJTC.Server
         public void OnPlayerDisconnect(int playerID)
         {
             playersCount--;
+            Debug.Log("Players count " + playersCount);
             if (gameState == Enums.GameData.GameState.GameEnd)
             {
                 if (playersCount == 0)

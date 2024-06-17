@@ -15,12 +15,15 @@ namespace GameData.Scripts
         public ServerDataSender serverDataSender { get; private set; }
         public ServerDataHandler serverDataHandler { get; private set; }
         private const int PING_TIME = 1000;
+        private const int MAX_CONNECT_TIME = 5000;
         private string ip;
         private string port;
         private ClientGameManager gameManager;
         private int messageCount = 0;
 
-        private Timer timer;
+        private Timer pingTimer;
+
+        private Timer connectTimer;
 
         public ServerCommunicator(
             ClientGameManager gm,
@@ -43,6 +46,12 @@ namespace GameData.Scripts
             ws.OnError += OnError;
             ws.OnClose += OnConnectionClosed;
             ws.ConnectAsync();
+
+            connectTimer = new Timer(MAX_CONNECT_TIME);
+            connectTimer.Elapsed += OnConnectError;
+            connectTimer.AutoReset = false;
+            connectTimer.Enabled = true;
+            connectTimer.Start();
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
@@ -66,6 +75,8 @@ namespace GameData.Scripts
 
         public void Disconnect()
         {
+            pingTimer.Stop();
+            connectTimer.Stop();
             if (ws != null)
             {
                 ws.Close();
@@ -91,27 +102,35 @@ namespace GameData.Scripts
             gameManager.OnError();
         }
 
+        private void OnConnectError(object source, ElapsedEventArgs e)
+        {
+            UnityMainThreadDispatcher.Instance.Enqueue(() => Disconnect());
+            UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnectError());
+        }
+
         private void OnConnected(object sender, System.EventArgs e)
         {
-            timer = new Timer(1000);
+            Debug.Log("Connected");
+            connectTimer.Stop();
+            pingTimer = new Timer(1000);
+            pingTimer.Elapsed += OnPingEvent;
 
-            timer.Elapsed += OnTimerEvent;
+            pingTimer.AutoReset = true;
 
-            timer.AutoReset = true;
-
-            timer.Enabled = true;
+            pingTimer.Enabled = true;
 
             UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnect());
         }
 
-        private void OnTimerEvent(object source, ElapsedEventArgs e)
+        private void OnPingEvent(object source, ElapsedEventArgs e)
         {
+            Debug.Log($"Player {gameManager.playerID} send ping");
             ws.Ping();
         }
 
         private void OnConnectionClosed(object sender, System.EventArgs e)
         {
-            timer.Stop();
+            pingTimer.Stop();
             gameManager.OnServerEndConnection();
         }
 

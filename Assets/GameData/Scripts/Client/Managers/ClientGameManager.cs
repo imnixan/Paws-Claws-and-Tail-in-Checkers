@@ -126,9 +126,12 @@ namespace PJTC.Managers
             gameState = Enums.GameData.GameState.WaitingMatchStart;
         }
 
-        public void OnError()
+        public void OnError() { }
+
+        public void OnConnectError()
         {
-            uiManager.OnError();
+            Debug.Log("Connect Error");
+            uiManager.OnConnectError();
         }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
