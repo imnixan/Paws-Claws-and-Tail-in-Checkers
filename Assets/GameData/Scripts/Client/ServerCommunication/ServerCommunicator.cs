@@ -1,4 +1,6 @@
-﻿using GameData.Managers;
+﻿using System.Collections;
+using System.Timers;
+using GameData.Managers;
 using PJTC.Enums;
 using PJTC.Managers;
 using PJTC.Structs;
@@ -12,10 +14,16 @@ namespace GameData.Scripts
         public WebSocket ws { get; private set; }
         public ServerDataSender serverDataSender { get; private set; }
         public ServerDataHandler serverDataHandler { get; private set; }
+        private const int PING_TIME = 1000;
+        private const int MAX_CONNECT_TIME = 5000;
         private string ip;
         private string port;
         private ClientGameManager gameManager;
         private int messageCount = 0;
+
+        private Timer pingTimer;
+
+        private Timer connectTimer;
 
         public ServerCommunicator(
             ClientGameManager gm,
@@ -38,6 +46,12 @@ namespace GameData.Scripts
             ws.OnError += OnError;
             ws.OnClose += OnConnectionClosed;
             ws.ConnectAsync();
+
+            connectTimer = new Timer(MAX_CONNECT_TIME);
+            connectTimer.Elapsed += OnConnectError;
+            connectTimer.AutoReset = false;
+            connectTimer.Enabled = true;
+            connectTimer.Start();
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
@@ -61,6 +75,8 @@ namespace GameData.Scripts
 
         public void Disconnect()
         {
+            pingTimer.Stop();
+            connectTimer.Stop();
             if (ws != null)
             {
                 ws.Close();
@@ -86,13 +102,35 @@ namespace GameData.Scripts
             gameManager.OnError();
         }
 
+        private void OnConnectError(object source, ElapsedEventArgs e)
+        {
+            UnityMainThreadDispatcher.Instance.Enqueue(() => Disconnect());
+            UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnectError());
+        }
+
         private void OnConnected(object sender, System.EventArgs e)
         {
+            Debug.Log("Connected");
+            connectTimer.Stop();
+            pingTimer = new Timer(1000);
+            pingTimer.Elapsed += OnPingEvent;
+
+            pingTimer.AutoReset = true;
+
+            pingTimer.Enabled = true;
+
             UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnect());
+        }
+
+        private void OnPingEvent(object source, ElapsedEventArgs e)
+        {
+            Debug.Log($"Player {gameManager.playerID} send ping");
+            ws.Ping();
         }
 
         private void OnConnectionClosed(object sender, System.EventArgs e)
         {
+            pingTimer.Stop();
             gameManager.OnServerEndConnection();
         }
 
@@ -103,8 +141,10 @@ namespace GameData.Scripts
 
         private void Send(string message)
         {
-            ws.Send(message);
+            ws.SendAsync(message, OnMessageSended);
         }
+
+        private void OnMessageSended(bool succes) { }
 
         private void HandleMessage(ClientServerMessage csm)
         {

@@ -36,8 +36,9 @@ namespace PJTC.Managers.UI
             connectBtn.SetActive(false);
         }
 
-        public void OnError()
+        public void OnConnectError()
         {
+            Debug.Log("ui connect Error");
             loadingIcon.SetActive(false);
             connectBtn.SetActive(true);
         }

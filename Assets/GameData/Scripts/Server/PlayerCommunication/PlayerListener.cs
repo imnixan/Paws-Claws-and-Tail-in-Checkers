@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using System.Timers;
 using PJTC.Enums;
 using PJTC.Structs;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using WebSocketSharp;
 using WebSocketSharp.Server;
 
@@ -20,11 +23,15 @@ namespace PJTC.Server
             int,
             (string message, DateTime timestamp, int retryCount)
         > pendingMessages = new Dictionary<int, (string, DateTime, int)>();
-        private const int retryIntervalSeconds = 5; // Интервал повторной отправки сообщения в секундах
-        private const int maxRetries = 3; // Максимальное количество попыток повторной отправки
+        private const int RETRY_INTERVAL = 5; // Интервал повторной отправки сообщения в секундах
+        private const int MAX_RETRIES = 3; // Максимальное количество попыток повторной отправки
+        private const int MAX_PING_TIME_SECONDS = 15;
+        private const int PING_CHECK_TIME = 5000;
         private Thread retryThread;
         private bool running = true;
         private readonly object lockObject = new object();
+        private float lastPingTime;
+        private System.Timers.Timer timer;
 
         public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
         {
@@ -36,7 +43,7 @@ namespace PJTC.Server
                 Debug.Log($"Process move {csm.data}");
             }
             string message = JsonUtility.ToJson(csm);
-            Send(message);
+            SendAsync(message, MessageSended);
 
             if (needAck)
             {
@@ -47,20 +54,27 @@ namespace PJTC.Server
             }
         }
 
+        public void MessageSended(bool succes) { }
+
         protected override void OnOpen()
         {
             base.OnOpen();
+            EmitOnPing = true;
             active = true;
             RoomCreator.OnPlayerConnect(this);
             retryThread = new Thread(CheckForAcknowledgements);
             retryThread.Start();
+            timer = new System.Timers.Timer(PING_CHECK_TIME);
+
+            timer.Elapsed += CheckPing;
+            timer.AutoReset = true;
+
+            timer.Enabled = true;
         }
 
         protected override void OnClose(CloseEventArgs e)
         {
             base.OnClose(e);
-            active = false;
-            Debug.Log($"PLAYER {playerID} DISCONNECTED");
             OnPlayerDisconnect();
             running = false;
             retryThread.Join();
@@ -68,8 +82,11 @@ namespace PJTC.Server
 
         private void OnPlayerDisconnect()
         {
+            timer.Stop();
+            Debug.Log($"PLAYER {playerID} DISCONNECTED");
             if (active)
             {
+                active = false;
                 GlobalMessageHandler.OnPlayerDisconnect(roomNumber, playerID);
             }
             else
@@ -96,6 +113,12 @@ namespace PJTC.Server
 
         protected override void OnMessage(MessageEventArgs e)
         {
+            if (e.IsPing)
+            {
+                OnPing();
+                return;
+            }
+
             ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
 
             HandleMessage(csm);
@@ -105,6 +128,35 @@ namespace PJTC.Server
         {
             base.OnError(e);
             Debug.Log($"Error: {e.Exception.Message} {e.Exception.StackTrace}");
+        }
+
+        private void OnPing()
+        {
+            Debug.Log($"Got ping from player {playerID}");
+            lastPingTime = Time.time;
+        }
+
+        private void CheckPing(object source, ElapsedEventArgs e)
+        {
+            float currentTime = Time.time;
+            float timeSinceLastPing = currentTime - lastPingTime;
+            Debug.Log(
+                $"Player {playerID} ping check... last {timeSinceLastPing} - {MAX_PING_TIME_SECONDS}"
+            );
+            if (timeSinceLastPing > MAX_PING_TIME_SECONDS)
+            {
+                active = false;
+                Debug.Log($"PLAYER {playerID} DISCONNECTED");
+
+                OnPlayerDisconnect();
+
+                running = false;
+                retryThread.Join();
+            }
+            else
+            {
+                Debug.Log($"Player {playerID} ping check ok");
+            }
         }
 
         private ClientServerMessage BuildMessage<T>(CSMRequest.Type type, T body)
@@ -119,7 +171,7 @@ namespace PJTC.Server
         {
             while (running)
             {
-                Thread.Sleep(retryIntervalSeconds * 1000);
+                Thread.Sleep(RETRY_INTERVAL * 1000);
                 List<int> toRemove = new List<int>();
 
                 lock (pendingMessages)
@@ -128,12 +180,12 @@ namespace PJTC.Server
                     {
                         var (message, timestamp, retryCount) = kvp.Value;
 
-                        if ((DateTime.UtcNow - timestamp).TotalSeconds >= retryIntervalSeconds)
+                        if ((DateTime.UtcNow - timestamp).TotalSeconds >= RETRY_INTERVAL)
                         {
-                            if (retryCount < maxRetries)
+                            if (retryCount < MAX_RETRIES)
                             {
                                 Debug.Log(
-                                    $"Retrying message {kvp.Key} to player {playerID} (Attempt {retryCount + 1}/{maxRetries})"
+                                    $"Retrying message {kvp.Key} to player {playerID} (Attempt {retryCount + 1}/{MAX_RETRIES})"
                                 );
                                 Send(message);
                                 pendingMessages[kvp.Key] = (
@@ -145,7 +197,7 @@ namespace PJTC.Server
                             else
                             {
                                 Debug.LogWarning(
-                                    $"Failed to receive acknowledgement for message {kvp.Key} to player {playerID} after {maxRetries} attempts"
+                                    $"Failed to receive acknowledgement for message {kvp.Key} to player {playerID} after {MAX_RETRIES} attempts"
                                 );
                                 toRemove.Add(kvp.Key);
                             }
