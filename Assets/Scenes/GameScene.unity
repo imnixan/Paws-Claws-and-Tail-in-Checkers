@@ -3047,7 +3047,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &982495772
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3827,7 +3827,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1211822101
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4247,7 +4247,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1354384623
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4602,7 +4602,7 @@ MonoBehaviour:
   scoreManager: {fileID: 747976496}
   gameEndManager: {fileID: 982495773}
   chooseAttackWindow: {fileID: 1354384623}
-  alarmWindow: {fileID: 0}
+  alarmWindow: {fileID: 1724427323}
 --- !u!114 &1484641850 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1912267860528838576, guid: ef24176dae493344cb0eea63e4d9307c, type: 3}

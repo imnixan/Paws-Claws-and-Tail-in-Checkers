@@ -29,9 +29,6 @@ namespace PJTC.Managers.UI
         [SerializeField]
         private Transform chooseAttackWindow;
 
-        [SerializeField]
-        private Transform alarmWindow;
-
         private void Start()
         {
             chooseAttackWindow.localPosition = new Vector2(
@@ -40,7 +37,6 @@ namespace PJTC.Managers.UI
             );
             chooseAttackWindow.gameObject.SetActive(false);
             restartBtn.gameObject.SetActive(false);
-            alarmWindow.gameObject.SetActive(false);
         }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
@@ -59,23 +55,6 @@ namespace PJTC.Managers.UI
                 .AppendCallback(() =>
                 {
                     chooseAttackWindow.gameObject.SetActive(true);
-                })
-                .Restart();
-        }
-
-        private void OnDrawAlarm()
-        {
-            alarmWindow.gameObject.SetActive(true);
-            alarmWindow.DOMoveX(-1000, 0);
-
-            Sequence showAlarm = DOTween.Sequence();
-            showAlarm
-                .Append(alarmWindow.DOMoveX(0, 0.3f))
-                .AppendInterval(1.5f)
-                .Append(alarmWindow.DOMoveX(-1000, 0.15f))
-                .AppendCallback(() =>
-                {
-                    alarmWindow.gameObject.SetActive(true);
                 })
                 .Restart();
         }
@@ -105,7 +84,6 @@ namespace PJTC.Managers.UI
             ServerDataHandler.MoverOrderChanging += OnOrderChanged;
             ServerDataHandler.PlayerInit += OnPlayerInit;
             ServerDataHandler.GameEnd += OnGameEnd;
-            ServerDataHandler.DrawAlarm += OnDrawAlarm;
             AttackChooseManager.PlayerFinishChoosingAttacks += OnPlayerFinishChooseAttack;
         }
 
@@ -115,7 +93,6 @@ namespace PJTC.Managers.UI
             ServerDataHandler.MoverOrderChanging -= OnOrderChanged;
             ServerDataHandler.PlayerInit -= OnPlayerInit;
             ServerDataHandler.GameEnd -= OnGameEnd;
-            ServerDataHandler.DrawAlarm += OnDrawAlarm;
             AttackChooseManager.PlayerFinishChoosingAttacks -= OnPlayerFinishChooseAttack;
         }
 
