@@ -24,7 +24,7 @@ jobs:
     - name: Authenticate Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}  # Убедитесь, что секрет добавлен в ваш репозиторий
-      run: railway auth login --token $RAILWAY_TOKEN
+      run: railway login --token $RAILWAY_TOKEN
 
     - name: Go to server folder
       env:
