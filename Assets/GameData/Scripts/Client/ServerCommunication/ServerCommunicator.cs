@@ -35,7 +35,7 @@ namespace GameData.Scripts
             ws.OnOpen += OnConnected;
             ws.OnError += OnError;
             ws.OnClose += OnConnectionClosed;
-            ws.Connect();
+            ws.ConnectAsync();
         }
 
         private void OnMessage(object sender, MessageEventArgs e)
