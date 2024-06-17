@@ -107,9 +107,9 @@ namespace PJTC.Structs
             this.attackHints = attackHints;
         }
 
-        public void UpdateDefenderHints(bool defeated)
+        public void UpdateDefenderHints(bool defeated, CatsType.Attack attackerType)
         {
-            CatsType.Attack newExcludedAttack = AttackMap.defenceMap[this.attackType];
+            CatsType.Attack newExcludedAttack = AttackMap.attackMap[attackerType];
             if (
                 defeated
                 || (

@@ -50,7 +50,10 @@ namespace PJTC.Server
                     completedMove.moveData.moveEnd.y = catchedCat.position.y - yDir;
 
                     completedMove.moveData.catData.UpdateAttackerHints(false);
-                    catchedCat.UpdateDefenderHints(false);
+                    catchedCat.UpdateDefenderHints(
+                        false,
+                        completedMove.moveData.catData.attackType
+                    );
 
                     completedMoves.Add(
                         new CompletedMoveData(
@@ -73,7 +76,7 @@ namespace PJTC.Server
                     completedMove.moveData.catData.type = CatsType.Type.Chonky;
                 }
                 completedMove.moveData.catData.UpdateAttackerHints(true);
-                catchedCat.UpdateDefenderHints(true);
+                catchedCat.UpdateDefenderHints(true, completedMove.moveData.catData.attackType);
                 completedMoves.Add(
                     new CompletedMoveData(completedMove.moveData, chonky, true, true, catchedCat)
                 );

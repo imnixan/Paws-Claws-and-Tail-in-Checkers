@@ -43,7 +43,10 @@ namespace PJTC.Managers
         private int _playerID;
 
         [SerializeField]
-        private string ip;
+        private string ip = "localHost";
+
+        [SerializeField]
+        private string port = "8080";
 
         public int playerID
         {
@@ -65,7 +68,7 @@ namespace PJTC.Managers
 
         public void Start()
         {
-            serverCommunicator = new ServerCommunicator(this, ip);
+            serverCommunicator = new ServerCommunicator(this, ip, port);
         }
 
         public void Connect()

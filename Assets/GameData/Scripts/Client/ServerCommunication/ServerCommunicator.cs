@@ -14,21 +14,27 @@ namespace GameData.Scripts
     public class ServerCommunicator
     {
         private string ip;
+        private string port;
         public WebSocket ws { get; private set; }
         private ClientGameManager gameManager;
         public ServerDataSender serverDataSender { get; private set; }
         public ServerDataHandler serverDataHandler { get; private set; }
         public int messageCount = 0;
 
-        public ServerCommunicator(ClientGameManager gm, string ip = "localhost")
+        public ServerCommunicator(
+            ClientGameManager gm,
+            string ip = "localhost",
+            string port = "8080"
+        )
         {
             this.ip = ip;
+            this.port = port;
             this.gameManager = gm;
         }
 
         public void ConnectToServer()
         {
-            ws = new WebSocket($"ws://{ip}:8080/checkers");
+            ws = new WebSocket($"ws://{ip}:{port}/checkers");
             serverDataHandler = new ServerDataHandler(ws);
             serverDataSender = new ServerDataSender(ws, this);
             ws.OnMessage += OnMessage;

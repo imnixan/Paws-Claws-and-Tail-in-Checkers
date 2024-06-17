@@ -20,15 +20,5 @@ namespace PJTC.General
         };
 
         //key who attack, value who can be defeated
-        public static Dictionary<CatsType.Attack, CatsType.Attack> defenceMap = new Dictionary<
-            CatsType.Attack,
-            CatsType.Attack
-        >()
-        {
-            { CatsType.Attack.None, CatsType.Attack.None },
-            { CatsType.Attack.Tail, CatsType.Attack.Paws },
-            { CatsType.Attack.Jaws, CatsType.Attack.Tail },
-            { CatsType.Attack.Paws, CatsType.Attack.Jaws },
-        };
     }
 }
