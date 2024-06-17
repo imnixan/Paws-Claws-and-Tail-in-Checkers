@@ -1,4 +1,6 @@
-﻿using System;
+﻿using DG.Tweening;
+using GameData.Managers;
+using PJTC.Structs;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,6 +55,12 @@ namespace PJTC.Managers.UI
         private Sprite redCircle,
             greenCircle;
 
+        private void Start()
+        {
+            windowBG.transform.DOMoveX(-1000, 0);
+            windowBG.gameObject.SetActive(false);
+        }
+
         public void SetMaxValues(int maxPaws, int maxJaws, int maxTails)
         {
             maxPawsText.text = maxPaws.ToString();
@@ -85,6 +93,47 @@ namespace PJTC.Managers.UI
         public void SetActiveFinishBtn(bool active)
         {
             finishBtn.interactable = active;
+        }
+
+        private void OnGameStart()
+        {
+            Sequence hideWindow = DOTween.Sequence();
+            hideWindow
+                .Append(windowBG.transform.DOMoveX(-1000, 0.4f).SetEase(Ease.OutBack))
+                .AppendCallback(() =>
+                {
+                    windowBG.gameObject.SetActive(false);
+                })
+                .Restart();
+        }
+
+        private void OnPlayerInit(PlayerInitData playerInitData)
+        {
+            windowBG.sprite = windowVariants[playerInitData.playerID];
+            windowBG.gameObject.SetActive(true);
+            windowBG.transform.DOMoveX(0, 0.4f).SetEase(Ease.InBack);
+        }
+
+        private void SubOnEvents()
+        {
+            ServerDataHandler.GameStart += OnGameStart;
+            ServerDataHandler.PlayerInit += OnPlayerInit;
+        }
+
+        private void UnsubFromEvents()
+        {
+            ServerDataHandler.GameStart -= OnGameStart;
+            ServerDataHandler.PlayerInit -= OnPlayerInit;
+        }
+
+        private void OnEnable()
+        {
+            SubOnEvents();
+        }
+
+        private void OnDisable()
+        {
+            UnsubFromEvents();
         }
     }
 }

@@ -60,7 +60,6 @@
         {
             Disconnect,
             Draw,
-            GiveUp,
             Clear,
             Stuck
         }
