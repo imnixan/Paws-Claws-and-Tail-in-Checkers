@@ -9,7 +9,6 @@ namespace PJTC.Server
     {
         private WebSocketServer wss;
 
-#if UNITY_EDITOR
         void OnEnable()
         {
             wss = new WebSocketServer("ws://localhost:8080");
@@ -26,6 +25,5 @@ namespace PJTC.Server
                 wss.Stop();
             }
         }
-#endif
     }
 }
