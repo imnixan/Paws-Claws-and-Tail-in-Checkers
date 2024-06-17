@@ -18,6 +18,7 @@ namespace GameData.Managers
         public static event UnityAction<Moves> GotPossibleMoves;
         public static event UnityAction<MoveResult> Move;
         public static event UnityAction<PlayerInitData> PlayerSync;
+        public static event UnityAction DrawAlarm;
 
         private WebSocket ws;
         private Dictionary<CSMRequest.Type, Action<ClientServerMessage>> requestHandlers;
@@ -39,6 +40,7 @@ namespace GameData.Managers
                 { CSMRequest.Type.POSSIBLE_MOVES, OnPossibleMovesCatch },
                 { CSMRequest.Type.MAKE_MOVE, OnPlayerMoveResultCatch },
                 { CSMRequest.Type.PLAYER_SYNC, OnPlayerSync },
+                { CSMRequest.Type.DRAW_ALARM, OnDrawAlarm },
                 { CSMRequest.Type.GAME_END, OnGameEnd }
             };
         }
@@ -103,6 +105,11 @@ namespace GameData.Managers
             PlayerInitData initData = JsonUtility.FromJson<PlayerInitData>(message.data);
 
             PlayerSync?.Invoke(initData);
+        }
+
+        private void OnDrawAlarm(ClientServerMessage message)
+        {
+            DrawAlarm?.Invoke();
         }
 
         private void OnGameEnd(ClientServerMessage message)

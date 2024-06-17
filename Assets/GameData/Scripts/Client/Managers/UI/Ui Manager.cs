@@ -60,6 +60,8 @@ namespace PJTC.Managers.UI
                 .Restart();
         }
 
+        private void OnDrawAlarm() { }
+
         private void OnGameEnd(GameResult gameResult)
         {
             restartBtn.SetActive(false);
@@ -70,6 +72,7 @@ namespace PJTC.Managers.UI
             ServerDataHandler.GameStart += OnGameStart;
             ServerDataHandler.PlayerInit += OnPlayerInit;
             ServerDataHandler.GameEnd += OnGameEnd;
+            ServerDataHandler.DrawAlarm += OnDrawAlarm;
 
             AttackChooseManager.PlayerFinishChoosingAttacks += OnPlayerFinishChooseAttack;
         }
@@ -79,6 +82,7 @@ namespace PJTC.Managers.UI
             ServerDataHandler.GameStart -= OnGameStart;
             ServerDataHandler.PlayerInit -= OnPlayerInit;
             ServerDataHandler.GameEnd -= OnGameEnd;
+            ServerDataHandler.DrawAlarm += OnDrawAlarm;
 
             AttackChooseManager.PlayerFinishChoosingAttacks -= OnPlayerFinishChooseAttack;
         }

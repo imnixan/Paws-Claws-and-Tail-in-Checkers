@@ -18,6 +18,7 @@ namespace PJTC.Enums
             ITEM_CLICK,
             ACK,
             MESSAGE_REQUEST,
+            DRAW_ALARM,
             GAME_END
         }
     }
@@ -61,6 +62,7 @@ namespace PJTC.Enums
         public enum EndGameReason
         {
             Disconnect,
+            Draw,
             GiveUp,
             Clear,
             Stuck

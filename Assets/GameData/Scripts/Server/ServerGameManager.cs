@@ -7,6 +7,7 @@ using JetBrains.Annotations;
 using PJTC.Enums;
 using PJTC.Game;
 using PJTC.Server;
+using PJTC.Server.MovesCalculation;
 using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -15,18 +16,23 @@ namespace PJTC.Server
 {
     public class ServerGameManager
     {
-        private PlayersCommunicator playersCommunicator;
-        public MoveChecker moveChecker { get; private set; }
+        private const int REPEATS_MAX = 5;
+        private const int REPEATS_ALARM = 3;
+
+        public GameField gameField { get; private set; }
         public MoveMaker moveMaker { get; private set; }
+        public MoveChecker moveChecker { get; private set; }
+
+        private PlayersCommunicator playersCommunicator;
         private bool[] playerReadyMarks;
         private int _currentPlayer;
         private int playersCount;
         private CatsCount catsCount;
         private Guid roomNumber;
-        public GameField gameField { get; private set; }
-
+        private RepeatMovesChecker repeatMovesChecker;
         private Enums.GameData.GameState gameState;
         private AttacksPool attacksPool = new AttacksPool(4, 4, 4);
+
         private int currentPlayer
         {
             get { return _currentPlayer; }
@@ -61,6 +67,7 @@ namespace PJTC.Server
             gameState = Enums.GameData.GameState.Game;
             playersCommunicator.playerDataSender.SendAllPlayersOrder(currentPlayer);
             playersCommunicator.playerDataSender.SendAllGameStart();
+            repeatMovesChecker = new RepeatMovesChecker();
         }
 
         private void InitAllPlayers()
@@ -128,6 +135,13 @@ namespace PJTC.Server
                 Debug.Log($"SERVER GM ORIGINAL move RESULT {JsonUtility.ToJson(moveResult)}");
 
                 playersCommunicator.playerDataSender.SendPlayerMove(playerResult, i);
+            }
+
+            int repeats = repeatMovesChecker.GetMoveRepeats(moveResult);
+            if (repeats == REPEATS_ALARM) { }
+            if (repeats >= REPEATS_MAX)
+            {
+                OnGameEnd(new GameResult(-1, (int)Enums.GameData.EndGameReason.Draw));
             }
         }
 

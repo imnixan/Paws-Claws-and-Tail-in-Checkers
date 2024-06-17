@@ -79,7 +79,7 @@ namespace PJTC.Server
         {
             CSMRequest.Type type = CSMRequest.Type.GAME_START;
 
-            SendAllPlayers(type, "Game Started!", true);
+            SendAllPlayers(type, new StringData("Game Started!"), true);
         }
 
         public void SendMessage<T>(int playerID, CSMRequest.Type type, T body, bool needAck = false)
@@ -88,6 +88,12 @@ namespace PJTC.Server
             {
                 playerListeners[playerID].SendMessage(type, body, needAck);
             }
+        }
+
+        public void SendAllPlayersAlarm()
+        {
+            CSMRequest.Type type = CSMRequest.Type.DRAW_ALARM;
+            SendAllPlayers(type, new StringData("Draw Alarm!!"), true);
         }
 
         private void SendAllPlayers<T>(CSMRequest.Type type, T body, bool needAck = false)
