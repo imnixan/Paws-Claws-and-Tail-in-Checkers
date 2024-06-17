@@ -30,6 +30,7 @@ namespace PJTC.Server
 
         private static void TryBuildRoom()
         {
+            Debug.Log("Trying build room");
             if (playersQueue.Count >= ROOM_SIZE)
             {
                 Guid roomId = Guid.NewGuid();
@@ -54,6 +55,10 @@ namespace PJTC.Server
                     Debug.Log($"TOTAL ROOMS {RoomStorage.rooms.Count}");
                     new ServerGameManager(playersCommunicator, playerListeners.Count, roomId);
                 }
+            }
+            else
+            {
+                Debug.Log("no enought player for room");
             }
         }
     }
