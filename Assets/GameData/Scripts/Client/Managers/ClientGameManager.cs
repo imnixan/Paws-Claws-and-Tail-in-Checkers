@@ -72,10 +72,7 @@ namespace PJTC.Managers
             serverCommunicator.ConnectToServer();
         }
 
-        public void OnConnect()
-        {
-            uiManager.OnConnect();
-        }
+        public void OnConnect() { }
 
         public void RestartGame()
         {

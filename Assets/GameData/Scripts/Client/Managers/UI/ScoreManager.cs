@@ -1,14 +1,20 @@
 ﻿using GameData.Managers;
+using PJTC.Controllers;
 using PJTC.Structs;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace PJTC.Managers.UI
 {
     public class ScoreManager : MonoBehaviour
     {
         [SerializeField]
-        private GameObject scoresBoard;
+        private Image scoresBoard;
+
+        [SerializeField]
+        [Tooltip("Backgrounds for player's team, Orange == 0, Black == 1")]
+        private Sprite[] windowVariants;
 
         [Header("Counters")]
         [SerializeField]
@@ -25,17 +31,18 @@ namespace PJTC.Managers.UI
 
         private void Start()
         {
-            scoresBoard.SetActive(false);
+            scoresBoard.gameObject.SetActive(false);
         }
 
         private void OnGameEnd(GameResult result)
         {
-            scoresBoard.SetActive(false);
+            scoresBoard.gameObject.SetActive(false);
         }
 
         private void OnGameStart()
         {
-            scoresBoard.SetActive(true);
+            scoresBoard.gameObject.SetActive(true);
+            scoresBoard.sprite = windowVariants[(int)GameController.playerTeam];
         }
 
         private void OnPlayerSync(PlayerInitData initData)
