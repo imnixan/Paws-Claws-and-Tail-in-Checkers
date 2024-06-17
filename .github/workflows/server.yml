@@ -21,15 +21,10 @@ jobs:
     - name: Install Railway CLI
       run: npm install -g @railway/cli
 
-    - name: Authenticate Railway
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}  # Убедитесь, что секрет добавлен в ваш репозиторий
-      run: railway login --token $RAILWAY_TOKEN
-
     - name: Go to server folder
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}  # Убедитесь, что секрет добавлен в ваш репозиторий
       run: cd server
 
     - name: Deploy to Railway
-      run: railway up
+      run: railway up --service=serious-server -d
