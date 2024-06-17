@@ -1,12 +1,16 @@
 ﻿using DG.Tweening;
 using GameData.Managers;
 using PJTC.Structs;
+using TMPro;
 using UnityEngine;
 
 namespace PJTC.Managers.UI
 {
     public class UIManager : MonoBehaviour
     {
+        [SerializeField]
+        private TextMeshProUGUI turnStatus;
+
         [Header("Hideable buttons")]
         [SerializeField]
         private GameObject connectBtn;
@@ -25,6 +29,9 @@ namespace PJTC.Managers.UI
         [SerializeField]
         private Transform chooseAttackWindow;
 
+        [SerializeField]
+        private Transform alarmWindow;
+
         private void Start()
         {
             chooseAttackWindow.localPosition = new Vector2(
@@ -33,18 +40,13 @@ namespace PJTC.Managers.UI
             );
             chooseAttackWindow.gameObject.SetActive(false);
             restartBtn.gameObject.SetActive(false);
-        }
-
-        public void OnConnect()
-        {
-            connectBtn.SetActive(false);
-            restartBtn.SetActive(true);
+            alarmWindow.gameObject.SetActive(false);
         }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
-            chooseAttackWindow.gameObject.SetActive(true);
-            chooseAttackWindow.DOLocalMoveX(0, 0.3f).Play();
+            connectBtn.SetActive(false);
+            restartBtn.SetActive(true);
         }
 
         private void OnGameStart() { }
@@ -61,16 +63,46 @@ namespace PJTC.Managers.UI
                 .Restart();
         }
 
-        private void OnDrawAlarm() { }
+        private void OnDrawAlarm()
+        {
+            alarmWindow.gameObject.SetActive(true);
+            alarmWindow.DOMoveX(-1000, 0);
+
+            Sequence showAlarm = DOTween.Sequence();
+            showAlarm
+                .Append(alarmWindow.DOMoveX(0, 0.3f))
+                .AppendInterval(1.5f)
+                .Append(alarmWindow.DOMoveX(-1000, 0.15f))
+                .AppendCallback(() =>
+                {
+                    alarmWindow.gameObject.SetActive(true);
+                })
+                .Restart();
+        }
 
         private void OnGameEnd(GameResult gameResult)
         {
             restartBtn.SetActive(false);
         }
 
+        private void OnOrderChanged(bool playerOrder)
+        {
+            if (playerOrder)
+            {
+                turnStatus.text = "Your turn";
+                turnStatus.color = Color.green;
+            }
+            else
+            {
+                turnStatus.text = "Opponent's turn";
+                turnStatus.color = Color.white;
+            }
+        }
+
         private void SubOnEvents()
         {
             ServerDataHandler.GameStart += OnGameStart;
+            ServerDataHandler.MoverOrderChanging += OnOrderChanged;
             ServerDataHandler.PlayerInit += OnPlayerInit;
             ServerDataHandler.GameEnd += OnGameEnd;
             ServerDataHandler.DrawAlarm += OnDrawAlarm;
@@ -80,6 +112,7 @@ namespace PJTC.Managers.UI
         private void UnsubFromEvents()
         {
             ServerDataHandler.GameStart -= OnGameStart;
+            ServerDataHandler.MoverOrderChanging -= OnOrderChanged;
             ServerDataHandler.PlayerInit -= OnPlayerInit;
             ServerDataHandler.GameEnd -= OnGameEnd;
             ServerDataHandler.DrawAlarm += OnDrawAlarm;
