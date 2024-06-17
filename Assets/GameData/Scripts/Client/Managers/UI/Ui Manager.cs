@@ -11,6 +11,12 @@ namespace PJTC.Managers.UI
         [SerializeField]
         private TextMeshProUGUI turnStatus;
 
+        [SerializeField]
+        private GameObject waitingForThePlayer;
+
+        [SerializeField]
+        private GameObject loadingIcon;
+
         [Header("Hideable buttons")]
         [SerializeField]
         private GameObject connectBtn;
@@ -30,12 +36,30 @@ namespace PJTC.Managers.UI
             );
             chooseAttackWindow.gameObject.SetActive(false);
             restartBtn.gameObject.SetActive(false);
+            waitingForThePlayer.SetActive(false);
+        }
+
+        public void OnStartConnect()
+        {
+            loadingIcon.SetActive(true);
+            connectBtn.SetActive(false);
+        }
+
+        public void OnError()
+        {
+            loadingIcon.SetActive(false);
+            connectBtn.SetActive(true);
+        }
+
+        public void OnConnected()
+        {
+            restartBtn.SetActive(true);
+            loadingIcon.SetActive(false);
         }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
-            connectBtn.SetActive(false);
-            restartBtn.SetActive(true);
+            waitingForThePlayer.SetActive(true);
         }
 
         private void OnGameStart() { }
@@ -50,6 +74,7 @@ namespace PJTC.Managers.UI
                     chooseAttackWindow.gameObject.SetActive(true);
                 })
                 .Restart();
+            waitingForThePlayer.SetActive(true);
         }
 
         private void OnGameEnd(GameResult gameResult)

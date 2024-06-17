@@ -70,9 +70,14 @@ namespace PJTC.Managers
         public void Connect()
         {
             serverCommunicator.ConnectToServer();
+            uiManager.OnStartConnect();
         }
 
-        public void OnConnect() { }
+        public void OnConnect()
+        {
+            Debug.Log("OnConnect");
+            uiManager.OnConnected();
+        }
 
         public void RestartGame()
         {
@@ -119,6 +124,11 @@ namespace PJTC.Managers
         {
             this.serverCommunicator.serverDataSender.SendPlayerAttack(playerAttackTypesData);
             gameState = Enums.GameData.GameState.WaitingMatchStart;
+        }
+
+        public void OnError()
+        {
+            uiManager.OnError();
         }
 
         private void OnPlayerInit(PlayerInitData playerInitData)

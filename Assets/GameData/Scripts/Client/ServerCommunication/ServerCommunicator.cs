@@ -83,7 +83,7 @@ namespace GameData.Scripts
 
         private void OnError(object sender, ErrorEventArgs e)
         {
-            Debug.Log("error" + e.Exception);
+            gameManager.OnError();
         }
 
         private void OnConnected(object sender, System.EventArgs e)
