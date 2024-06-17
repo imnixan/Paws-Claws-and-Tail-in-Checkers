@@ -42,7 +42,8 @@ namespace GameData.Scripts
         {
             ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
             SendAck(csm.messageID);
-            HandleMessage(csm);
+
+            UnityMainThreadDispatcher.Instance.Enqueue(() => HandleMessage(csm));
         }
 
         private void SendAck(int messageID)
@@ -73,7 +74,7 @@ namespace GameData.Scripts
 
         private void OnConnected(object sender, System.EventArgs e)
         {
-            gameManager.OnConnect();
+            UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnect());
         }
 
         private void OnConnectionClosed(object sender, System.EventArgs e)

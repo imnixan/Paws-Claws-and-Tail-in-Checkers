@@ -48,7 +48,7 @@ namespace GameData.Managers
 
         public void ProcessServerData(ClientServerMessage serverMessage)
         {
-            UnityMainThreadDispatcher.Instance.Enqueue(() => InvokeHandler(serverMessage));
+            InvokeHandler(serverMessage);
         }
 
         private void InvokeHandler(ClientServerMessage message)
