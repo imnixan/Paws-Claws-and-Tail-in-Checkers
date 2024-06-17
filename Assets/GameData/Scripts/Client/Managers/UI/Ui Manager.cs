@@ -55,14 +55,18 @@ namespace PJTC.Managers.UI
         {
             restartBtn.SetActive(true);
             loadingIcon.SetActive(false);
+            waitingForThePlayer.SetActive(true);
         }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
-            waitingForThePlayer.SetActive(true);
+            waitingForThePlayer.SetActive(false);
         }
 
-        private void OnGameStart() { }
+        private void OnGameStart()
+        {
+            waitingForThePlayer.SetActive(false);
+        }
 
         private void OnPlayerFinishChooseAttack()
         {
