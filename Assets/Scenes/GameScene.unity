@@ -16861,14 +16861,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b77d19bb1ccc5428f0322fbef25f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ip: roundhouse.proxy.rlwy.net
+  port: 25349
   carpetBuilder: {fileID: 962529098}
   gameBuilder: {fileID: 1721084981}
   gameController: {fileID: 309793257}
   cameraPositioner: {fileID: 256900105}
   uiManager: {fileID: 1479061439}
-  _playerID: 0
-  ip: 25.2.149.75
-  _gameState: 0
 --- !u!1 &612635023
 GameObject:
   m_ObjectHideFlags: 0
@@ -19813,11 +19812,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6bd02608c8b2744bae07f4f5f7777a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  scoresBoard: {fileID: 198667000}
   orangeCountText: {fileID: 962951176}
   orangeChokyCountText: {fileID: 239453346}
   blackCountText: {fileID: 2048366383}
   blackChonkyCountText: {fileID: 1596203280}
-  scoresBoard: {fileID: 198667000}
 --- !u!1 &749667671
 GameObject:
   m_ObjectHideFlags: 0
@@ -25807,9 +25806,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   endGameField: {fileID: 1130225842}
+  gameManager: {fileID: 612151598}
   endReasonText: {fileID: 1797947547}
   winText: {fileID: 1450466932}
-  gameManager: {fileID: 612151598}
 --- !u!1 &983963106
 GameObject:
   m_ObjectHideFlags: 0
@@ -30630,7 +30629,6 @@ MonoBehaviour:
   chonkyModel: {fileID: 2371197227498360040, guid: cde33db7da190984a879d8170565dfdf, type: 3}
   orangeMat: {fileID: 2100000, guid: 00dab619cbac7464cbb9da9d4a2b562b, type: 2}
   blackMat: {fileID: 2100000, guid: 6430b7be03331ca4b985da9040135c8e, type: 2}
-  field: {fileID: 1242105675}
 --- !u!4 &1168514659
 Transform:
   m_ObjectHideFlags: 0
@@ -44608,7 +44606,6 @@ MonoBehaviour:
   chonkyModel: {fileID: 2371197227498360040, guid: cde33db7da190984a879d8170565dfdf, type: 3}
   orangeMat: {fileID: 2100000, guid: 00dab619cbac7464cbb9da9d4a2b562b, type: 2}
   blackMat: {fileID: 2100000, guid: 6430b7be03331ca4b985da9040135c8e, type: 2}
-  field: {fileID: 0}
 --- !u!1 &1722396240
 GameObject:
   m_ObjectHideFlags: 0

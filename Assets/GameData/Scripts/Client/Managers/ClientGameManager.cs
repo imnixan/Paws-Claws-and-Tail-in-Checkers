@@ -23,7 +23,7 @@ namespace PJTC.Managers
 
         [Header("Connect params")]
         [SerializeField]
-        private string ip = "localHost";
+        private string ip = "localhost";
 
         [SerializeField]
         private string port = "8080";
