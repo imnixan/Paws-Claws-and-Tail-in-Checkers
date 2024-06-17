@@ -1,5 +1,4 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -7,8 +6,9 @@ namespace PJTC.Controllers
 {
     public abstract class MoveController : MonoBehaviour
     {
-        public float speed;
         public event UnityAction destinationReached;
+        public float speed;
+
         protected Transform transform;
 
         protected void Start()
@@ -22,6 +22,7 @@ namespace PJTC.Controllers
                 destination,
                 Vector3.Distance(transform.position, destination) / speed
             );
+
             return tween;
         }
 

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using PJTC.Enums;
-using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 
@@ -23,28 +21,6 @@ namespace PJTC.Server
         {
             gameManager.OnPlayerDisconnect(playerID);
         }
-
-        #region Initialization
-        private void InitializeHandlers()
-        {
-            #region Handlers
-            requestHandlers = new Dictionary<CSMRequest.Type, Action<DataFromPlayer>>
-            {
-                { CSMRequest.Type.SET_ATTACK, HandlePlayerAttack },
-                { CSMRequest.Type.POSSIBLE_MOVES, HandlePlayerChoosedCat },
-                { CSMRequest.Type.MAKE_MOVE, HandlePlayerMove },
-                { CSMRequest.Type.PLAYER_READY, HandlePlayerReady }
-            };
-            #endregion
-            #region ActivePlayerRequests
-            requestsRequireActivePlayer = new HashSet<CSMRequest.Type>
-            {
-                CSMRequest.Type.POSSIBLE_MOVES,
-                CSMRequest.Type.MAKE_MOVE,
-            };
-            #endregion
-        }
-        #endregion
 
         public void SetGameManager(ServerGameManager gameManager)
         {
@@ -81,6 +57,27 @@ namespace PJTC.Server
             }
         }
 
+        #region Initialization
+        private void InitializeHandlers()
+        {
+            #region Handlers
+            requestHandlers = new Dictionary<CSMRequest.Type, Action<DataFromPlayer>>
+            {
+                { CSMRequest.Type.SET_ATTACK, HandlePlayerAttack },
+                { CSMRequest.Type.POSSIBLE_MOVES, HandlePlayerChoosedCat },
+                { CSMRequest.Type.MAKE_MOVE, HandlePlayerMove },
+                { CSMRequest.Type.PLAYER_READY, HandlePlayerReady }
+            };
+            #endregion
+            #region ActivePlayerRequests
+            requestsRequireActivePlayer = new HashSet<CSMRequest.Type>
+            {
+                CSMRequest.Type.POSSIBLE_MOVES,
+                CSMRequest.Type.MAKE_MOVE,
+            };
+            #endregion
+        }
+        #endregion
         private void HandlePlayerChoosedCat(DataFromPlayer dft)
         {
             CatData catData = JsonUtility.FromJson<CatData>(dft.message.data);

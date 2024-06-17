@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing.Text;
-using PJTC.Game;
-using PJTC.Structs;
-using UnityEngine;
+﻿using PJTC.Structs;
 
 namespace PJTC.Server.MovesCalculation
 {
@@ -25,6 +21,7 @@ namespace PJTC.Server.MovesCalculation
             {
                 repeats = 0;
             }
+
             return repeats;
         }
     }

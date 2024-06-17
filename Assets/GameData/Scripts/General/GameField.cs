@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using PJTC.CatScripts;
 using PJTC.Enums;
-using PJTC.Managers;
 using PJTC.Structs;
-using UnityEditor;
 using UnityEngine;
 
 namespace PJTC.Game
@@ -32,8 +28,11 @@ namespace PJTC.Game
         {
             server = true;
             matrix = new CatData[fieldSize, fieldSize];
+
             BuildField();
+
             FillField(type);
+
             UpdateHash();
         }
 
@@ -59,6 +58,7 @@ namespace PJTC.Game
         public GameField(CatData[,] gameField)
         {
             this.matrix = gameField;
+
             UpdateHash();
         }
 
@@ -78,6 +78,7 @@ namespace PJTC.Game
                     }
                 }
             }
+
             return secureField;
         }
 
@@ -95,6 +96,7 @@ namespace PJTC.Game
         private void BuildField()
         {
             bool whiteCell = false;
+
             for (int x = 0; x < fieldSize; x++)
             {
                 whiteCell = !whiteCell;
@@ -112,7 +114,9 @@ namespace PJTC.Game
             foreach (CompletedMoveData move in moveResult.moves)
             {
                 CatData movedCat = move.moveData.catData;
+
                 RemoveElementAt(movedCat.position);
+
                 movedCat.position = move.moveData.moveEnd;
                 if (move.moveWithBattle)
                 {
@@ -152,6 +156,7 @@ namespace PJTC.Game
                     moves[i].moveData.catData,
                     playerTeam
                 );
+
                 if (censureMoves[i].moveWithBattle)
                 {
                     censureMoves[i].enemy = CensureCat(moves[i].enemy, playerTeam);
@@ -161,25 +166,59 @@ namespace PJTC.Game
             return new MoveResult(censureMoves, moveResult.catsCount);
         }
 
+        public CatData GetElement(Vector2Int coords)
+        {
+            if (coords.x < 0 || coords.y < 0 || coords.x >= fieldSize || coords.y >= fieldSize)
+            {
+                return new CatData(-1, coords);
+            }
+
+            return matrix[coords.x, coords.y];
+        }
+
+        public CatData GetElementById(int id)
+        {
+            foreach (var item in matrix)
+            {
+                if (item.id == id)
+                {
+                    return item;
+                }
+            }
+
+            return new CatData(-1, Vector2Int.zero);
+        }
+
+        public void RemoveElementAt(Vector2Int elementCoords)
+        {
+            matrix[elementCoords.x, elementCoords.y] = new CatData(1, elementCoords);
+        }
+
+        public void SetElement(CatData element)
+        {
+            matrix[element.position.x, element.position.y] = element;
+        }
+
+        public void UpgradeElementAt(Vector2Int elementCoords)
+        {
+            matrix[elementCoords.x, elementCoords.y].type = Enums.CatsType.Type.Chonky;
+        }
+
         private CatData CensureCat(CatData catData, CatsType.Team playerTeam)
         {
-            Debug.Log($"CENSURE FOR {playerTeam} CAT {catData.team} BEFORE {catData.attackType}");
             if (catData.team != playerTeam && !catData.attackHints.solved)
             {
-                Debug.Log(
-                    $"CENSURE FOR {playerTeam} TO NONE BECAUSE OF catData.team != playerTeam && !catData.attackHints.solved) {catData.team != playerTeam}&&{!catData.attackHints.solved}"
-                );
                 catData.attackType = CatsType.Attack.None;
             }
-            Debug.Log($"CENSURE FOR {playerTeam} CAT {catData.team} AFTER {catData.attackType}");
+
             return catData;
         }
 
-        //normal
         private void FillFieldNormal()
         {
             int catId = 2;
             Enums.CatsType.Type defaultType = Enums.CatsType.Type.Normal;
+
             for (int x = 0; x < 3; x++)
             {
                 for (int y = 0; y < fieldSize; y++)
@@ -333,41 +372,5 @@ namespace PJTC.Game
             );
         }
         #endregion
-
-        public CatData GetElement(Vector2Int coords)
-        {
-            if (coords.x < 0 || coords.y < 0 || coords.x >= fieldSize || coords.y >= fieldSize)
-            {
-                return new CatData(-1, coords);
-            }
-            return matrix[coords.x, coords.y];
-        }
-
-        public CatData GetElementById(int id)
-        {
-            foreach (var item in matrix)
-            {
-                if (item.id == id)
-                {
-                    return item;
-                }
-            }
-            return new CatData(-1, Vector2Int.zero);
-        }
-
-        public void RemoveElementAt(Vector2Int elementCoords)
-        {
-            matrix[elementCoords.x, elementCoords.y] = new CatData(1, elementCoords);
-        }
-
-        public void SetElement(CatData element)
-        {
-            matrix[element.position.x, element.position.y] = element;
-        }
-
-        public void UpgradeElementAt(Vector2Int elementCoords)
-        {
-            matrix[elementCoords.x, elementCoords.y].type = Enums.CatsType.Type.Chonky;
-        }
     }
 }

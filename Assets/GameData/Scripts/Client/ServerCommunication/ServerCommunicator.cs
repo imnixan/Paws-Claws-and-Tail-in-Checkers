@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using GameData.Managers;
+﻿using GameData.Managers;
 using PJTC.Enums;
 using PJTC.Managers;
-using PJTC.Server;
 using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
@@ -13,13 +9,13 @@ namespace GameData.Scripts
 {
     public class ServerCommunicator
     {
-        private string ip;
-        private string port;
         public WebSocket ws { get; private set; }
-        private ClientGameManager gameManager;
         public ServerDataSender serverDataSender { get; private set; }
         public ServerDataHandler serverDataHandler { get; private set; }
-        public int messageCount = 0;
+        private string ip;
+        private string port;
+        private ClientGameManager gameManager;
+        private int messageCount = 0;
 
         public ServerCommunicator(
             ClientGameManager gm,
@@ -47,6 +43,7 @@ namespace GameData.Scripts
         private void OnMessage(object sender, MessageEventArgs e)
         {
             ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
+
             SendAck(csm.messageID);
 
             UnityMainThreadDispatcher.Instance.Enqueue(() => HandleMessage(csm));
@@ -58,6 +55,7 @@ namespace GameData.Scripts
             ClientServerMessage csm = new ClientServerMessage((int)type, "Ack");
             csm.messageID = messageID;
             string message = JsonUtility.ToJson(csm);
+
             Send(message);
         }
 
@@ -71,6 +69,16 @@ namespace GameData.Scripts
             {
                 gameManager.RestartScene();
             }
+        }
+
+        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
+        {
+            ClientServerMessage csm = BuildMessage(type, body);
+            csm.messageID = messageCount;
+            messageCount++;
+            Debug.Log($"Client {gameManager.playerID} send message {csm.messageID}");
+            string message = JsonUtility.ToJson(csm);
+            Send(message);
         }
 
         private void OnError(object sender, ErrorEventArgs e)
@@ -103,20 +111,11 @@ namespace GameData.Scripts
             serverDataHandler.ProcessServerData(csm);
         }
 
-        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
-        {
-            ClientServerMessage csm = BuildMessage(type, body);
-            csm.messageID = messageCount;
-            messageCount++;
-            Debug.Log($"Client {gameManager.playerID} send message {csm.messageID}");
-            string message = JsonUtility.ToJson(csm);
-            Send(message);
-        }
-
         private ClientServerMessage BuildMessage<T>(CSMRequest.Type type, T body)
         {
             string data = JsonUtility.ToJson(body);
             ClientServerMessage csm = new ClientServerMessage((int)type, data);
+
             return csm;
         }
     }

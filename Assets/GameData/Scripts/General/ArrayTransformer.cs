@@ -1,11 +1,11 @@
-﻿using System;
-using PJTC.Game;
-using UnityEngine;
+﻿using PJTC.Game;
 
 namespace PJTC.Managers
 {
     public static class ArrayTransformer
     {
+        private static System.Random rng = new System.Random();
+
         public static T[] Flatten<T>(T[,] arr)
         {
             int rows0 = arr.GetLength(0);
@@ -36,8 +36,6 @@ namespace PJTC.Managers
             }
             return arrExpanded;
         }
-
-        private static System.Random rng = new System.Random();
 
         public static T[] Shuffle<T>(T[] array)
         {

@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
-using PJTC.CatScripts;
 using PJTC.Enums;
 using PJTC.Game;
 using PJTC.General;
@@ -13,7 +11,7 @@ namespace PJTC.Server
     {
         private GameField gameField;
         private MoveChecker moveChecker;
-        System.Random random = new System.Random();
+        private System.Random random = new System.Random();
 
         public MoveMaker(GameField gameField, MoveChecker moveChecker)
         {
@@ -67,14 +65,17 @@ namespace PJTC.Server
 
                     return new MoveResult(completedMoves.ToArray(), CountCats());
                 }
+
                 bool chonky = NeedChonkyUpgrade(
                     completedMove.moveData.catData,
                     completedMove.moveData.moveEnd
                 );
+
                 if (chonky)
                 {
                     completedMove.moveData.catData.type = CatsType.Type.Chonky;
                 }
+
                 completedMove.moveData.catData.UpdateAttackerHints(true);
                 catchedCat.UpdateDefenderHints(true, completedMove.moveData.catData.attackType);
                 completedMoves.Add(
@@ -87,10 +88,12 @@ namespace PJTC.Server
                     completedMove.moveData.catData,
                     completedMove.moveData.moveEnd
                 );
+
                 if (chonky)
                 {
                     completedMove.moveData.catData.type = CatsType.Type.Chonky;
                 }
+
                 completedMoves.Add(new CompletedMoveData(completedMove.moveData, chonky));
 
                 return new MoveResult(completedMoves.ToArray(), CountCats());
@@ -151,19 +154,6 @@ namespace PJTC.Server
             return cats;
         }
 
-        private Vector2Int[] CropStartPoint(Vector2Int[] moves, Vector2Int startMove)
-        {
-            List<Vector2Int> croppedMoves = new List<Vector2Int>();
-            foreach (var move in moves)
-            {
-                if (move != startMove)
-                {
-                    croppedMoves.Add(move);
-                }
-            }
-            return croppedMoves.ToArray();
-        }
-
         public CatData TryCatchCat(MoveData move)
         {
             CatData catchedCat = new CatData(-1, new Vector2Int(0, 0));
@@ -180,6 +170,19 @@ namespace PJTC.Server
             }
 
             return catchedCat;
+        }
+
+        private Vector2Int[] CropStartPoint(Vector2Int[] moves, Vector2Int startMove)
+        {
+            List<Vector2Int> croppedMoves = new List<Vector2Int>();
+            foreach (var move in moves)
+            {
+                if (move != startMove)
+                {
+                    croppedMoves.Add(move);
+                }
+            }
+            return croppedMoves.ToArray();
         }
 
         private List<Vector2Int> GetPath(Vector2Int start, Vector2Int end)

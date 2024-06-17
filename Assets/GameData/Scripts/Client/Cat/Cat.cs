@@ -1,14 +1,10 @@
-﻿using System;
-using DG.Tweening;
-using PJTC.Enums;
+﻿using DG.Tweening;
 using PJTC.Handlers;
 using PJTC.Managers;
 using PJTC.Managers.UI;
 using PJTC.Structs;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace PJTC.CatScripts
 {
@@ -16,26 +12,32 @@ namespace PJTC.CatScripts
     [RequireComponent(typeof(MoveController))]
     public class Cat : MonoBehaviour
     {
-        public CatData catData;
         public event UnityAction<Cat> catTouched;
-        public ClickInputHandler clickHandler { get; private set; }
-        private MoveController moveController;
+
+        public CatData catData;
         public VisualModel visualModel;
+        public ClickInputHandler clickHandler { get; private set; }
+
+        private MoveController moveController;
         private AttackViewer attackViewer;
 
-        private GameObject image;
+        public Material mat
+        {
+            get { return visualModel.GetMaterial(); }
+        }
 
         public void Init(CatData catData)
         {
             this.catData = catData;
             InitCat();
             MakeSubscribes();
+
             transform.forward = new Vector3(
                 catData.team == Enums.CatsType.Team.Orange ? 1 : -1,
                 0,
                 0
             );
-            visualModel = GetComponentInChildren<VisualModel>();
+
             attackViewer = GetComponentInChildren<AttackViewer>();
             attackViewer.SetAttackBanner(catData);
         }
@@ -46,9 +48,21 @@ namespace PJTC.CatScripts
             attackViewer.SetAttackBanner(catData);
         }
 
-        public Material mat
+        public Tween MoveTo(Vector2Int destination)
         {
-            get { return visualModel.GetMaterial(); }
+            Vector3 position = new Vector3(destination.x, 0, destination.y);
+            catData.position = destination;
+            Vector3 forward = position - transform.position;
+            transform.forward = forward;
+
+            Tween tween = moveController.MoveTo(position);
+
+            return tween;
+        }
+
+        public void RemoveCat()
+        {
+            Destroy(gameObject);
         }
 
         private void InitCat()
@@ -63,6 +77,7 @@ namespace PJTC.CatScripts
         private void OnClick(ClickInputHandler inputHandler)
         {
             this.catTouched?.Invoke(this);
+
             Sequence catJump = DOTween.Sequence();
             catJump
                 .Append(transform.DOMoveY(0.5f, 0.15f))
@@ -80,24 +95,9 @@ namespace PJTC.CatScripts
             this.clickHandler.Click -= this.OnClick;
         }
 
-        public Tween MoveTo(Vector2Int destination)
-        {
-            Vector3 position = new Vector3(destination.x, 0, destination.y);
-            catData.position = destination;
-            Vector3 forward = position - transform.position;
-            transform.forward = forward;
-            Tween tween = moveController.MoveTo(position);
-            return tween;
-        }
-
         private void OnDestroy()
         {
             MakeUnSubscrubs();
-        }
-
-        public void RemoveCat()
-        {
-            Destroy(gameObject);
         }
     }
 }

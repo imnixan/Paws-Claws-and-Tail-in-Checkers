@@ -1,8 +1,5 @@
-﻿using System;
-using GameData.Scripts;
+﻿using GameData.Scripts;
 using PJTC.Enums;
-using PJTC.Managers;
-using PJTC.Server;
 using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
@@ -23,25 +20,28 @@ namespace PJTC.Managers
         public void SendPlayerChooseCat(CatData catData)
         {
             CSMRequest.Type type = CSMRequest.Type.POSSIBLE_MOVES;
+
             SendMessage(type, catData);
         }
 
         public void SendPlayerReady(string mapHash)
         {
             CSMRequest.Type type = CSMRequest.Type.PLAYER_READY;
+
             SendMessage(type, new MapHash(mapHash), true);
         }
 
         public void SendPlayerMove(MoveData moveData)
         {
             CSMRequest.Type type = CSMRequest.Type.MAKE_MOVE;
-            Debug.Log($"chose cell {moveData.moveEnd}");
+
             SendMessage(type, moveData);
         }
 
         public void SendPlayerAttack(PlayerAttackTypesData playerAttackTypesData)
         {
             CSMRequest.Type type = CSMRequest.Type.SET_ATTACK;
+
             SendMessage(type, playerAttackTypesData, true);
         }
 

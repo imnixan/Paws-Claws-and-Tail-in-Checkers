@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PJTC.Enums;
-using UnityEngine;
 
 namespace PJTC.General
 {
@@ -18,7 +16,5 @@ namespace PJTC.General
             { CatsType.Attack.Tail, CatsType.Attack.Jaws },
             { CatsType.Attack.Jaws, CatsType.Attack.Paws },
         };
-
-        //key who attack, value who can be defeated
     }
 }

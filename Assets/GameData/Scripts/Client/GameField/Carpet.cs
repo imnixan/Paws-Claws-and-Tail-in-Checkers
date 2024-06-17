@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace PJTC
 {
@@ -7,8 +6,8 @@ namespace PJTC
     {
         [SerializeField]
         private Material choosedMat;
-        private Material defaultMat;
 
+        private Material defaultMat;
         private MeshRenderer meshRenderer;
 
         private void Start()

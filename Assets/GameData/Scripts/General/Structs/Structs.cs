@@ -1,7 +1,5 @@
-﻿using System.ComponentModel;
-using PJTC.Enums;
+﻿using PJTC.Enums;
 using PJTC.General;
-using PJTC.Server;
 using UnityEngine;
 
 namespace PJTC.Structs

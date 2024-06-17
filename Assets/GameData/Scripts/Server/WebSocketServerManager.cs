@@ -1,6 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
-using WebSocketSharp;
+﻿using UnityEngine;
 using WebSocketSharp.Server;
 
 namespace PJTC.Server
@@ -9,6 +7,7 @@ namespace PJTC.Server
     {
         [SerializeField]
         private string ip;
+
         private WebSocketServer wss;
 
         void OnEnable()

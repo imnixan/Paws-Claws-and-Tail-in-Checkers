@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-namespace PJTC.Enums
+﻿namespace PJTC.Enums
 {
     public static class CSMRequest
     {

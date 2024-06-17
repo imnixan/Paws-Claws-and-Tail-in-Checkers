@@ -19,6 +19,7 @@ namespace PJTC.Server
         public int GetActiveListenersCount(int playerID)
         {
             int activeListenersCount = 0;
+
             foreach (PlayerListener listener in playerListeners)
             {
                 if (listener.active)
@@ -26,6 +27,7 @@ namespace PJTC.Server
                     activeListenersCount++;
                 }
             }
+
             return playerListeners.Count;
         }
 
@@ -46,6 +48,7 @@ namespace PJTC.Server
         public void SendAllGameEnd(GameResult gameResult)
         {
             CSMRequest.Type type = CSMRequest.Type.GAME_END;
+
             SendAllPlayers(type, gameResult, true);
         }
 
@@ -93,6 +96,7 @@ namespace PJTC.Server
         public void SendAllPlayersAlarm()
         {
             CSMRequest.Type type = CSMRequest.Type.DRAW_ALARM;
+
             SendAllPlayers(type, new StringData("Draw Alarm!!"), true);
         }
 

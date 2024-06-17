@@ -1,7 +1,5 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using GameData.Managers;
-using PJTC.Enums;
 using PJTC.Structs;
 using TMPro;
 using UnityEngine;
@@ -14,11 +12,13 @@ namespace PJTC.Managers.UI
         private Transform endGameField;
 
         [SerializeField]
-        private TextMeshProUGUI endReasonText,
-            winText;
+        private ClientGameManager gameManager;
 
         [SerializeField]
-        private ClientGameManager gameManager;
+        private TextMeshProUGUI endReasonText;
+
+        [SerializeField]
+        private TextMeshProUGUI winText;
 
         private void Start()
         {
@@ -33,6 +33,7 @@ namespace PJTC.Managers.UI
             endGameField.DOLocalMoveX(0, 0.5f).Play();
             winText.text = win ? "You won!" : "You lose!";
             string gameEndReason = "";
+
             switch (reason)
             {
                 case Enums.GameData.EndGameReason.Disconnect:
@@ -48,6 +49,7 @@ namespace PJTC.Managers.UI
                     gameEndReason = "The cats have no moves left";
                     break;
             }
+
             endReasonText.text = gameEndReason;
         }
 

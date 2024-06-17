@@ -49,6 +49,14 @@ namespace PJTC.Server
             return count == 0;
         }
 
+        public bool CanBeEaten(CatData attacker, CatData defender)
+        {
+            bool defenderIsCat = defender.id > 1;
+            bool oppositeTeam = attacker.team != defender.team;
+
+            return defenderIsCat && oppositeTeam;
+        }
+
         private int GetSuccesMovesCount(CatData cat, Moves uncuttedMoves)
         {
             List<Vector2Int> moves = new List<Vector2Int>();
@@ -169,22 +177,12 @@ namespace PJTC.Server
 
         private bool CellIsValid(CatData checkedCat)
         {
-            bool validId = checkedCat.id != -1;
-            return validId;
+            return checkedCat.id != -1;
         }
 
         private bool IsSameTeam(CatData checkedCat1, CatData checkedCat2)
         {
-            bool sameTeam = checkedCat1.team == checkedCat2.team;
-            return sameTeam;
-        }
-
-        public bool CanBeEaten(CatData attacker, CatData defender)
-        {
-            bool defenderIsCat = defender.id > 1;
-            bool oppositeTeam = attacker.team != defender.team;
-
-            return defenderIsCat && oppositeTeam;
+            return checkedCat1.team == checkedCat2.team;
         }
     }
 }

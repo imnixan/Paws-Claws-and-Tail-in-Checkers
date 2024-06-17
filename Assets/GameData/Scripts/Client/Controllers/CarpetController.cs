@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using PJTC.Handlers;
+﻿using PJTC.Handlers;
 using UnityEngine;
 
 namespace PJTC.Controllers
@@ -8,8 +6,8 @@ namespace PJTC.Controllers
     public class CarpetController : MonoBehaviour
     {
         private ClickInputHandler[,] cellHandlers;
-        private Vector2Int[] activeCoords;
         private GameController gameController;
+        private Vector2Int[] activeCoords;
 
         public void Init(ClickInputHandler[,] cellHandlers, GameController gameController)
         {
@@ -23,7 +21,9 @@ namespace PJTC.Controllers
             {
                 DeactivateCells();
             }
+
             this.activeCoords = coords;
+
             foreach (var coord in this.activeCoords)
             {
                 cellHandlers[coord.x, coord.y].Click += OnCarpetClick;
@@ -38,6 +38,7 @@ namespace PJTC.Controllers
                 cellHandlers[coord.x, coord.y].Click -= OnCarpetClick;
                 cellHandlers[coord.x, coord.y].GetComponent<Carpet>().DeactivateCell();
             }
+
             activeCoords = null;
         }
 

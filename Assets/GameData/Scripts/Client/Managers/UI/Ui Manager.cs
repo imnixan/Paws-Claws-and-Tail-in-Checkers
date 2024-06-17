@@ -1,9 +1,5 @@
-﻿using System;
-using DG.Tweening;
+﻿using DG.Tweening;
 using GameData.Managers;
-using PJTC.Builders;
-using PJTC.Enums;
-using PJTC.Game;
 using PJTC.Structs;
 using UnityEngine;
 
@@ -11,18 +7,23 @@ namespace PJTC.Managers.UI
 {
     public class UIManager : MonoBehaviour
     {
+        [Header("Hideable buttons")]
         [SerializeField]
-        private GameObject connectBtn,
-            restartBtn;
+        private GameObject connectBtn;
 
+        [SerializeField]
+        private GameObject restartBtn;
+
+        [Header("Other managers")]
         [SerializeField]
         private ScoreManager scoreManager;
 
         [SerializeField]
         private EndGameWindow gameEndManager;
 
+        [Header("Windows")]
         [SerializeField]
-        private RectTransform chooseAttackWindow;
+        private Transform chooseAttackWindow;
 
         private void Start()
         {
@@ -73,7 +74,6 @@ namespace PJTC.Managers.UI
             ServerDataHandler.PlayerInit += OnPlayerInit;
             ServerDataHandler.GameEnd += OnGameEnd;
             ServerDataHandler.DrawAlarm += OnDrawAlarm;
-
             AttackChooseManager.PlayerFinishChoosingAttacks += OnPlayerFinishChooseAttack;
         }
 
@@ -83,7 +83,6 @@ namespace PJTC.Managers.UI
             ServerDataHandler.PlayerInit -= OnPlayerInit;
             ServerDataHandler.GameEnd -= OnGameEnd;
             ServerDataHandler.DrawAlarm += OnDrawAlarm;
-
             AttackChooseManager.PlayerFinishChoosingAttacks -= OnPlayerFinishChooseAttack;
         }
 

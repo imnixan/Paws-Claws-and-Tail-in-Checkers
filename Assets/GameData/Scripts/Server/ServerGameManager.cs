@@ -1,16 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.Runtime.ExceptionServices;
-using GameData.Scripts;
-using JetBrains.Annotations;
 using PJTC.Enums;
 using PJTC.Game;
-using PJTC.Server;
 using PJTC.Server.MovesCalculation;
 using PJTC.Structs;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace PJTC.Server
 {
@@ -59,30 +53,6 @@ namespace PJTC.Server
             moveMaker = new MoveMaker(gameField, moveChecker);
             catsCount = moveMaker.CountCats();
             InitAllPlayers();
-        }
-
-        private void StartGame()
-        {
-            currentPlayer = 0;
-            gameState = Enums.GameData.GameState.Game;
-            playersCommunicator.playerDataSender.SendAllPlayersOrder(currentPlayer);
-            playersCommunicator.playerDataSender.SendAllGameStart();
-            repeatMovesChecker = new RepeatMovesChecker();
-        }
-
-        private void InitAllPlayers()
-        {
-            Debug.Log("Server init all players");
-            gameState = Enums.GameData.GameState.PlayerInit;
-            for (int playerID = 0; playerID < playersCount; playerID++)
-            {
-                playersCommunicator.playerDataSender.InitPlayer(
-                    playerID,
-                    gameField.GetSecureField((CatsType.Team)playerID),
-                    catsCount,
-                    attacksPool
-                );
-            }
         }
 
         public void OnPlayerCatSelect(CatData cat)
@@ -145,6 +115,61 @@ namespace PJTC.Server
             }
         }
 
+        public void OnPlayerSetAttack(PlayerAttackTypesData playerAttackTypesData, int playerID)
+        {
+            if (UpdateAttacks(playerAttackTypesData, playerID))
+            {
+                playerReadyMarks[playerID] = true;
+                Debug.Log($"player{playerID} send attacks");
+
+                if (CheckAllReady())
+                {
+                    OnAllPlayersReady();
+                }
+            }
+            else
+            {
+                Debug.Log($"WRONG Attack data");
+                playersCommunicator.playerDataSender.InitPlayer(
+                    playerID,
+                    gameField.GetSecureField((CatsType.Team)playerID),
+                    moveMaker.CountCats(),
+                    attacksPool,
+                    CSMRequest.Type.PLAYER_INIT
+                );
+            }
+        }
+
+        public bool IsCurrentPlayer(int playerID)
+        {
+            return playerID == currentPlayer;
+        }
+
+        private void StartGame()
+        {
+            currentPlayer = 0;
+            gameState = Enums.GameData.GameState.Game;
+            playersCommunicator.playerDataSender.SendAllPlayersOrder(currentPlayer);
+            playersCommunicator.playerDataSender.SendAllGameStart();
+            repeatMovesChecker = new RepeatMovesChecker();
+        }
+
+        private void InitAllPlayers()
+        {
+            Debug.Log("Server init all players");
+            gameState = Enums.GameData.GameState.PlayerInit;
+
+            for (int playerID = 0; playerID < playersCount; playerID++)
+            {
+                playersCommunicator.playerDataSender.InitPlayer(
+                    playerID,
+                    gameField.GetSecureField((CatsType.Team)playerID),
+                    catsCount,
+                    attacksPool
+                );
+            }
+        }
+
         private bool CheckEndGame()
         {
             bool orangeWinsByClear = catsCount.blackCats == 0 && catsCount.blackChonkyCats == 0;
@@ -159,12 +184,14 @@ namespace PJTC.Server
                 orangeWinsByClear || blackWinsByClear
                     ? Enums.GameData.EndGameReason.Clear
                     : Enums.GameData.EndGameReason.Stuck;
+
             if (gameEnd)
             {
                 GameResult gameResult = new GameResult(winnerID, (int)reason);
                 OnGameEnd(gameResult);
                 return true;
             }
+
             return false;
         }
 
@@ -181,6 +208,7 @@ namespace PJTC.Server
             {
                 playerReadyMarks[playerID] = true;
                 Debug.Log($"player{playerID} is ready");
+
                 if (CheckAllReady())
                 {
                     OnAllPlayersReady();
@@ -201,34 +229,11 @@ namespace PJTC.Server
             }
         }
 
-        public void OnPlayerSetAttack(PlayerAttackTypesData playerAttackTypesData, int playerID)
-        {
-            if (UpdateAttacks(playerAttackTypesData, playerID))
-            {
-                playerReadyMarks[playerID] = true;
-                Debug.Log($"player{playerID} send attacks");
-                if (CheckAllReady())
-                {
-                    OnAllPlayersReady();
-                }
-            }
-            else
-            {
-                Debug.Log($"WRONG Attack data");
-                playersCommunicator.playerDataSender.InitPlayer(
-                    playerID,
-                    gameField.GetSecureField((CatsType.Team)playerID),
-                    moveMaker.CountCats(),
-                    attacksPool,
-                    CSMRequest.Type.PLAYER_INIT
-                );
-            }
-        }
-
         private bool UpdateAttacks(PlayerAttackTypesData playerAttackTypesData, int playerID)
         {
             CatsType.Team playerTeam = (CatsType.Team)playerID;
             List<CatData> cats = new List<CatData>();
+
             foreach (var attackData in playerAttackTypesData.attackTypes)
             {
                 CatData cat = gameField.GetElementById(attackData.catID);
@@ -256,6 +261,7 @@ namespace PJTC.Server
                 case Enums.GameData.GameState.PlayerInit:
                     Debug.Log("starting game");
                     StartGame();
+
                     break;
                 case Enums.GameData.GameState.Game:
                     Debug.Log("continue game");
@@ -263,6 +269,7 @@ namespace PJTC.Server
                     {
                         NextPlayerTurn();
                     }
+
                     break;
             }
         }
@@ -287,17 +294,13 @@ namespace PJTC.Server
             {
                 ClearReadyMarks();
             }
+
             return allReady;
         }
 
         private void ClearReadyMarks()
         {
             playerReadyMarks = new bool[playersCount];
-        }
-
-        public bool IsCurrentPlayer(int playerID)
-        {
-            return playerID == currentPlayer;
         }
     }
 }

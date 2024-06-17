@@ -1,5 +1,4 @@
-﻿using System;
-using GameData.Managers;
+﻿using GameData.Managers;
 using PJTC.Structs;
 using TMPro;
 using UnityEngine;
@@ -9,13 +8,20 @@ namespace PJTC.Managers.UI
     public class ScoreManager : MonoBehaviour
     {
         [SerializeField]
-        private TextMeshProUGUI orangeCountText,
-            orangeChokyCountText,
-            blackCountText,
-            blackChonkyCountText;
+        private GameObject scoresBoard;
+
+        [Header("Counters")]
+        [SerializeField]
+        private TextMeshProUGUI orangeCountText;
 
         [SerializeField]
-        private GameObject scoresBoard;
+        private TextMeshProUGUI orangeChokyCountText;
+
+        [SerializeField]
+        private TextMeshProUGUI blackCountText;
+
+        [SerializeField]
+        private TextMeshProUGUI blackChonkyCountText;
 
         private void Start()
         {

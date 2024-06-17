@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using GameData.Managers;
-using PJTC.Builders;
 using PJTC.CatScripts;
 using PJTC.Enums;
 using PJTC.Game;
 using PJTC.Handlers;
-using PJTC.Managers;
 using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
@@ -18,8 +16,7 @@ namespace PJTC.Controllers
     public class GameController : MonoBehaviour
     {
         public static event UnityAction<CatData, CatsType.Attack> AttackChanged;
-
-        private GameField gameField;
+        public static CatsType.Team playerTeam;
 
         [SerializeField]
         private CarpetController carpetController;
@@ -27,12 +24,11 @@ namespace PJTC.Controllers
         [SerializeField]
         private PlayerController playerController;
 
-        public bool playerOrder;
-
-        private CatData choosedCat = new CatData();
         private ClientGameManager gameManager;
+        private GameField gameField;
         private Enums.GameData.GameState gameState;
-        public static CatsType.Team playerTeam;
+        private CatData choosedCat = new CatData();
+        public bool playerOrder;
 
         public void Init(
             CatData[,] catData,
@@ -67,82 +63,6 @@ namespace PJTC.Controllers
             }
         }
 
-        private void ChangeAttackType(CatData catData)
-        {
-            CatsType.Attack oldAttack = catData.attackType;
-            Cat cat = playerController.GetCat(catData.id);
-            int currentAttackType = (int)oldAttack;
-            int typesTotal = Enum.GetValues(typeof(CatsType.Attack)).Length;
-            currentAttackType++;
-            if (currentAttackType >= typesTotal)
-            {
-                currentAttackType = 0;
-            }
-            CatsType.Attack newAttack = (CatsType.Attack)currentAttackType;
-            catData.attackType = newAttack;
-            cat.UpdateAttackType(catData);
-            gameField.SetElement(cat.catData);
-            AttackChanged?.Invoke(cat.catData, oldAttack);
-        }
-
-        private void OnRandomChoose(AttacksPool attacks)
-        {
-            CatsType.Attack[] attackTypes = GetAttacksShuffleArray(attacks);
-
-            List<Cat> cats = playerController.ownCats;
-            CatsType.Attack currentAttack = CatsType.Attack.None;
-            for (int i = 0; i < attackTypes.Length; i++)
-            {
-                Cat cat = cats[i];
-                currentAttack = cat.catData.attackType;
-                cats[i]
-                    .UpdateAttackType(
-                        new CatData(
-                            cat.catData.id,
-                            cat.catData.position,
-                            cat.catData.type,
-                            cat.catData.team,
-                            attackTypes[i],
-                            cat.catData.attackHints
-                        )
-                    );
-                gameField.SetElement(cat.catData);
-                AttackChanged?.Invoke(cat.catData, currentAttack);
-            }
-        }
-
-        private CatsType.Attack[] GetAttacksShuffleArray(AttacksPool attacks)
-        {
-            CatsType.Attack[] attackTypes = new CatsType.Attack[playerController.ownCats.Count];
-            for (int i = 0; i < attackTypes.Length; i++)
-            {
-                if (i >= attacks.maxPaws + attacks.maxJaws)
-                {
-                    attackTypes[i] = CatsType.Attack.Tail;
-                }
-                else if (i >= attacks.maxPaws)
-                {
-                    attackTypes[i] = CatsType.Attack.Jaws;
-                }
-                else
-                {
-                    attackTypes[i] = CatsType.Attack.Paws;
-                }
-            }
-
-            return ArrayTransformer.Shuffle(attackTypes);
-        }
-
-        private void ChooseCat(CatData cat)
-        {
-            if (playerOrder)
-            {
-                choosedCat = cat;
-                gameManager.RequestPossibleMoves(cat);
-                carpetController.ActiveCells(new Vector2Int[0]);
-            }
-        }
-
         public void OnCarpetClick(Vector2Int position)
         {
             if (choosedCat.id > 1)
@@ -154,14 +74,11 @@ namespace PJTC.Controllers
             }
         }
 
-        private List<CatData> catsForRemove = new List<CatData>();
-
         public void OnPlayerMove(MoveResult moveResult)
         {
+            List<CatData> catsForRemove = new List<CatData>();
             Sequence move = DOTween.Sequence();
-            Debug.Log(
-                $"GAME CONTROLLER PLAYER {GameController.playerTeam} unpack moves {JsonUtility.ToJson(moveResult)}"
-            );
+
             foreach (var completedMove in moveResult.moves)
             {
                 Cat movedCat = playerController.GetCat(completedMove.moveData.catData.id);
@@ -174,6 +91,7 @@ namespace PJTC.Controllers
                         if (completedMove.moveWithBattle)
                         {
                             movedCat.UpdateAttackType(completedMove.moveData.catData);
+
                             if (completedMove.battleWin)
                             {
                                 catsForRemove.Add(completedMove.enemy);
@@ -205,9 +123,86 @@ namespace PJTC.Controllers
                 .Restart();
         }
 
-        public void UpdateCatAttackType(CatData catData)
+        private void ChangeAttackType(CatData catData)
         {
-            gameField.SetElement(catData);
+            CatsType.Attack oldAttack = catData.attackType;
+            Cat cat = playerController.GetCat(catData.id);
+
+            int currentAttackType = (int)oldAttack;
+            currentAttackType++;
+
+            int typesTotal = Enum.GetValues(typeof(CatsType.Attack)).Length;
+            if (currentAttackType >= typesTotal)
+            {
+                currentAttackType = 0;
+            }
+
+            CatsType.Attack newAttack = (CatsType.Attack)currentAttackType;
+            catData.attackType = newAttack;
+            cat.UpdateAttackType(catData);
+            gameField.SetElement(cat.catData);
+
+            AttackChanged?.Invoke(cat.catData, oldAttack);
+        }
+
+        private void OnRandomChoose(AttacksPool attacks)
+        {
+            CatsType.Attack[] attackTypes = GetAttacksShuffleArray(attacks);
+            List<Cat> cats = playerController.ownCats;
+            CatsType.Attack currentAttack = CatsType.Attack.None;
+
+            for (int i = 0; i < attackTypes.Length; i++)
+            {
+                Cat cat = cats[i];
+                currentAttack = cat.catData.attackType;
+                cat.UpdateAttackType(
+                    new CatData(
+                        cat.catData.id,
+                        cat.catData.position,
+                        cat.catData.type,
+                        cat.catData.team,
+                        attackTypes[i],
+                        cat.catData.attackHints
+                    )
+                );
+
+                gameField.SetElement(cat.catData);
+
+                AttackChanged?.Invoke(cat.catData, currentAttack);
+            }
+        }
+
+        private CatsType.Attack[] GetAttacksShuffleArray(AttacksPool attacks)
+        {
+            CatsType.Attack[] attackTypes = new CatsType.Attack[playerController.ownCats.Count];
+
+            for (int i = 0; i < attackTypes.Length; i++)
+            {
+                if (i >= attacks.maxPaws + attacks.maxJaws)
+                {
+                    attackTypes[i] = CatsType.Attack.Tail;
+                }
+                else if (i >= attacks.maxPaws)
+                {
+                    attackTypes[i] = CatsType.Attack.Jaws;
+                }
+                else
+                {
+                    attackTypes[i] = CatsType.Attack.Paws;
+                }
+            }
+
+            return ArrayTransformer.Shuffle(attackTypes);
+        }
+
+        private void ChooseCat(CatData cat)
+        {
+            if (playerOrder)
+            {
+                choosedCat = cat;
+                gameManager.RequestPossibleMoves(cat);
+                carpetController.ActiveCells(new Vector2Int[0]);
+            }
         }
 
         private void OnGameStateChanged(Enums.GameData.GameState state)

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml.Schema;
-using JetBrains.Annotations;
-using PJTC.CatScripts;
+﻿using PJTC.CatScripts;
 using PJTC.Controllers;
 using PJTC.Enums;
 using PJTC.Structs;
@@ -13,12 +9,20 @@ namespace PJTC.Managers.UI
 {
     public class AttackViewer : MonoBehaviour
     {
+        [Header("AttackIcons")]
         [SerializeField]
-        private Sprite jawIcon,
-            pawIcon,
-            tailIcon,
-            crossIcon;
+        private Sprite jawIcon;
 
+        [SerializeField]
+        private Sprite pawIcon;
+
+        [SerializeField]
+        private Sprite tailIcon;
+
+        [SerializeField]
+        private Sprite crossIcon;
+
+        [Tooltip("Backgrounds for player's team, Orange == 0, Black == 1")]
         [SerializeField]
         Sprite[] bgIcons;
 
@@ -27,26 +31,7 @@ namespace PJTC.Managers.UI
         private Image attackIcon;
         private GameObject cross;
 
-        //[SerializeField]
         private float bias = 20f;
-
-        private Sprite currentIcon
-        {
-            get { return attackIcon.sprite; }
-            set
-            {
-                attackIcon.sprite = value;
-                if (value == null)
-                {
-                    attackIcon.color = new Color(1, 1, 1, 0);
-                }
-                else
-                {
-                    attackIcon.color = Color.white;
-                }
-                attackBannerImage.color = attackIcon.color;
-            }
-        }
 
         public void SetAttackBanner(CatData catData)
         {
@@ -58,12 +43,34 @@ namespace PJTC.Managers.UI
             if (catData.attackType == CatsType.Attack.None)
             {
                 cross.SetActive(catData.attackHints.excludedAttack != CatsType.Attack.None);
+
                 SetBannerIcon(catData.attackHints.excludedAttack);
             }
             else
             {
                 cross.SetActive(false);
+
                 SetBannerIcon(catData.attackType);
+            }
+        }
+
+        private Sprite currentIcon
+        {
+            get { return attackIcon.sprite; }
+            set
+            {
+                attackIcon.sprite = value;
+
+                if (value == null)
+                {
+                    attackIcon.color = new Color(1, 1, 1, 0);
+                }
+                else
+                {
+                    attackIcon.color = Color.white;
+                }
+
+                attackBannerImage.color = attackIcon.color;
             }
         }
 
@@ -82,7 +89,6 @@ namespace PJTC.Managers.UI
                     break;
                 default:
                     currentIcon = null;
-
                     break;
             }
         }
@@ -130,9 +136,10 @@ namespace PJTC.Managers.UI
             GameObject imageObject = new GameObject(name);
             imageObject.transform.SetParent(parent);
             imageObject.transform.localScale = Vector3.one;
+
             Image image = imageObject.AddComponent<Image>();
             imageObject.GetComponent<RectTransform>().sizeDelta = size;
-            Debug.Log(imageObject.transform.parent.name);
+
             return image;
         }
     }

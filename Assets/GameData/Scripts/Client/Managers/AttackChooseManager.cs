@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Xml.Schema;
-using GameData.Managers;
+﻿using GameData.Managers;
 using PJTC.Controllers;
 using PJTC.Enums;
 using PJTC.Managers.UI;
 using PJTC.Structs;
-using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace PJTC.Managers
 {
@@ -17,15 +12,24 @@ namespace PJTC.Managers
     {
         public static event UnityAction PlayerFinishChoosingAttacks;
         public static event UnityAction<AttacksPool> RandomChoose;
+        public static event UnityAction AttacksChoosed;
 
         [SerializeField]
         private AttackChooseWindow window;
 
-        public static event UnityAction AttacksChoosed;
-
         private int _currentPaws,
             _currentJaws,
             _currentTails;
+
+        public void OnPlayerFinish()
+        {
+            PlayerFinishChoosingAttacks?.Invoke();
+        }
+
+        public void SetRandomAttacks()
+        {
+            RandomChoose?.Invoke(attacksPool);
+        }
 
         private int currentPaws
         {
@@ -33,7 +37,6 @@ namespace PJTC.Managers
             set
             {
                 _currentPaws = Mathf.Max(0, value);
-
                 window.UpdatePaws(_currentPaws);
             }
         }
@@ -44,7 +47,6 @@ namespace PJTC.Managers
             set
             {
                 _currentJaws = Mathf.Max(0, value);
-
                 window.UpdateJaws(_currentJaws);
             }
         }
@@ -61,22 +63,10 @@ namespace PJTC.Managers
 
         private AttacksPool attacksPool;
 
-        public void OnPlayerFinish()
-        {
-            PlayerFinishChoosingAttacks?.Invoke();
-        }
-
-        public void SetRandomAttacks()
-        {
-            RandomChoose?.Invoke(attacksPool);
-        }
-
         private void OnPlayerInit(PlayerInitData initData)
         {
             attacksPool = initData.attacksPool;
-
             window.SetMaxValues(attacksPool.maxPaws, attacksPool.maxJaws, attacksPool.maxTails);
-
             currentJaws = 0;
             currentPaws = 0;
             currentTails = 0;

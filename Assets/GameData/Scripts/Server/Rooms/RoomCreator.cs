@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using PJTC.Server;
 using UnityEngine;
 
 namespace PJTC.Server
@@ -20,6 +19,13 @@ namespace PJTC.Server
         public static void OnPlayerDisconnect(PlayerListener listener)
         {
             playersQueue.Remove(listener);
+        }
+
+        public static void DestroyRoom(Guid roomID)
+        {
+            Debug.Log("DestroyRoom");
+            RoomStorage.rooms.TryRemove(roomID, out _);
+            Debug.Log($"TOTAL ROOMS {RoomStorage.rooms.Count}");
         }
 
         private static void TryBuildRoom()
@@ -49,13 +55,6 @@ namespace PJTC.Server
                     new ServerGameManager(playersCommunicator, playerListeners.Count, roomId);
                 }
             }
-        }
-
-        public static void DestroyRoom(Guid roomID)
-        {
-            Debug.Log("DestroyRoom");
-            RoomStorage.rooms.TryRemove(roomID, out _);
-            Debug.Log($"TOTAL ROOMS {RoomStorage.rooms.Count}");
         }
     }
 }

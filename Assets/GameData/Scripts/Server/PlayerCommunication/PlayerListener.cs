@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Threading;
 using PJTC.Enums;
-using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
@@ -15,6 +14,7 @@ namespace PJTC.Server
         public Guid roomNumber;
         public int playerID;
         public bool active;
+
         private int messageCount = 0;
         private Dictionary<
             int,
@@ -25,6 +25,27 @@ namespace PJTC.Server
         private Thread retryThread;
         private bool running = true;
         private readonly object lockObject = new object();
+
+        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
+        {
+            ClientServerMessage csm = BuildMessage(type, body);
+            csm.messageID = messageCount;
+            messageCount++;
+            if (type == CSMRequest.Type.MAKE_MOVE)
+            {
+                Debug.Log($"Process move {csm.data}");
+            }
+            string message = JsonUtility.ToJson(csm);
+            Send(message);
+
+            if (needAck)
+            {
+                lock (lockObject)
+                {
+                    pendingMessages[csm.messageID] = (message, DateTime.UtcNow, 0);
+                }
+            }
+        }
 
         protected override void OnOpen()
         {
@@ -51,6 +72,7 @@ namespace PJTC.Server
             {
                 GlobalMessageHandler.OnPlayerDisconnect(roomNumber, playerID);
             }
+
             RoomCreator.OnPlayerDisconnect(this);
         }
 
@@ -73,6 +95,7 @@ namespace PJTC.Server
         protected override void OnMessage(MessageEventArgs e)
         {
             ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
+
             HandleMessage(csm);
         }
 
@@ -82,31 +105,11 @@ namespace PJTC.Server
             Debug.Log($"Error: {e.Exception.Message} {e.Exception.StackTrace}");
         }
 
-        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
-        {
-            ClientServerMessage csm = BuildMessage(type, body);
-            csm.messageID = messageCount;
-            messageCount++;
-            if (type == CSMRequest.Type.MAKE_MOVE)
-            {
-                Debug.Log($"Process move {csm.data}");
-            }
-            string message = JsonUtility.ToJson(csm);
-            Send(message);
-
-            if (needAck)
-            {
-                lock (lockObject)
-                {
-                    pendingMessages[csm.messageID] = (message, DateTime.UtcNow, 0);
-                }
-            }
-        }
-
         private ClientServerMessage BuildMessage<T>(CSMRequest.Type type, T body)
         {
             string data = JsonUtility.ToJson(body);
             ClientServerMessage csm = new ClientServerMessage((int)type, data);
+
             return csm;
         }
 

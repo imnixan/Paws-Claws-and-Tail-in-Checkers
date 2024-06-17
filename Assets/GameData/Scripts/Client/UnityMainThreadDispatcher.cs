@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -34,6 +33,7 @@ public class UnityMainThreadDispatcher : MonoBehaviour
         if (_instance == null)
         {
             _instance = this;
+
             DontDestroyOnLoad(this.gameObject);
         }
         else

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.Policy;
 using GameData.Managers;
 using GameData.Scripts;
 using PJTC.Builders;
@@ -8,13 +7,11 @@ using PJTC.CameraControl;
 using PJTC.CatScripts;
 using PJTC.Controllers;
 using PJTC.Enums;
-using PJTC.Handlers;
 using PJTC.Managers.UI;
 using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using WebSocketSharp;
 
 namespace PJTC.Managers
 {
@@ -22,10 +19,17 @@ namespace PJTC.Managers
     {
         public static event UnityAction<Enums.GameData.GameState> GameStateChanged;
 
+        public ServerCommunicator serverCommunicator { get; private set; }
+
+        [Header("Connect params")]
+        [SerializeField]
+        private string ip = "localHost";
+
+        [SerializeField]
+        private string port = "8080";
+
         [SerializeField]
         private CarpetBuilder carpetBuilder;
-
-        public ServerCommunicator serverCommunicator { get; private set; }
 
         [SerializeField]
         private GameBuilder gameBuilder;
@@ -39,22 +43,8 @@ namespace PJTC.Managers
         [SerializeField]
         private UIManager uiManager;
 
-        [SerializeField]
         private int _playerID;
 
-        [SerializeField]
-        private string ip = "localHost";
-
-        [SerializeField]
-        private string port = "8080";
-
-        public int playerID
-        {
-            get { return _playerID; }
-            private set { _playerID = value; }
-        }
-
-        [SerializeField]
         private Enums.GameData.GameState _gameState;
         private Enums.GameData.GameState gameState
         {
@@ -64,6 +54,12 @@ namespace PJTC.Managers
                 _gameState = value;
                 GameStateChanged?.Invoke(value);
             }
+        }
+
+        public int playerID
+        {
+            get { return _playerID; }
+            private set { _playerID = value; }
         }
 
         public void Start()
@@ -83,7 +79,6 @@ namespace PJTC.Managers
 
         public void RestartGame()
         {
-            //RestartScene();
             serverCommunicator.Disconnect();
         }
 
@@ -132,7 +127,9 @@ namespace PJTC.Managers
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
             gameState = Enums.GameData.GameState.PlayerInit;
+
             OnPlayerSync(playerInitData);
+
             cameraPositioner.PosCamera(playerID);
         }
 

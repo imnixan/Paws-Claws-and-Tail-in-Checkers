@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using PJTC.Enums;
-using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.Events;
@@ -26,6 +25,7 @@ namespace GameData.Managers
         public ServerDataHandler(WebSocket ws)
         {
             this.ws = ws;
+
             InitHandler();
         }
 
@@ -56,6 +56,7 @@ namespace GameData.Managers
         private void InvokeHandler(ClientServerMessage message)
         {
             CSMRequest.Type type = (CSMRequest.Type)message.type;
+
             if (requestHandlers.TryGetValue(type, out Action<ClientServerMessage> handler))
             {
                 handler(message);
@@ -116,6 +117,7 @@ namespace GameData.Managers
         {
             Debug.Log("GAME END");
             GameResult result = JsonUtility.FromJson<GameResult>(message.data);
+
             GameEnd?.Invoke(result);
         }
     }
