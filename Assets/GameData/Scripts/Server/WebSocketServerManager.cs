@@ -13,11 +13,11 @@ namespace PJTC.Server
 
         void OnEnable()
         {
-            wss = new WebSocketServer("ws://ip:8080");
+            wss = new WebSocketServer($"ws://{ip}:8080");
             wss.AddWebSocketService<PlayerListener>("/checkers");
             wss.Start();
 
-            Debug.Log("WebSocket server started at ws://localhost:8080");
+            Debug.Log($"WebSocket server started at ws://{ip}:8080");
         }
 
         void OnDestroy()
