@@ -112,7 +112,7 @@ namespace PJTC.Managers.UI
             Debug.Log("show attack on playerInit");
             windowBG.gameObject.SetActive(true);
             windowBG.sprite = windowVariants[playerInitData.playerID];
-            windowBG.transform.DOMoveX(0, 0.4f).SetEase(Ease.InBack).Play();
+            windowBG.transform.DOLocalMoveX(0, 0.4f).SetEase(Ease.InBack).Play();
         }
 
         private void SubOnEvents()
