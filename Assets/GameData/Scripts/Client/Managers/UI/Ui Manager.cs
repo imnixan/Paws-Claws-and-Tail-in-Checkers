@@ -24,17 +24,8 @@ namespace PJTC.Managers.UI
         [SerializeField]
         private GameObject restartBtn;
 
-        [Header("Windows")]
-        [SerializeField]
-        private Transform chooseAttackWindow;
-
         private void Start()
         {
-            chooseAttackWindow.localPosition = new Vector2(
-                -1000,
-                chooseAttackWindow.localPosition.y
-            );
-            chooseAttackWindow.gameObject.SetActive(false);
             restartBtn.gameObject.SetActive(false);
             waitingForThePlayer.SetActive(false);
         }
@@ -70,14 +61,6 @@ namespace PJTC.Managers.UI
 
         private void OnPlayerFinishChooseAttack()
         {
-            Sequence showAttackChooseWindow = DOTween.Sequence();
-            showAttackChooseWindow
-                .Append(chooseAttackWindow.DOLocalMoveX(-1000, 0.3f))
-                .AppendCallback(() =>
-                {
-                    chooseAttackWindow.gameObject.SetActive(true);
-                })
-                .Restart();
             waitingForThePlayer.SetActive(true);
         }
 

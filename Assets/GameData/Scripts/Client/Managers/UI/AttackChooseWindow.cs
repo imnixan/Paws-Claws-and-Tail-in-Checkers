@@ -109,6 +109,7 @@ namespace PJTC.Managers.UI
 
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
+            Debug.Log("show attack on playerInit");
             windowBG.gameObject.SetActive(true);
             windowBG.sprite = windowVariants[playerInitData.playerID];
             windowBG.transform.DOMoveX(0, 0.4f).SetEase(Ease.InBack).Play();

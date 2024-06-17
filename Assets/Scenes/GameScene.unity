@@ -2112,8 +2112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b77d19bb1ccc5428f0322fbef25f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ip: roundhouse.proxy.rlwy.net
-  port: 25349
+  ip: localhost
+  port: 8080
   carpetBuilder: {fileID: 962529098}
   gameBuilder: {fileID: 1721084981}
   gameController: {fileID: 309793257}
@@ -4875,7 +4875,6 @@ MonoBehaviour:
   loadingIcon: {fileID: 291358908}
   connectBtn: {fileID: 895399977}
   restartBtn: {fileID: 329834729}
-  chooseAttackWindow: {fileID: 1354384623}
 --- !u!114 &1484641850 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1912267860528838576, guid: ef24176dae493344cb0eea63e4d9307c, type: 3}
