@@ -21,10 +21,8 @@ jobs:
     - name: Install Railway CLI
       run: npm install -g @railway/cli
 
-    - name: Go to server folder
-      run: cd server
-
     - name: Deploy to Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      working-directory: ./server
       run: railway up --service=serious-server -d
