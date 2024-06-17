@@ -4875,7 +4875,6 @@ MonoBehaviour:
   loadingIcon: {fileID: 291358908}
   connectBtn: {fileID: 895399977}
   restartBtn: {fileID: 329834729}
-  chooseAttackWindow: {fileID: 1354384623}
 --- !u!114 &1484641850 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1912267860528838576, guid: ef24176dae493344cb0eea63e4d9307c, type: 3}

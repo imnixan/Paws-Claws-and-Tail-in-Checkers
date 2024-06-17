@@ -12,13 +12,17 @@ namespace PJTC.Server
 
         public static void OnPlayerConnect(PlayerListener listener)
         {
+            Debug.Log("add player in queue ");
             playersQueue.Add(listener);
+            Debug.Log("Queue lenght " + playersQueue.Count);
             TryBuildRoom();
         }
 
         public static void OnPlayerDisconnect(PlayerListener listener)
         {
+            Debug.Log("remove player from queue coz disconnect");
             playersQueue.Remove(listener);
+            Debug.Log("Queue lenght " + playersQueue.Count);
         }
 
         public static void DestroyRoom(Guid roomID)
@@ -41,7 +45,9 @@ namespace PJTC.Server
                     playerListeners.Add(listener);
                     listener.roomNumber = roomId;
                     listener.playerID = i;
+                    Debug.Log("remove player from queue coz of room");
                     playersQueue.RemoveAt(0);
+                    Debug.Log("Queue lenght " + playersQueue.Count);
                 }
                 PlayerDataSender playerDataSender = new PlayerDataSender(playerListeners);
                 PlayerDataHandler playerDataHandler = new PlayerDataHandler();
