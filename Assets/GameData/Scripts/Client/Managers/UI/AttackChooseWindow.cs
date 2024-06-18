@@ -95,17 +95,7 @@ namespace PJTC.Managers.UI
             finishBtn.interactable = active;
         }
 
-        private void OnGameStart()
-        {
-            Sequence hideWindow = DOTween.Sequence();
-            hideWindow
-                .Append(windowBG.transform.DOMoveX(-1000, 0.4f).SetEase(Ease.OutBack))
-                .AppendCallback(() =>
-                {
-                    windowBG.gameObject.SetActive(false);
-                })
-                .Restart();
-        }
+        private void OnAttackChoosed() { }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
@@ -117,13 +107,13 @@ namespace PJTC.Managers.UI
 
         private void SubOnEvents()
         {
-            ServerDataHandler.GameStart += OnGameStart;
             ServerDataHandler.PlayerInit += OnPlayerInit;
+            AttackChooseManager.AttacksChoosed += OnAttackChoosed;
         }
 
         private void UnsubFromEvents()
         {
-            ServerDataHandler.GameStart -= OnGameStart;
+            AttackChooseManager.AttacksChoosed -= OnAttackChoosed;
             ServerDataHandler.PlayerInit -= OnPlayerInit;
         }
 
