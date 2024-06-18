@@ -95,7 +95,17 @@ namespace PJTC.Managers.UI
             finishBtn.interactable = active;
         }
 
-        private void OnAttackChoosed() { }
+        private void OnAttackChoosed()
+        {
+            Sequence hideWindow = DOTween.Sequence();
+            hideWindow
+                .Append(windowBG.transform.DOMoveX(-1000, 0.4f).SetEase(Ease.OutBack))
+                .AppendCallback(() =>
+                {
+                    windowBG.gameObject.SetActive(false);
+                })
+                .Restart();
+        }
 
         private void OnPlayerInit(PlayerInitData playerInitData)
         {
