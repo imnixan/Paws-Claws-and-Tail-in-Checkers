@@ -75,7 +75,6 @@ namespace PJTC.Managers
 
         public void OnConnect()
         {
-            Debug.Log("OnConnect");
             uiManager.OnConnected();
         }
 
@@ -128,7 +127,6 @@ namespace PJTC.Managers
 
         public void OnConnectError()
         {
-            Debug.Log("Connect Error");
             uiManager.OnConnectError();
         }
 
@@ -173,10 +171,7 @@ namespace PJTC.Managers
             this.gameController.playerOrder = playerOrder;
         }
 
-        private void OnMoveError()
-        {
-            Debug.Log("NoMoves for this cat");
-        }
+        private void OnMoveError() { }
 
         private void SubOnEvents()
         {

@@ -1,4 +1,5 @@
 ﻿using PJTC.Structs;
+using UnityEngine;
 
 namespace PJTC.Server.MovesCalculation
 {
@@ -21,7 +22,7 @@ namespace PJTC.Server.MovesCalculation
             {
                 repeats = 0;
             }
-
+            oldCatsCount = moveResult.catsCount;
             return repeats;
         }
     }

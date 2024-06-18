@@ -30,11 +30,7 @@ namespace PJTC.Server
         private int currentPlayer
         {
             get { return _currentPlayer; }
-            set
-            {
-                _currentPlayer = value >= playersCount ? 0 : value;
-                Debug.Log($"current player {_currentPlayer}");
-            }
+            set { _currentPlayer = value >= playersCount ? 0 : value; }
         }
 
         public ServerGameManager(
@@ -66,7 +62,6 @@ namespace PJTC.Server
         public void OnPlayerDisconnect(int playerID)
         {
             playersCount--;
-            Debug.Log("Players count " + playersCount);
             if (gameState == Enums.GameData.GameState.GameEnd)
             {
                 if (playersCount == 0 && roomNumber != Guid.Empty)
@@ -81,7 +76,6 @@ namespace PJTC.Server
                 int winnerID = playerID == 0 ? 1 : 0;
                 GameResult gameResult = new GameResult(winnerID, (int)reason);
                 OnGameEnd(gameResult);
-                Debug.Log($"players count {playersCount}");
             }
         }
 
@@ -92,7 +86,6 @@ namespace PJTC.Server
             {
                 return;
             }
-            Debug.Log($"build move to {move.moveEnd}");
             MoveResult moveResult = moveMaker.MakeMove(new CompletedMoveData(move));
             gameField.UpdateField(moveResult);
             catsCount = moveResult.catsCount;
@@ -103,13 +96,14 @@ namespace PJTC.Server
                     (CatsType.Team)i,
                     moveResult
                 );
-                Debug.Log($"SERVER GM ORIGINAL move RESULT {JsonUtility.ToJson(moveResult)}");
-
                 playersCommunicator.playerDataSender.SendPlayerMove(playerResult, i);
             }
 
             int repeats = repeatMovesChecker.GetMoveRepeats(moveResult);
-            if (repeats == REPEATS_ALARM) { }
+            if (repeats == REPEATS_ALARM)
+            {
+                playersCommunicator.playerDataSender.SendAllPlayersDrawAlarm();
+            }
             if (repeats >= REPEATS_MAX)
             {
                 OnGameEnd(new GameResult(-1, (int)Enums.GameData.EndGameReason.Draw));
@@ -121,7 +115,6 @@ namespace PJTC.Server
             if (UpdateAttacks(playerAttackTypesData, playerID))
             {
                 playerReadyMarks[playerID] = true;
-                Debug.Log($"player{playerID} send attacks");
 
                 if (CheckAllReady())
                 {
@@ -130,7 +123,6 @@ namespace PJTC.Server
             }
             else
             {
-                Debug.Log($"WRONG Attack data");
                 playersCommunicator.playerDataSender.InitPlayer(
                     playerID,
                     gameField.GetSecureField((CatsType.Team)playerID),
@@ -157,7 +149,6 @@ namespace PJTC.Server
 
         private void InitAllPlayers()
         {
-            Debug.Log("Server init all players");
             gameState = Enums.GameData.GameState.PlayerInit;
 
             for (int playerID = 0; playerID < playersCount; playerID++)
@@ -208,7 +199,6 @@ namespace PJTC.Server
             if (playerHash.maphash == gameField.mapHash)
             {
                 playerReadyMarks[playerID] = true;
-                Debug.Log($"player{playerID} is ready");
 
                 if (CheckAllReady())
                 {
@@ -260,12 +250,10 @@ namespace PJTC.Server
             switch (gameState)
             {
                 case Enums.GameData.GameState.PlayerInit:
-                    Debug.Log("starting game");
                     StartGame();
 
                     break;
                 case Enums.GameData.GameState.Game:
-                    Debug.Log("continue game");
                     if (!CheckEndGame())
                     {
                         NextPlayerTurn();
