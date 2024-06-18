@@ -29,31 +29,37 @@ namespace PJTC.Managers
 
         public void PlayHitEffect()
         {
+            Debug.Log("play hit");
             Instantiate(hitEffect, transform.position, new Quaternion(), transform.parent);
         }
 
         public void PlayDeathEffect()
         {
+            Debug.Log("play lose");
             Instantiate(deathEffect, transform.position, new Quaternion(), transform.parent);
         }
 
         public void PlayDefendEffect()
         {
+            Debug.Log("play defend");
             Instantiate(defendEffect, transform.position, new Quaternion(), transform.parent);
         }
 
         public void PlayLoseAttackMove()
         {
+            Debug.Log("play loseattack");
             Instantiate(loseAttackEffect, transform.position, new Quaternion(), transform.parent);
         }
 
         public void StartMoving()
         {
             moveEffect.Play();
+            Debug.Log("start moving");
         }
 
         public void StopMoving()
         {
+            Debug.Log("end moving");
             moveEffect.Stop();
         }
 

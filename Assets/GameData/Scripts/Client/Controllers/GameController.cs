@@ -91,13 +91,19 @@ namespace PJTC.Controllers
                         move.Append(movedCat.MoveTo(completedMove.enemy.position));
                         if (completedMove.battleWin)
                         {
-                            movedCat.OnBattle(true, true);
-                            enemyCat.OnBattle(false, false);
+                            move.AppendCallback(() =>
+                            {
+                                movedCat.OnBattle(true, true);
+                                enemyCat.OnBattle(false, false);
+                            });
                         }
                         else
                         {
-                            movedCat.OnBattle(true, false);
-                            enemyCat.OnBattle(false, true);
+                            move.AppendCallback(() =>
+                            {
+                                movedCat.OnBattle(true, false);
+                                enemyCat.OnBattle(false, true);
+                            });
                         }
                     }
                     move.Append(movedCat.MoveTo(completedMove.moveData.moveEnd));

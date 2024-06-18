@@ -70,6 +70,7 @@ namespace PJTC.Managers
             currentJaws = 0;
             currentPaws = 0;
             currentTails = 0;
+            window.SetActiveFinishBtn(false);
         }
 
         private void OnAttackChanged(CatData catData, CatsType.Attack oldAttack)
