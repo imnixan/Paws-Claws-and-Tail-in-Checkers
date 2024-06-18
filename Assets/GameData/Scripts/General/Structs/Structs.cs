@@ -151,8 +151,8 @@ namespace PJTC.Structs
         public CatsType.Attack excludedAttack;
 
         public AttackHint(
-            CatsType.Attack excludedAttack = CatsType.Attack.None,
-            bool solved = false
+            bool solved = false,
+            CatsType.Attack excludedAttack = CatsType.Attack.None
         )
         {
             this.solved = solved;

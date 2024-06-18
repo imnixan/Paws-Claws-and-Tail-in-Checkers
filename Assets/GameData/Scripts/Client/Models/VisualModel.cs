@@ -29,7 +29,7 @@ namespace PJTC.Managers
             Debug.Log("play hit");
             core.material = attackMaterial;
 
-            hitEffect.Play();
+            Instantiate(hitEffect, transform.position, new Quaternion());
         }
 
         public void PlayDefendEffect()
