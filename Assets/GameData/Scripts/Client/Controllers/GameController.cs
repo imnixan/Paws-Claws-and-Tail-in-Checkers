@@ -85,6 +85,21 @@ namespace PJTC.Controllers
 
                 if (movedCat != null)
                 {
+                    Cat enemyCat = playerController.GetCat(completedMove.enemy.id);
+                    if (completedMove.moveWithBattle)
+                    {
+                        move.Append(movedCat.MoveTo(completedMove.enemy.position));
+                        if (completedMove.battleWin)
+                        {
+                            movedCat.OnBattle(true, true);
+                            enemyCat.OnBattle(false, false);
+                        }
+                        else
+                        {
+                            movedCat.OnBattle(true, false);
+                            enemyCat.OnBattle(false, true);
+                        }
+                    }
                     move.Append(movedCat.MoveTo(completedMove.moveData.moveEnd));
                     move.AppendCallback(() =>
                     {
