@@ -75,8 +75,11 @@ namespace GameData.Scripts
 
         public void Disconnect()
         {
-            pingTimer.Stop();
-            connectTimer.Stop();
+            if (pingTimer != null)
+                pingTimer.Stop();
+
+            if (connectTimer != null)
+                connectTimer.Stop();
             if (ws != null)
             {
                 ws.Close();

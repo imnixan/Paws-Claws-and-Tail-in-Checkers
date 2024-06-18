@@ -17,6 +17,21 @@ namespace PJTC.Server
         public Guid roomNumber;
         public int playerID;
         public bool active;
+        private const float MAX_PING_TIME_FOR_CONNECT = 3;
+        public float lastPingTime { get; private set; }
+        public float timeSinceLastPing
+        {
+            get
+            {
+                float currentTime = Time.time;
+                return currentTime - lastPingTime;
+            }
+        }
+
+        public bool isConnected
+        {
+            get { return timeSinceLastPing <= MAX_PING_TIME_FOR_CONNECT; }
+        }
 
         private int messageCount = 0;
         private Dictionary<
@@ -25,12 +40,11 @@ namespace PJTC.Server
         > pendingMessages = new Dictionary<int, (string, DateTime, int)>();
         private const int RETRY_INTERVAL = 5; // Интервал повторной отправки сообщения в секундах
         private const int MAX_RETRIES = 3; // Максимальное количество попыток повторной отправки
-        private const int MAX_PING_TIME_SECONDS = 15;
-        private const int PING_CHECK_TIME = 5000;
+        private const float MAX_PING_TIME_SECONDS = 7.5f;
+        private const int PING_CHECK_TIME = 2500;
         private Thread retryThread;
         private bool running = true;
         private readonly object lockObject = new object();
-        private float lastPingTime;
         private System.Timers.Timer timer;
 
         public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
@@ -70,6 +84,11 @@ namespace PJTC.Server
             timer.AutoReset = true;
 
             timer.Enabled = true;
+        }
+
+        public void CloseListener()
+        {
+            CloseAsync();
         }
 
         protected override void OnClose(CloseEventArgs e)
@@ -138,8 +157,6 @@ namespace PJTC.Server
 
         private void CheckPing(object source, ElapsedEventArgs e)
         {
-            float currentTime = Time.time;
-            float timeSinceLastPing = currentTime - lastPingTime;
             Debug.Log(
                 $"Player {playerID} ping check... last {timeSinceLastPing} - {MAX_PING_TIME_SECONDS}"
             );

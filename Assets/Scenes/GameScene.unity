@@ -2111,8 +2111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b77d19bb1ccc5428f0322fbef25f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ip: roundhouse.proxy.rlwy.net
-  port: 25349
+  ip: localhost
+  port: 8080
   carpetBuilder: {fileID: 962529098}
   gameBuilder: {fileID: 1721084981}
   gameController: {fileID: 309793257}

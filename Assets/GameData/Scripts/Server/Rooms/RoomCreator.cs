@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace PJTC.Server
@@ -35,36 +36,59 @@ namespace PJTC.Server
         private static void TryBuildRoom()
         {
             Debug.Log("Trying build room");
+
             if (playersQueue.Count >= ROOM_SIZE)
             {
                 Guid roomId = Guid.NewGuid();
                 List<PlayerListener> playerListeners = new List<PlayerListener>();
                 for (int i = 0; i < ROOM_SIZE; i++)
                 {
+                    if (playersQueue.Count == 0)
+                    {
+                        return;
+                    }
                     PlayerListener listener = playersQueue[0];
-                    playerListeners.Add(listener);
-                    listener.roomNumber = roomId;
-                    listener.playerID = i;
-                    Debug.Log("remove player from queue coz of room");
-                    playersQueue.RemoveAt(0);
-                    Debug.Log("Queue lenght " + playersQueue.Count);
+                    if (listener.isConnected)
+                    {
+                        playerListeners.Add(listener);
+                        listener.roomNumber = roomId;
+                        listener.playerID = i;
+                        playersQueue.RemoveAt(0);
+                    }
+                    else
+                    {
+                        Debug.Log("remove player from queue coz of not connected");
+                        listener.CloseListener();
+                        playersQueue.RemoveAt(0);
+                        i--;
+                    }
                 }
-                PlayerDataSender playerDataSender = new PlayerDataSender(playerListeners);
-                PlayerDataHandler playerDataHandler = new PlayerDataHandler();
-                PlayersCommunicator playersCommunicator = new PlayersCommunicator(
-                    playerDataSender,
-                    playerDataHandler
-                );
 
-                if (RoomStorage.rooms.TryAdd(roomId, playersCommunicator))
+                if (playerListeners.Count == ROOM_SIZE)
                 {
-                    Debug.Log($"TOTAL ROOMS {RoomStorage.rooms.Count}");
-                    new ServerGameManager(playersCommunicator, playerListeners.Count, roomId);
+                    PlayerDataSender playerDataSender = new PlayerDataSender(playerListeners);
+                    PlayerDataHandler playerDataHandler = new PlayerDataHandler();
+                    PlayersCommunicator playersCommunicator = new PlayersCommunicator(
+                        playerDataSender,
+                        playerDataHandler
+                    );
+
+                    if (RoomStorage.rooms.TryAdd(roomId, playersCommunicator))
+                    {
+                        Debug.Log($"TOTAL ROOMS {RoomStorage.rooms.Count}");
+                        new ServerGameManager(playersCommunicator, playerListeners.Count, roomId);
+                    }
+                }
+                else
+                {
+                    // Если не удалось собрать полную комнату, возвращаем оставшихся игроков в очередь
+                    playersQueue.AddRange(playerListeners);
+                    Debug.Log("Not enough connected players to build a full room");
                 }
             }
             else
             {
-                Debug.Log("no enought player for room");
+                Debug.Log("Not enough players for room");
             }
         }
     }

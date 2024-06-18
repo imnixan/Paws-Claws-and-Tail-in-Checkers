@@ -19,12 +19,10 @@ namespace PJTC.Game
         public enum FieldTypes
         {
             Normal8x8,
-            TestNormal,
-            TestNormalMulti,
-            TestChonky
+            Chonky8x8
         }
 
-        public GameField(FieldTypes type = FieldTypes.Normal8x8)
+        public GameField(FieldTypes type = FieldTypes.Chonky8x8)
         {
             server = true;
             matrix = new CatData[fieldSize, fieldSize];
@@ -43,14 +41,8 @@ namespace PJTC.Game
                 case FieldTypes.Normal8x8:
                     FillFieldNormal();
                     break;
-                case FieldTypes.TestNormal:
-                    FillFieldTestNormal();
-                    break;
-                case FieldTypes.TestNormalMulti:
-                    FillFieldTestNormalMultiway();
-                    break;
-                case FieldTypes.TestChonky:
-                    FillFieldTestChonky();
+                case FieldTypes.Chonky8x8:
+                    FillFieldChonky();
                     break;
             }
         }
@@ -239,137 +231,31 @@ namespace PJTC.Game
             }
         }
 
-        #region testnormal
-        //test normals
-        private void FillFieldTestNormal()
-        {
-            int catId = 2;
-            Enums.CatsType.Type defaultType = Enums.CatsType.Type.Normal;
-
-            // Расставляем фишки для тестового поля
-            // Оранжевая команда
-            matrix[3, 6] = new CatData(
-                catId++,
-                new Vector2Int(3, 6),
-                defaultType,
-                Enums.CatsType.Team.Orange
-            );
-
-            matrix[5, 6] = new CatData(
-                catId++,
-                new Vector2Int(5, 6),
-                defaultType,
-                Enums.CatsType.Team.Orange
-            );
-
-            // Черная команда
-            matrix[4, 3] = new CatData(
-                catId++,
-                new Vector2Int(4, 3),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-            matrix[4, 1] = new CatData(
-                catId++,
-                new Vector2Int(4, 1),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-            matrix[4, 5] = new CatData(
-                catId++,
-                new Vector2Int(4, 5),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-        }
-        #endregion
-
-        #region testnormalMOREWAYS
-        private void FillFieldTestNormalMultiway()
-        {
-            int catId = 2;
-            Enums.CatsType.Type defaultType = Enums.CatsType.Type.Normal;
-
-            // Расставляем фишки для тестового поля
-            // Оранжевая команда
-
-            matrix[5, 6] = new CatData(
-                catId++,
-                new Vector2Int(5, 6),
-                defaultType,
-                Enums.CatsType.Team.Orange
-            );
-
-            // Черная команда
-            matrix[4, 3] = new CatData(
-                catId++,
-                new Vector2Int(4, 3),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-            matrix[4, 5] = new CatData(
-                catId++,
-                new Vector2Int(4, 5),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-            matrix[2, 5] = new CatData(
-                catId++,
-                new Vector2Int(2, 5),
-                defaultType,
-                Enums.CatsType.Team.Black
-            );
-        }
-        #endregion
-
-
         #region testChonky
         //test chonky
-        private void FillFieldTestChonky()
+        private void FillFieldChonky()
         {
             int catId = 2;
             Enums.CatsType.Type defaultType = Enums.CatsType.Type.Chonky;
 
-            // Расставляем фишки для тестового поля
-            // Оранжевая команда
-            matrix[2, 7] = new CatData(
-                catId++,
-                new Vector2Int(2, 7),
-                defaultType,
-                Enums.CatsType.Team.Orange,
-                Enums.CatsType.Attack.Paws
-            );
-
-            matrix[6, 7] = new CatData(
-                catId++,
-                new Vector2Int(6, 7),
-                defaultType,
-                Enums.CatsType.Team.Orange,
-                Enums.CatsType.Attack.Jaws
-            );
-
-            // Черная команда
-            matrix[4, 3] = new CatData(
-                catId++,
-                new Vector2Int(4, 3),
-                defaultType,
-                Enums.CatsType.Team.Black,
-                Enums.CatsType.Attack.Tail
-            );
-            matrix[4, 1] = new CatData(
-                catId++,
-                new Vector2Int(4, 1),
-                defaultType,
-                Enums.CatsType.Team.Black,
-                Enums.CatsType.Attack.Tail
-            );
-            matrix[4, 5] = new CatData(
-                catId++,
-                new Vector2Int(4, 5),
-                defaultType,
-                Enums.CatsType.Team.Black,
-                Enums.CatsType.Attack.Tail
-            );
+            for (int x = 0; x < 3; x++)
+            {
+                for (int y = 0; y < fieldSize; y++)
+                {
+                    if (matrix[x, y].id == 1)
+                    {
+                        matrix[x, y].id = catId++;
+                        matrix[x, y].team = Enums.CatsType.Team.Orange;
+                        matrix[x, y].type = defaultType;
+                        matrix[(fieldSize - 1) - x, (fieldSize - 1) - y].id = catId++;
+                        matrix[(fieldSize - 1) - x, (fieldSize - 1) - y].team = Enums
+                            .CatsType
+                            .Team
+                            .Black;
+                        matrix[(fieldSize - 1) - x, (fieldSize - 1) - y].type = defaultType;
+                    }
+                }
+            }
         }
         #endregion
     }
