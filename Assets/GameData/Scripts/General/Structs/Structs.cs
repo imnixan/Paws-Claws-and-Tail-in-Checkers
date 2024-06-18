@@ -107,7 +107,7 @@ namespace PJTC.Structs
 
         public void UpdateDefenderHints(bool defeated, CatsType.Attack attackerType)
         {
-            CatsType.Attack newExcludedAttack = AttackMap.attackMap[attackerType];
+            CatsType.Attack newExcludedAttack = AttackMap.defenceMap[attackerType];
             if (
                 defeated
                 || (
@@ -124,9 +124,9 @@ namespace PJTC.Structs
             }
         }
 
-        public void UpdateAttackerHints(bool won)
+        public void UpdateAttackerHints(bool won, CatsType.Attack defenderType)
         {
-            CatsType.Attack newExcludedAttack = AttackMap.attackMap[this.attackType];
+            CatsType.Attack newExcludedAttack = AttackMap.attackMap[defenderType];
             if (
                 won
                 || (

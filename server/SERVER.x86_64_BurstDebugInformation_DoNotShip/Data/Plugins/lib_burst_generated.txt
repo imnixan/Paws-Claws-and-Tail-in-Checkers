@@ -10,7 +10,10 @@ Library: M:\AGAIN GAME YES\PCTC\Temp\BurstOutput\Data\Plugins\lib_burst_generate
 --assembly-defines=Accessibility;
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=CFXRDemo;
+--assembly-defines=CFXRRuntime;
 --assembly-defines=DOTween;
+--assembly-defines=KinoBloom.Runtime;
 --assembly-defines=Mono.Data.Sqlite;
 --assembly-defines=Mono.Messaging;
 --assembly-defines=Mono.Posix;
@@ -205,7 +208,10 @@ Library: M:\AGAIN GAME YES\PCTC\Temp\BurstOutput\Data\Plugins\lib_burst_generate
 --assembly-defines=Accessibility;
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=CFXRDemo;
+--assembly-defines=CFXRRuntime;
 --assembly-defines=DOTween;
+--assembly-defines=KinoBloom.Runtime;
 --assembly-defines=Mono.Data.Sqlite;
 --assembly-defines=Mono.Messaging;
 --assembly-defines=Mono.Posix;
@@ -402,7 +408,10 @@ Library: M:\AGAIN GAME YES\PCTC\Temp\BurstOutput\Data\Plugins\lib_burst_generate
 --assembly-defines=Accessibility;
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=CFXRDemo;
+--assembly-defines=CFXRRuntime;
 --assembly-defines=DOTween;
+--assembly-defines=KinoBloom.Runtime;
 --assembly-defines=Mono.Data.Sqlite;
 --assembly-defines=Mono.Messaging;
 --assembly-defines=Mono.Posix;
@@ -501,7 +510,10 @@ Library: M:\AGAIN GAME YES\PCTC\Temp\BurstOutput\Data\Plugins\lib_burst_generate
 --assembly-defines=Accessibility;
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=CFXRDemo;
+--assembly-defines=CFXRRuntime;
 --assembly-defines=DOTween;
+--assembly-defines=KinoBloom.Runtime;
 --assembly-defines=Mono.Data.Sqlite;
 --assembly-defines=Mono.Messaging;
 --assembly-defines=Mono.Posix;
@@ -598,7 +610,10 @@ Library: M:\AGAIN GAME YES\PCTC\Temp\BurstOutput\Data\Plugins\lib_burst_generate
 --assembly-defines=Accessibility;
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=CFXRDemo;
+--assembly-defines=CFXRRuntime;
 --assembly-defines=DOTween;
+--assembly-defines=KinoBloom.Runtime;
 --assembly-defines=Mono.Data.Sqlite;
 --assembly-defines=Mono.Messaging;
 --assembly-defines=Mono.Posix;
@@ -697,7 +712,10 @@ Library: M:\AGAIN GAME YES\PCTC\Temp\BurstOutput\Data\Plugins\lib_burst_generate
 --assembly-defines=Accessibility;
 --assembly-defines=Assembly-CSharp-firstpass;
 --assembly-defines=Assembly-CSharp;
+--assembly-defines=CFXRDemo;
+--assembly-defines=CFXRRuntime;
 --assembly-defines=DOTween;
+--assembly-defines=KinoBloom.Runtime;
 --assembly-defines=Mono.Data.Sqlite;
 --assembly-defines=Mono.Messaging;
 --assembly-defines=Mono.Posix;

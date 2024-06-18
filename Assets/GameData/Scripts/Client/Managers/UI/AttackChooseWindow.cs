@@ -95,7 +95,7 @@ namespace PJTC.Managers.UI
             finishBtn.interactable = active;
         }
 
-        private void OnGameStart()
+        private void OnAttackChoosed()
         {
             Sequence hideWindow = DOTween.Sequence();
             hideWindow
@@ -117,13 +117,13 @@ namespace PJTC.Managers.UI
 
         private void SubOnEvents()
         {
-            ServerDataHandler.GameStart += OnGameStart;
             ServerDataHandler.PlayerInit += OnPlayerInit;
+            AttackChooseManager.PlayerFinishChoosingAttacks += OnAttackChoosed;
         }
 
         private void UnsubFromEvents()
         {
-            ServerDataHandler.GameStart -= OnGameStart;
+            AttackChooseManager.PlayerFinishChoosingAttacks -= OnAttackChoosed;
             ServerDataHandler.PlayerInit -= OnPlayerInit;
         }
 

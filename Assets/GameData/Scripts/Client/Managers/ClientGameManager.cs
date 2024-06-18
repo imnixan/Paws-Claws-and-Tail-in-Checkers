@@ -82,6 +82,7 @@ namespace PJTC.Managers
         public void RestartGame()
         {
             serverCommunicator.Disconnect();
+            RestartScene();
         }
 
         public void RestartScene()
@@ -95,9 +96,6 @@ namespace PJTC.Managers
             {
                 case Enums.GameData.GameState.GameEnd:
 
-                    break;
-                case Enums.GameData.GameState.Game:
-                    RestartScene();
                     break;
                 default:
                     RestartScene();

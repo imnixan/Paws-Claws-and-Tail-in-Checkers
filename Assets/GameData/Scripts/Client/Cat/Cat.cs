@@ -56,8 +56,52 @@ namespace PJTC.CatScripts
             transform.forward = forward;
 
             Tween tween = moveController.MoveTo(position);
-
+            tween.OnStart(OnMoveStart).OnComplete(OnMoveEnd);
             return tween;
+        }
+
+        public void OnBattle(bool attacker, bool result)
+        {
+            if (attacker)
+            {
+                if (result)
+                {
+                    visualModel.PlayHitEffect();
+                }
+                else
+                {
+                    visualModel.PlayLoseAttackMove();
+                }
+            }
+            else
+            {
+                if (result)
+                {
+                    visualModel.PlayDeathEffect();
+                }
+                else
+                {
+                    visualModel.PlayDefendEffect();
+                }
+            }
+        }
+
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnBattle(true, true);
+            }
+        }
+
+        private void OnMoveStart()
+        {
+            visualModel.StartMoving();
+        }
+
+        private void OnMoveEnd()
+        {
+            visualModel.StopMoving();
         }
 
         public void RemoveCat()

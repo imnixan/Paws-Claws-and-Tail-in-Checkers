@@ -12,7 +12,6 @@ namespace PJTC.Managers
     {
         public static event UnityAction PlayerFinishChoosingAttacks;
         public static event UnityAction<AttacksPool> RandomChoose;
-        public static event UnityAction AttacksChoosed;
 
         [SerializeField]
         private AttackChooseWindow window;
@@ -70,6 +69,7 @@ namespace PJTC.Managers
             currentJaws = 0;
             currentPaws = 0;
             currentTails = 0;
+            window.SetActiveFinishBtn(false);
         }
 
         private void OnAttackChanged(CatData catData, CatsType.Attack oldAttack)
