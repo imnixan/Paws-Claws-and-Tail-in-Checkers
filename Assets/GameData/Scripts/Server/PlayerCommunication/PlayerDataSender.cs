@@ -93,7 +93,7 @@ namespace PJTC.Server
             }
         }
 
-        public void SendAllPlayersAlarm()
+        public void SendAllPlayersDrawAlarm()
         {
             CSMRequest.Type type = CSMRequest.Type.DRAW_ALARM;
 
