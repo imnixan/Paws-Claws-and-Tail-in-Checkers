@@ -16,6 +16,8 @@ namespace GameData.Scripts
         public ServerDataHandler serverDataHandler { get; private set; }
         private const int PING_TIME = 1000;
         private const int MAX_CONNECT_TIME = 5000;
+        private const int MAX_RETRIES = 5;
+        private int retries;
         private string ip;
         private string port;
         private ClientGameManager gameManager;
@@ -58,7 +60,7 @@ namespace GameData.Scripts
         {
             ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
 
-            SendAck(csm.messageID);
+            //SendAck(csm.messageID);
 
             UnityMainThreadDispatcher.Instance.Enqueue(() => HandleMessage(csm));
         }
@@ -112,8 +114,7 @@ namespace GameData.Scripts
             Debug.Log("Connected");
             connectTimer.Stop();
             pingTimer = new Timer(1000);
-            pingTimer.Elapsed += OnPingEvent;
-
+            pingTimer.Elapsed += CheckAlive;
             pingTimer.AutoReset = true;
 
             pingTimer.Enabled = true;
@@ -121,10 +122,20 @@ namespace GameData.Scripts
             UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnect());
         }
 
-        private void OnPingEvent(object source, ElapsedEventArgs e)
+        private void CheckAlive(object source, ElapsedEventArgs e)
         {
-            Debug.Log($"Player {gameManager.playerID} send ping");
-            ws.Ping();
+            if (ws.IsAlive)
+            {
+                retries = 0;
+            }
+            else
+            {
+                retries++;
+            }
+            if (retries >= MAX_RETRIES)
+            {
+                Disconnect();
+            }
         }
 
         private void OnConnectionClosed(object sender, System.EventArgs e)
