@@ -69,7 +69,7 @@ namespace PJTC.Server
             Debug.Log("Players count " + playersCount);
             if (gameState == Enums.GameData.GameState.GameEnd)
             {
-                if (playersCount == 0)
+                if (playersCount == 0 && roomNumber != Guid.Empty)
                 {
                     RoomCreator.DestroyRoom(roomNumber);
                 }

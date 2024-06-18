@@ -5,6 +5,7 @@ using System.Threading;
 using System.Timers;
 using PJTC.Enums;
 using PJTC.Structs;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using WebSocketSharp;
@@ -103,9 +104,10 @@ namespace PJTC.Server
         {
             timer.Stop();
             Debug.Log($"PLAYER {playerID} DISCONNECTED");
-            if (active)
+            if (active && roomNumber != Guid.Empty)
             {
                 active = false;
+                Debug.Log(roomNumber);
                 GlobalMessageHandler.OnPlayerDisconnect(roomNumber, playerID);
             }
             else

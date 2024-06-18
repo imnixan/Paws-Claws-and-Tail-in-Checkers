@@ -84,10 +84,6 @@ namespace GameData.Scripts
             {
                 ws.Close();
             }
-            else
-            {
-                gameManager.RestartScene();
-            }
         }
 
         public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
