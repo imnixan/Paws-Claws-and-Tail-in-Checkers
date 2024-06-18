@@ -1,15 +1,7 @@
 fileFormatVersion: 2
-guid: 87ee7299dd44ed747af24dbb91bcd33b
+guid: a43bfa53f2e86d24c9a6d7c0ecbcc5f9
 PrefabImporter:
   externalObjects: {}
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 109565
-  packageName: Cartoon FX Remaster Free
-  packageVersion: R 1.4
-  assetPath: Assets/JMO Assets/Cartoon FX Remaster/CFXR Prefabs/Impacts/CFXR2 Ground
-    Hit.prefab
-  uploadId: 668589

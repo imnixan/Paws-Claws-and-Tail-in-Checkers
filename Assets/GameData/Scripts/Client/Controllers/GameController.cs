@@ -24,6 +24,9 @@ namespace PJTC.Controllers
         [SerializeField]
         private PlayerController playerController;
 
+        [SerializeField]
+        private Material[] attackMats;
+
         private ClientGameManager gameManager;
         private GameField gameField;
         private Enums.GameData.GameState gameState;
@@ -93,7 +96,11 @@ namespace PJTC.Controllers
                         {
                             move.AppendCallback(() =>
                             {
-                                movedCat.OnBattle(true, true);
+                                movedCat.OnBattle(
+                                    true,
+                                    true,
+                                    attackMats[(int)movedCat.catData.attackType]
+                                );
                                 enemyCat.OnBattle(false, false);
                             });
                         }
@@ -101,7 +108,11 @@ namespace PJTC.Controllers
                         {
                             move.AppendCallback(() =>
                             {
-                                movedCat.OnBattle(true, false);
+                                movedCat.OnBattle(
+                                    true,
+                                    false,
+                                    attackMats[(int)movedCat.catData.attackType]
+                                );
                                 enemyCat.OnBattle(false, true);
                             });
                         }

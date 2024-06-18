@@ -36,6 +36,7 @@ namespace PJTC.Managers
             set
             {
                 _currentPaws = Mathf.Max(0, value);
+                Debug.Log("paws " + _currentPaws);
                 window.UpdatePaws(_currentPaws);
             }
         }
@@ -46,6 +47,7 @@ namespace PJTC.Managers
             set
             {
                 _currentJaws = Mathf.Max(0, value);
+                Debug.Log("jaws " + _currentJaws);
                 window.UpdateJaws(_currentJaws);
             }
         }
@@ -56,6 +58,7 @@ namespace PJTC.Managers
             set
             {
                 _currentTails = Mathf.Max(0, value);
+                Debug.Log("tails " + _currentTails);
                 window.UpdateTails(_currentTails);
             }
         }
