@@ -62,16 +62,13 @@ namespace PJTC.CatScripts
 
         public void OnBattle(bool attacker, bool result, Material attackMat = null)
         {
-            if (attacker)
+            if (result)
             {
-                if (result)
+                if (attacker)
                 {
                     visualModel.PlayHitEffect(attackMat);
                 }
-            }
-            else
-            {
-                if (!result)
+                else
                 {
                     visualModel.PlayDefendEffect();
                 }

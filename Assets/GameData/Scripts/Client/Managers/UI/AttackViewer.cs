@@ -31,7 +31,7 @@ namespace PJTC.Managers.UI
         private Image attackIcon;
         private GameObject cross;
 
-        private float bias = 20f;
+        private float bias = 30f;
 
         public void SetAttackBanner(CatData catData)
         {
@@ -69,7 +69,7 @@ namespace PJTC.Managers.UI
                 }
                 else
                 {
-                    attackIcon.color = Color.white;
+                    attackIcon.color = new Color(1, 1, 1, 0.5f);
                 }
 
                 attackBannerImage.color = attackIcon.color;
@@ -118,18 +118,20 @@ namespace PJTC.Managers.UI
             Cat cat = GetComponentInParent<Cat>();
             Transform canvas = GameObject.FindGameObjectWithTag("AttackCanvas").transform;
 
-            attackBannerImage = CreateImageObject("AttackBanner", new Vector2(40, 40), canvas);
+            attackBannerImage = CreateImageObject("AttackBanner", new Vector2(30, 30), canvas);
             attackBannerImage.sprite = bgIcons[(int)cat.catData.team];
             attackBanner = attackBannerImage.transform;
-            attackIcon = CreateImageObject("AttackIcon", new Vector2(30, 30), attackBanner);
+            attackIcon = CreateImageObject("AttackIcon", new Vector2(20, 20), attackBanner);
 
             if (cat.catData.team == GameController.playerTeam)
             {
                 bias *= -1;
             }
 
-            Image crossImage = CreateImageObject("Cross", new Vector2(40, 40), attackBanner);
+            Image crossImage = CreateImageObject("Cross", new Vector2(30, 30), attackBanner);
             crossImage.sprite = crossIcon;
+            crossImage.color = new Color(1, 1, 1, 0.5f);
+
             cross = crossImage.gameObject;
         }
 
