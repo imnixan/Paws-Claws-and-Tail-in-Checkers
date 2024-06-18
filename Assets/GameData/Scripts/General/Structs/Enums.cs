@@ -38,10 +38,10 @@
 
         public enum Attack
         {
-            None,
             Paws,
             Jaws,
-            Tail
+            Tail,
+            None,
         }
     }
 

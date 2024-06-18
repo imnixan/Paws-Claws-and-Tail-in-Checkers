@@ -8,16 +8,13 @@ namespace PJTC.Managers
         private ParticleSystem hitEffect;
 
         [SerializeField]
-        private ParticleSystem deathEffect;
-
-        [SerializeField]
         private ParticleSystem moveEffect;
 
         [SerializeField]
         private ParticleSystem defendEffect;
 
         [SerializeField]
-        private ParticleSystem loseAttackEffect;
+        private ParticleSystemRenderer core;
 
         private SkinnedMeshRenderer meshRenderer;
 
@@ -27,28 +24,18 @@ namespace PJTC.Managers
             meshRenderer.material = material;
         }
 
-        public void PlayHitEffect()
+        public void PlayHitEffect(Material attackMaterial)
         {
             Debug.Log("play hit");
-            Instantiate(hitEffect, transform.position, new Quaternion(), transform.parent);
-        }
+            core.material = attackMaterial;
 
-        public void PlayDeathEffect()
-        {
-            Debug.Log("play lose");
-            Instantiate(deathEffect, transform.position, new Quaternion(), transform.parent);
+            hitEffect.Play();
         }
 
         public void PlayDefendEffect()
         {
             Debug.Log("play defend");
-            Instantiate(defendEffect, transform.position, new Quaternion(), transform.parent);
-        }
-
-        public void PlayLoseAttackMove()
-        {
-            Debug.Log("play loseattack");
-            Instantiate(loseAttackEffect, transform.position, new Quaternion(), transform.parent);
+            defendEffect.Play();
         }
 
         public void StartMoving()

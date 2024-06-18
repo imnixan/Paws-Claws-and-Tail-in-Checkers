@@ -13,6 +13,9 @@ namespace PJTC.Controllers
         [SerializeField]
         private GameBuilder gameBuilder;
 
+        [SerializeField]
+        private ParticleSystem upgradeChonkyEffect;
+
         public List<Cat> cats;
         public List<Cat> ownCats { get; private set; }
 
@@ -64,7 +67,7 @@ namespace PJTC.Controllers
         public void MakeCatChonky(Cat cat)
         {
             Material mat = cat.mat;
-
+            Instantiate(upgradeChonkyEffect, cat.transform.position, new Quaternion(), transform);
             Destroy(cat.visualModel.gameObject);
 
             VisualModel newModel = Instantiate(gameBuilder.chonkyModel, cat.transform);

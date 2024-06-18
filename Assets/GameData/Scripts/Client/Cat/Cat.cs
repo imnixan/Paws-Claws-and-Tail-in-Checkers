@@ -60,37 +60,21 @@ namespace PJTC.CatScripts
             return tween;
         }
 
-        public void OnBattle(bool attacker, bool result)
+        public void OnBattle(bool attacker, bool result, Material attackMat = null)
         {
             if (attacker)
             {
                 if (result)
                 {
-                    visualModel.PlayHitEffect();
-                }
-                else
-                {
-                    visualModel.PlayLoseAttackMove();
+                    visualModel.PlayHitEffect(attackMat);
                 }
             }
             else
             {
-                if (result)
-                {
-                    visualModel.PlayDeathEffect();
-                }
-                else
+                if (!result)
                 {
                     visualModel.PlayDefendEffect();
                 }
-            }
-        }
-
-        public void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                OnBattle(true, true);
             }
         }
 
