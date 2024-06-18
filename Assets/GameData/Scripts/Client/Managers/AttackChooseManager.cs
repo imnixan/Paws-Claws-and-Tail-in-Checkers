@@ -12,7 +12,6 @@ namespace PJTC.Managers
     {
         public static event UnityAction PlayerFinishChoosingAttacks;
         public static event UnityAction<AttacksPool> RandomChoose;
-        public static event UnityAction AttacksChoosed;
 
         [SerializeField]
         private AttackChooseWindow window;

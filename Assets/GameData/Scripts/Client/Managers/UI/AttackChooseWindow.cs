@@ -118,12 +118,12 @@ namespace PJTC.Managers.UI
         private void SubOnEvents()
         {
             ServerDataHandler.PlayerInit += OnPlayerInit;
-            AttackChooseManager.AttacksChoosed += OnAttackChoosed;
+            AttackChooseManager.PlayerFinishChoosingAttacks += OnAttackChoosed;
         }
 
         private void UnsubFromEvents()
         {
-            AttackChooseManager.AttacksChoosed -= OnAttackChoosed;
+            AttackChooseManager.PlayerFinishChoosingAttacks -= OnAttackChoosed;
             ServerDataHandler.PlayerInit -= OnPlayerInit;
         }
 

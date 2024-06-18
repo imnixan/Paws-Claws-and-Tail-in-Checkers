@@ -86,13 +86,13 @@ namespace PJTC.CatScripts
             }
         }
 
-        //public void Update()
-        //{
-        //    if (Input.GetKeyDown(KeyCode.Space))
-        //    {
-        //        OnBattle(true, true);
-        //    }
-        //}
+        public void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                OnBattle(true, true);
+            }
+        }
 
         private void OnMoveStart()
         {
