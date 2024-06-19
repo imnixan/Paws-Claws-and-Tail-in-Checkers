@@ -1,4 +1,4 @@
-name: Deploy to Railway server
+name: Deploy WebGL
 
 on:
   push:
@@ -27,4 +27,4 @@ jobs:
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       working-directory: ./webgl
-      run: railway up --service=cats-chekers -d
+      run: railway up --service=cats-checkers -d
