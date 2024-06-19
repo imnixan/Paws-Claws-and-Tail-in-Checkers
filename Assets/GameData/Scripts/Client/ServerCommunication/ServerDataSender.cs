@@ -1,5 +1,5 @@
-﻿using GameData.Scripts;
-using PJTC.Enums;
+﻿using PJTC.Enums;
+using PJTC.Scripts;
 using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;

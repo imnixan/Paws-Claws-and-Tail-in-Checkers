@@ -12,6 +12,11 @@ namespace PJTC.CatScripts
     [RequireComponent(typeof(MoveController))]
     public class Cat : MonoBehaviour
     {
+        [SerializeField]
+        private float chonkySpeed = 1.5f;
+
+        [SerializeField]
+        private float catSpeed = 3.5f;
         public event UnityAction<Cat> catTouched;
 
         public CatData catData;
@@ -40,6 +45,8 @@ namespace PJTC.CatScripts
 
             attackViewer = GetComponentInChildren<AttackViewer>();
             attackViewer.SetAttackBanner(catData);
+            moveController.speed =
+                catData.type == Enums.CatsType.Type.Normal ? catSpeed : chonkySpeed;
         }
 
         public void UpdateAttackType(CatData catData)
@@ -85,6 +92,12 @@ namespace PJTC.CatScripts
             visualModel.StopMoving();
         }
 
+        public void OnCatUpgrade()
+        {
+            visualModel.PlayUpgradeEffect();
+            moveController.speed = chonkySpeed;
+        }
+
         public void RemoveCat()
         {
             Destroy(gameObject);
@@ -108,6 +121,8 @@ namespace PJTC.CatScripts
                 .Append(transform.DOMoveY(0.5f, 0.15f))
                 .Append(transform.DOMoveY(0, 0.1f))
                 .Restart();
+
+            visualModel.OnInteract();
         }
 
         private void MakeSubscribes()

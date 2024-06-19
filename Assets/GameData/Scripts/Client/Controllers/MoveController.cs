@@ -18,6 +18,7 @@ namespace PJTC.Controllers
 
         public Tween MoveTo(Vector3 destination)
         {
+            Debug.Log("move speed = " + speed);
             Tween tween = this.transform.DOMove(
                 destination,
                 Vector3.Distance(transform.position, destination) / speed

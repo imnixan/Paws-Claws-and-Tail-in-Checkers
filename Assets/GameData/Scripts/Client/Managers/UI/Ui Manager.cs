@@ -1,5 +1,5 @@
 ﻿using DG.Tweening;
-using GameData.Managers;
+using PJTC.Managers;
 using PJTC.Structs;
 using TMPro;
 using UnityEngine;

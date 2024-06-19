@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Timers;
-using GameData.Managers;
 using PJTC.Enums;
+using PJTC.Managers;
 using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
 using WebSocketSharp;
 
-namespace GameData.Scripts
+namespace PJTC.Scripts
 {
     public class ServerCommunicator
     {

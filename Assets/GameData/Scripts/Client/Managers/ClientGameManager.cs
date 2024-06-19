@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using GameData.Managers;
-using GameData.Scripts;
 using PJTC.Builders;
 using PJTC.CameraControl;
 using PJTC.CatScripts;
 using PJTC.Controllers;
 using PJTC.Enums;
+using PJTC.Managers;
 using PJTC.Managers.UI;
+using PJTC.Scripts;
 using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.Events;

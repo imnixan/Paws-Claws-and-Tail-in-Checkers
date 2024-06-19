@@ -1,5 +1,5 @@
-﻿using GameData.Managers;
-using PJTC.Controllers;
+﻿using PJTC.Controllers;
+using PJTC.Managers;
 using PJTC.Structs;
 using TMPro;
 using UnityEngine;

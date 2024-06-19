@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
-using GameData.Managers;
 using PJTC.CatScripts;
 using PJTC.Enums;
 using PJTC.Game;
 using PJTC.Handlers;
+using PJTC.Managers;
 using PJTC.Managers;
 using PJTC.Structs;
 using UnityEngine;
@@ -111,7 +111,7 @@ namespace PJTC.Controllers
                                 movedCat.OnBattle(
                                     true,
                                     false,
-                                    attackMats[(int)movedCat.catData.attackType]
+                                    attackMats[(int)movedCat.catData.attackType - 1]
                                 );
                                 enemyCat.OnBattle(false, true);
                             });

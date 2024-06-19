@@ -1,6 +1,6 @@
 ﻿using System;
 using DG.Tweening;
-using GameData.Managers;
+using PJTC.Managers;
 using UnityEngine;
 
 namespace PJTC.Managers.UI

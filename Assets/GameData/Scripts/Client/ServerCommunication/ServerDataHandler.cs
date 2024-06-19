@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using WebSocketSharp;
 
-namespace GameData.Managers
+namespace PJTC.Managers
 {
     public class ServerDataHandler
     {

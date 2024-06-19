@@ -9,7 +9,6 @@ namespace PJTC.CatScripts
         protected void Start()
         {
             base.Start();
-            speed = 5;
         }
     }
 }

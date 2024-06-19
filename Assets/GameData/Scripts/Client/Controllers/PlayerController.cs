@@ -73,8 +73,8 @@ namespace PJTC.Controllers
             VisualModel newModel = Instantiate(gameBuilder.chonkyModel, cat.transform);
             newModel.Init(mat);
             cat.visualModel = newModel;
-
             cat.catData.type = CatsType.Type.Chonky;
+            cat.OnCatUpgrade();
         }
 
         private void FillOwnCats()

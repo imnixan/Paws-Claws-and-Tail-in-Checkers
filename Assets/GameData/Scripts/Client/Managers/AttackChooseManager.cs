@@ -1,6 +1,6 @@
-﻿using GameData.Managers;
-using PJTC.Controllers;
+﻿using PJTC.Controllers;
 using PJTC.Enums;
+using PJTC.Managers;
 using PJTC.Managers.UI;
 using PJTC.Structs;
 using UnityEngine;
