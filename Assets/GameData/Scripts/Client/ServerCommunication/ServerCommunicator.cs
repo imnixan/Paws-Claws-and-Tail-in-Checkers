@@ -111,7 +111,7 @@ namespace PJTC.Scripts
 
         private void OnConnectError(object source, ElapsedEventArgs e)
         {
-            Debug.Log("on connect error");
+            Debug.Log("on connect error " + e.ToString());
             UnityMainThreadDispatcher.Instance.Enqueue(() => Disconnect());
             UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnectError());
         }
