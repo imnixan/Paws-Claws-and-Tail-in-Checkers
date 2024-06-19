@@ -2346,7 +2346,7 @@ MonoBehaviour:
   - {x: 7, y: 3}
   startPos: {x: 0, y: 0}
   startType: 1
-  startAttack: 1
+  startAttack: 3
   startTeam: 0
   normalModel: {fileID: 2371197227498360040, guid: ae0956960ee8cb84caa8f9073ba98f93, type: 3}
   chonkyModel: {fileID: 2371197227498360040, guid: cde33db7da190984a879d8170565dfdf, type: 3}
