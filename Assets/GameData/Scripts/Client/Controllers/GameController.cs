@@ -113,6 +113,7 @@ namespace PJTC.Controllers
                                     false,
                                     attackMats[(int)movedCat.catData.attackType - 1]
                                 );
+                                enemyCat.transform.forward = movedCat.transform.forward * -1;
                                 enemyCat.OnBattle(false, true);
                             });
                         }
