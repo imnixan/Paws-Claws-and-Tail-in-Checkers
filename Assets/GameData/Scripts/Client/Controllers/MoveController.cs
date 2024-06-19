@@ -16,12 +16,11 @@ namespace PJTC.Controllers
             this.transform = this.gameObject.transform;
         }
 
-        public Tween MoveTo(Vector3 destination)
+        public Tween Move(Vector3 moveStart, Vector3 destination)
         {
-            Debug.Log("move speed = " + speed);
             Tween tween = this.transform.DOMove(
                 destination,
-                Vector3.Distance(transform.position, destination) / speed
+                Vector3.Distance(moveStart, destination) / speed
             );
 
             return tween;

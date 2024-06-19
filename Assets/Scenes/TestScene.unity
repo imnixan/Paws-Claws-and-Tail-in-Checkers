@@ -2339,7 +2339,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   catPrefab: {fileID: 3353764196649784024, guid: c84104dd841915c4da65abab340c168b, type: 3}
-  movePos: {x: 0, y: 0}
+  movePoses:
+  - {x: 0, y: 0}
+  - {x: 7, y: 7}
+  - {x: 5, y: 5}
+  - {x: 7, y: 3}
   startPos: {x: 0, y: 0}
   startType: 1
   startAttack: 1

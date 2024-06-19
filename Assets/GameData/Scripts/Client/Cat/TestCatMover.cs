@@ -15,7 +15,7 @@ namespace PJTC.CatScripts
         private Cat catPrefab;
 
         [SerializeField]
-        private Vector2Int movePos;
+        private Vector2Int[] movePoses;
 
         [SerializeField]
         private Vector2Int startPos;
@@ -79,7 +79,7 @@ namespace PJTC.CatScripts
             }
             else if (Input.GetKeyDown(KeyCode.M))
             {
-                cat.MoveTo(movePos).Play();
+                Move();
             }
             else if (Input.GetKeyDown(KeyCode.D))
             {
@@ -89,6 +89,16 @@ namespace PJTC.CatScripts
             {
                 cat.OnBattle(true, true, attackMats[(int)cat.catData.attackType - 1]);
             }
+        }
+
+        private void Move()
+        {
+            Sequence moveSeq = DOTween.Sequence();
+            foreach (var move in movePoses)
+            {
+                moveSeq.Append(cat.MoveTo(move));
+            }
+            moveSeq.Restart();
         }
     }
 }

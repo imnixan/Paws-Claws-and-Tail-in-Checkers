@@ -57,13 +57,19 @@ namespace PJTC.CatScripts
 
         public Tween MoveTo(Vector2Int destination)
         {
-            Vector3 position = new Vector3(destination.x, 0, destination.y);
-            catData.position = destination;
-            Vector3 forward = position - transform.position;
-            transform.forward = forward;
+            Vector3 startWorld = new Vector3(catData.position.x, 0, catData.position.y);
+            Vector3 destinationWorld = new Vector3(destination.x, 0, destination.y);
 
-            Tween tween = moveController.MoveTo(position);
-            tween.OnStart(OnMoveStart).OnComplete(OnMoveEnd);
+            Tween tween = moveController.Move(startWorld, destinationWorld);
+            tween
+                .OnStart(() =>
+                {
+                    OnMoveStart(destination);
+                })
+                .OnComplete(OnMoveEnd);
+
+            catData.position = destination;
+
             return tween;
         }
 
@@ -82,8 +88,11 @@ namespace PJTC.CatScripts
             }
         }
 
-        private void OnMoveStart()
+        private void OnMoveStart(Vector2Int destination)
         {
+            Vector3 position = new Vector3(destination.x, 0, destination.y);
+            Vector3 forward = position - transform.position;
+            transform.forward = forward;
             visualModel.StartMoving();
         }
 

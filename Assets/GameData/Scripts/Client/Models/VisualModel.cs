@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace PJTC.Managers
 {
@@ -36,15 +37,53 @@ namespace PJTC.Managers
         [SerializeField]
         private AudioClip[] meowSounds;
 
+        [SerializeField]
+        private AnimationClip[] idleAnims;
+
+        [SerializeField]
+        private AnimationClip moveAnim;
+
         private SkinnedMeshRenderer meshRenderer;
-        private Animator animator;
+        public Animation animator;
 
         public void Init(Material material)
         {
             meshRenderer = GetComponentInChildren<SkinnedMeshRenderer>();
             meshRenderer.material = material;
+            InitAnims();
+            StartCoroutine(RandomMoves());
+        }
 
-            animator = GetComponentInChildren<Animator>();
+        private IEnumerator RandomMoves()
+        {
+            while (true)
+            {
+                yield return new WaitForSeconds(Random.Range(0, 25));
+                if (!animator.isPlaying)
+                {
+                    string idleName = $"Idle{Random.Range(0, 2)}";
+                    animator.Play(idleName);
+                }
+            }
+        }
+
+        private void InitAnims()
+        {
+            animator = GetComponentInChildren<Animation>();
+            if (!moveAnim.legacy)
+            {
+                moveAnim.legacy = true;
+            }
+            animator.AddClip(moveAnim, "Move");
+            for (int i = 0; i < idleAnims.Length; i++)
+            {
+                if (!idleAnims[i].legacy)
+                {
+                    idleAnims[i].legacy = true;
+                }
+                animator.AddClip(idleAnims[i], $"Idle{i}");
+            }
+            Debug.Log(animator.GetClipCount());
         }
 
         public void PlayHitEffect(Material attackMaterial)
@@ -73,7 +112,9 @@ namespace PJTC.Managers
 
         public void OnInteract()
         {
-            if (Random.value > 0.8f)
+            string idleName = $"Idle{Random.Range(0, 2)}";
+            animator.Play(idleName);
+            if (Random.value > 0.5f)
             {
                 SoundManager.instance.PlaySound(
                     meowSounds[Random.Range(0, moveSounds.Length)],
@@ -91,16 +132,17 @@ namespace PJTC.Managers
                 0,
                 0.3f
             );
-            animator.SetBool("Moving", true);
+            animator.Play("Move");
 
             Debug.Log("start moving");
         }
 
         public void StopMoving()
         {
-            Debug.Log("end moving");
             moveEffect.Stop();
-            animator.SetBool("Moving", false);
+            Debug.Log("end moving");
+            string idleName = $"Idle{Random.Range(0, 2)}";
+            animator.Play(idleName);
         }
 
         public Material GetMaterial()

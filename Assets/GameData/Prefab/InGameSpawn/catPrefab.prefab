@@ -74,6 +74,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d39c06de4226c2b479a97da81e77c0f5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  chonkySpeed: 2
+  catSpeed: 3
   catData:
     id: 0
     position: {x: 0, y: 0}
