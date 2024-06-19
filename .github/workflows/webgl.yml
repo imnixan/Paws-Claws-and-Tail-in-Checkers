@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - server
+      - webgl
 
 jobs:
   deploy:
@@ -26,5 +26,5 @@ jobs:
     - name: Deploy to Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      working-directory: ./server
-      run: railway up --service=serious-server -d
+      working-directory: ./webgl
+      run: railway up --service=cats-chekers -d
