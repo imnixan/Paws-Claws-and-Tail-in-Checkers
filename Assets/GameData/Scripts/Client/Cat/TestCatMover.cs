@@ -2,9 +2,6 @@
 using DG.Tweening;
 using PJTC.Enums;
 using PJTC.Managers;
-using PJTC.Structs;
-using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace PJTC.CatScripts
