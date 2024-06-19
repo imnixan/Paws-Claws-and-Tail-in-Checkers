@@ -22,7 +22,7 @@ namespace PJTC.Game
             Chonky8x8
         }
 
-        public GameField(FieldTypes type = FieldTypes.Chonky8x8)
+        public GameField(FieldTypes type = FieldTypes.Normal8x8)
         {
             server = true;
             matrix = new CatData[fieldSize, fieldSize];
