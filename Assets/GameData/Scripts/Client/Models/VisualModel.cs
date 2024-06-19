@@ -130,7 +130,7 @@ namespace PJTC.Managers
             SoundManager.instance.PlaySound(
                 moveSounds[Random.Range(0, moveSounds.Length)],
                 0,
-                0.3f
+                0.1f
             );
             animator.Play("Move");
 
