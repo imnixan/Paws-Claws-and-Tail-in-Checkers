@@ -99,7 +99,7 @@ namespace PJTC.Controllers
                                 movedCat.OnBattle(
                                     true,
                                     true,
-                                    attackMats[(int)movedCat.catData.attackType - 1]
+                                    attackMats[(int)completedMove.moveData.catData.attackType - 1]
                                 );
                                 enemyCat.OnBattle(false, false);
                             });
