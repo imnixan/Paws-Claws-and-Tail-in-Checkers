@@ -21,13 +21,6 @@ namespace PJTC.Managers
 
         public ServerCommunicator serverCommunicator { get; private set; }
 
-        [Header("Connect params")]
-        [SerializeField]
-        private string ip = "localhost";
-
-        [SerializeField]
-        private string port = "8080";
-
         [SerializeField]
         private CarpetBuilder carpetBuilder;
 
@@ -64,12 +57,12 @@ namespace PJTC.Managers
 
         public void Start()
         {
-            serverCommunicator = new ServerCommunicator(this, ip, port);
+            serverCommunicator = new ServerCommunicator(this);
         }
 
         public void Connect()
         {
-            serverCommunicator.ConnectToServer();
+            serverCommunicator.TryToConnect();
             uiManager.OnStartConnect();
         }
 
