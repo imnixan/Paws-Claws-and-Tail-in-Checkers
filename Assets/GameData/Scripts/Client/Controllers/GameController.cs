@@ -127,7 +127,6 @@ namespace PJTC.Controllers
                             }
                             else
                             {
-                                Cat enemyCat = playerController.GetCat(completedMove.enemy.id);
                                 enemyCat.UpdateAttackType(completedMove.enemy);
                             }
                         }
