@@ -48,6 +48,7 @@ namespace PJTC.Scripts
         {
             if (Application.internetReachability == NetworkReachability.NotReachable)
             {
+                Debug.Log("no internet");
                 gameManager.OnError();
                 return;
             }
@@ -104,11 +105,13 @@ namespace PJTC.Scripts
 
         private void OnError(object sender, ErrorEventArgs e)
         {
+            Debug.Log("ws error");
             gameManager.OnError();
         }
 
         private void OnConnectError(object source, ElapsedEventArgs e)
         {
+            Debug.Log("on connect error");
             UnityMainThreadDispatcher.Instance.Enqueue(() => Disconnect());
             UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnectError());
         }
@@ -188,6 +191,7 @@ namespace PJTC.Scripts
             this.ip = RemoteConfigService.Instance.appConfig.GetString("serverURL");
             this.port = RemoteConfigService.Instance.appConfig.GetString("serverPORT");
 
+            Debug.Log($"connecting {ip}:{port}");
             ws = new WebSocket($"ws://{ip}:{port}/checkers");
             serverDataHandler = new ServerDataHandler(ws);
             serverDataSender = new ServerDataSender(ws, this);
