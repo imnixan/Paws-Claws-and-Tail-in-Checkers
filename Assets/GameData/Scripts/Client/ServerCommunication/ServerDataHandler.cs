@@ -97,7 +97,12 @@ namespace PJTC.Managers
         private void OnPlayerMoveResultCatch(ClientServerMessage message)
         {
             MoveResult moveResult = JsonUtility.FromJson<MoveResult>(message.data);
-
+            if (moveResult.moves[0].moveWithBattle)
+            {
+                Debug.Log(
+                    $"catch battle, attacker {moveResult.moves[0].moveData.catData.attackType}(hint{moveResult.moves[0].moveData.catData.attackHints.excludedAttack}), defender  {moveResult.moves[0].enemy.attackType}(hint{moveResult.moves[0].enemy.attackHints.excludedAttack})"
+                );
+            }
             Move?.Invoke(moveResult);
         }
 

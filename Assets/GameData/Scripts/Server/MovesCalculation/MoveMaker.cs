@@ -49,7 +49,7 @@ namespace PJTC.Server
 
                     completedMove.moveData.catData.UpdateAttackerHints(
                         false,
-                        completedMove.enemy.attackType
+                        catchedCat.attackType
                     );
                     catchedCat.UpdateDefenderHints(
                         false,
@@ -79,10 +79,7 @@ namespace PJTC.Server
                     completedMove.moveData.catData.type = CatsType.Type.Chonky;
                 }
 
-                completedMove.moveData.catData.UpdateAttackerHints(
-                    true,
-                    completedMove.enemy.attackType
-                );
+                completedMove.moveData.catData.UpdateAttackerHints(true, catchedCat.attackType);
                 catchedCat.UpdateDefenderHints(true, completedMove.moveData.catData.attackType);
                 completedMoves.Add(
                     new CompletedMoveData(completedMove.moveData, chonky, true, true, catchedCat)

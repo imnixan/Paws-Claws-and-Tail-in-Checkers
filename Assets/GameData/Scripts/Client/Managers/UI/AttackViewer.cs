@@ -35,8 +35,9 @@ namespace PJTC.Managers.UI
 
         public void SetAttackBanner(CatData catData)
         {
-            Debug.Log("SET BANNER ATTACK TYPE " + catData.attackType);
-            Debug.Log("SET BANNER ATTACK HINT " + catData.attackHints.excludedAttack);
+            Debug.Log(
+                $"CAT {catData.id} SET BANNER ATTACK TYPE {catData.attackType} BANNER ATTACK HINT {catData.attackHints.excludedAttack}"
+            );
             if (attackBanner == null)
             {
                 CreateBanner();

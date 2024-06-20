@@ -74,7 +74,12 @@ namespace PJTC.Server
         public void SendPlayerMove(MoveResult moveResult, int playerId)
         {
             CSMRequest.Type type = CSMRequest.Type.MAKE_MOVE;
-
+            if (moveResult.moves[0].moveWithBattle)
+            {
+                Debug.Log(
+                    $"send move with battle to {playerId}, {JsonUtility.ToJson(moveResult)} "
+                );
+            }
             SendMessage(playerId, type, moveResult, true);
         }
 

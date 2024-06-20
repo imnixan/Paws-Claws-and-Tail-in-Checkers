@@ -1601,7 +1601,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Waiting for a opponent
+  m_text: Waiting for an opponent
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: e33a704a9ef697a4ca452c246e2da75f, type: 2}
   m_sharedMaterial: {fileID: 6139195923628833818, guid: e33a704a9ef697a4ca452c246e2da75f, type: 2}
@@ -2641,8 +2641,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3b77d19bb1ccc5428f0322fbef25f7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ip: roundhouse.proxy.rlwy.net
-  port: 25349
   carpetBuilder: {fileID: 962529098}
   gameBuilder: {fileID: 1721084981}
   gameController: {fileID: 309793257}

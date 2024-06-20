@@ -120,6 +120,7 @@ namespace PJTC.Structs
             }
             else
             {
+                Debug.Log($"UpdateDefended hints {newExcludedAttack}");
                 attackHints.excludedAttack = newExcludedAttack;
             }
         }
@@ -139,6 +140,9 @@ namespace PJTC.Structs
             }
             else
             {
+                Debug.Log(
+                    $"UpdateAttacker {attackType} x {defenderType}  hints {attackHints.excludedAttack} => {newExcludedAttack}"
+                );
                 attackHints.excludedAttack = newExcludedAttack;
             }
         }
