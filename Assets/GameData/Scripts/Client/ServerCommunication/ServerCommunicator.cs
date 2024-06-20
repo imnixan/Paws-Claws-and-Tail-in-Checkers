@@ -190,7 +190,7 @@ namespace PJTC.Scripts
         {
             this.ip = RemoteConfigService.Instance.appConfig.GetString("serverURL");
             this.port = RemoteConfigService.Instance.appConfig.GetString("serverPORT");
-
+            RemoteConfigService.Instance.FetchCompleted -= ParseRemoteConfig;
             Debug.Log($"connecting {ip}:{port}");
             ws = new WebSocket($"ws://{ip}:{port}/checkers");
             serverDataHandler = new ServerDataHandler(ws);

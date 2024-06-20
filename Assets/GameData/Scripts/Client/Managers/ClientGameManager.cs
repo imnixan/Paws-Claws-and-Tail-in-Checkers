@@ -192,6 +192,7 @@ namespace PJTC.Managers
         private void OnDisable()
         {
             UnsubFromEvents();
+            serverCommunicator.Disconnect();
         }
     }
 }
