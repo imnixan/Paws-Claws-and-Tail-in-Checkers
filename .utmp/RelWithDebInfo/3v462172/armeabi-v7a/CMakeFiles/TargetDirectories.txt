@@ -1,5 +1,0 @@
-M:/AGAIN GAME YES/PCTC/.utmp/RelWithDebInfo/3v462172/armeabi-v7a/CMakeFiles/edit_cache.dir
-M:/AGAIN GAME YES/PCTC/.utmp/RelWithDebInfo/3v462172/armeabi-v7a/CMakeFiles/rebuild_cache.dir
-M:/AGAIN GAME YES/PCTC/.utmp/RelWithDebInfo/3v462172/armeabi-v7a/GameActivity/CMakeFiles/game.dir
-M:/AGAIN GAME YES/PCTC/.utmp/RelWithDebInfo/3v462172/armeabi-v7a/GameActivity/CMakeFiles/edit_cache.dir
-M:/AGAIN GAME YES/PCTC/.utmp/RelWithDebInfo/3v462172/armeabi-v7a/GameActivity/CMakeFiles/rebuild_cache.dir
