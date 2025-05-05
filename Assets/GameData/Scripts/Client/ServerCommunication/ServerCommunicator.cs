@@ -1,17 +1,15 @@
 ﻿using System.Collections;
+using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
 using PJTC.Enums;
-using PJTC.Managers;
 using PJTC.Managers;
 using PJTC.Structs;
 using Unity.Services.Authentication;
 using Unity.Services.Core;
 using Unity.Services.RemoteConfig;
 using UnityEngine;
-using UnityEngine;
 using UnityEngine.Networking;
-using WebSocketSharp;
+using HybridWebSocket;
 
 namespace PJTC.Scripts
 {
@@ -20,160 +18,212 @@ namespace PJTC.Scripts
         public WebSocket ws { get; private set; }
         public ServerDataSender serverDataSender { get; private set; }
         public ServerDataHandler serverDataHandler { get; private set; }
-        private const int PING_TIME = 1000;
-        private const int MAX_CONNECT_TIME = 5000;
+
+        private const float PING_INTERVAL = 1.0f;
+        private const float MAX_CONNECT_TIME = 5.0f;
         private const int MAX_RETRIES = 5;
-        private int retries;
+
+        private int retries = 0;
         private string ip;
         private string port;
         private ClientGameManager gameManager;
         private int messageCount = 0;
 
-        private Timer pingTimer;
+        private MonoBehaviour coroutineHost;
 
-        private Timer connectTimer;
+        private Coroutine pingCoroutine;
+        private Coroutine connectTimeoutCoroutine;
 
         public struct userAttributes { }
-
         public struct appAttributes { }
 
-        public ServerCommunicator(ClientGameManager gm)
+        private bool IsAlive => ws != null && ws.GetState() == WebSocketState.Open;
+
+        public ServerCommunicator(ClientGameManager gm, MonoBehaviour coroutineHost)
         {
-            this.ip = ip;
-            this.port = port;
             this.gameManager = gm;
+            this.coroutineHost = coroutineHost;
         }
 
         public async void TryToConnect()
         {
             if (Application.internetReachability == NetworkReachability.NotReachable)
             {
-                Debug.Log("no internet");
+                Debug.Log("No internet");
                 gameManager.OnError();
                 return;
             }
 
             await InitializeRemoteConfigAsync();
             RemoteConfigService.Instance.FetchCompleted += ParseRemoteConfig;
-            await RemoteConfigService.Instance.FetchConfigsAsync(
-                new userAttributes(),
-                new appAttributes()
-            );
+            await RemoteConfigService.Instance.FetchConfigsAsync(new userAttributes(), new appAttributes());
         }
 
-        private void OnMessage(object sender, MessageEventArgs e)
+        private void ParseRemoteConfig(ConfigResponse configResponse)
         {
-            ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
+            RemoteConfigService.Instance.FetchCompleted -= ParseRemoteConfig;
 
-            //SendAck(csm.messageID);
+            ip = RemoteConfigService.Instance.appConfig.GetString("serverURL");
+            port = RemoteConfigService.Instance.appConfig.GetString("serverPORT");
 
-            UnityMainThreadDispatcher.Instance.Enqueue(() => HandleMessage(csm));
-        }
+            Debug.Log($"Connecting to ws://{ip}:{port}/checkers");
 
-        private void SendAck(int messageID)
-        {
-            CSMRequest.Type type = CSMRequest.Type.ACK;
-            ClientServerMessage csm = new ClientServerMessage((int)type, "Ack");
-            csm.messageID = messageID;
-            string message = JsonUtility.ToJson(csm);
+            ws = WebSocketFactory.CreateInstance($"ws://{ip}:{port}/checkers");
+            serverDataHandler = new ServerDataHandler(ws);
+            serverDataSender = new ServerDataSender(ws, this);
 
-            Send(message);
-        }
+            ws.OnMessage += OnMessage;
 
-        public void Disconnect()
-        {
-            if (pingTimer != null)
-                pingTimer.Stop();
-
-            if (connectTimer != null)
-                connectTimer.Stop();
-            if (ws != null)
+            // Все обработчики заворачиваем в try/catch
+            ws.OnOpen += () =>
             {
-                ws.Close();
-            }
+                try
+                {
+                    OnConnected();
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogError("Exception in OnOpen: " + e.Message);
+                    OnError(e.Message);
+                }
+            };
+
+            ws.OnError += OnError;
+            ws.OnClose += OnConnectionClosed;
+
+            ConnectWebSocket();
         }
 
-        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
+        private void ConnectWebSocket()
         {
-            ClientServerMessage csm = BuildMessage(type, body);
-            csm.messageID = messageCount;
-            messageCount++;
-            Debug.Log($"Client {gameManager.playerID} send message {csm.messageID}");
-            string message = JsonUtility.ToJson(csm);
-            Send(message);
+            connectTimeoutCoroutine = coroutineHost.StartCoroutine(ConnectTimeout());
+            ws.Connect();
         }
 
-        private void OnError(object sender, ErrorEventArgs e)
+        private IEnumerator ConnectTimeout()
         {
-            Debug.Log("ws error");
-            gameManager.OnError();
-        }
-
-        private void OnConnectError(object source, ElapsedEventArgs e)
-        {
-            Debug.Log("on connect error " + e.ToString());
-            UnityMainThreadDispatcher.Instance.Enqueue(() => Disconnect());
-            UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnectError());
-        }
-
-        private void OnConnected(object sender, System.EventArgs e)
-        {
-            Debug.Log("Connected");
-            connectTimer.Stop();
-            pingTimer = new Timer(1000);
-            pingTimer.Elapsed += CheckAlive;
-            pingTimer.AutoReset = true;
-
-            pingTimer.Enabled = true;
-
-            UnityMainThreadDispatcher.Instance.Enqueue(() => gameManager.OnConnect());
-        }
-
-        private void CheckAlive(object source, ElapsedEventArgs e)
-        {
-            if (ws.IsAlive)
+            yield return new WaitForSeconds(MAX_CONNECT_TIME);
+            if (!IsAlive)
             {
-                retries = 0;
-            }
-            else
-            {
-                retries++;
-            }
-            if (retries >= MAX_RETRIES)
-            {
+                Debug.Log("Connection timeout");
                 Disconnect();
+                gameManager.OnConnectError();
             }
         }
 
-        private void OnConnectionClosed(object sender, System.EventArgs e)
+        private void OnConnected()
         {
-            pingTimer.Stop();
-            gameManager.OnServerEndConnection();
+            UnityMainThreadDispatcher.Instance.Enqueue(() =>
+            {
+                Debug.Log("Connected");
+
+                if (connectTimeoutCoroutine != null)
+                    coroutineHost.StopCoroutine(connectTimeoutCoroutine);
+
+                pingCoroutine = coroutineHost.StartCoroutine(PingRoutine());
+                gameManager.OnConnect();
+            });
         }
 
-        void OnDestroy()
+        private IEnumerator PingRoutine()
         {
-            Disconnect();
+            while (true)
+            {
+                yield return new WaitForSeconds(PING_INTERVAL);
+
+                if (IsAlive)
+                {
+                    retries = 0;
+                }
+                else
+                {
+                    retries++;
+                    Debug.LogWarning($"Ping failed ({retries})");
+                }
+
+                if (retries >= MAX_RETRIES)
+                {
+                    Debug.LogError("Ping failed too many times. Disconnecting.");
+                    Disconnect();
+                    break;
+                }
+            }
         }
 
-        private void Send(string message)
+        private void OnMessage(byte[] msg)
         {
-            ws.SendAsync(message, OnMessageSended);
+            // ws.DispatchMessageQueue();
+#if UNITY_WEBGL && !UNITY_EDITOR
+#endif
+            try
+            {
+                string data = Encoding.UTF8.GetString(msg);
+                ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(data);
+                UnityMainThreadDispatcher.Instance.Enqueue(() => HandleMessage(csm));
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("Error processing message: " + e.Message);
+            }
         }
-
-        private void OnMessageSended(bool succes) { }
 
         private void HandleMessage(ClientServerMessage csm)
         {
             serverDataHandler.ProcessServerData(csm);
         }
 
+        private void OnError(string errMsg)
+        {
+            Debug.LogError("WebSocket error: " + errMsg);
+            Disconnect();
+            gameManager.OnError();
+        }
+
+        private void OnConnectionClosed(WebSocketCloseCode code)
+        {
+            Debug.Log($"Connection closed with code: {code}");
+
+            if (pingCoroutine != null)
+                coroutineHost.StopCoroutine(pingCoroutine);
+
+            gameManager.OnServerEndConnection();
+        }
+
+        public void SendMessage<T>(CSMRequest.Type type, T body, bool needAck)
+        {
+            ClientServerMessage csm = BuildMessage(type, body);
+            csm.messageID = messageCount++;
+            Debug.Log($"Client {gameManager.playerID} sending message {csm.messageID}");
+            string message = JsonUtility.ToJson(csm);
+            Send(message);
+        }
+
+        private void Send(string message)
+        {
+            if (IsAlive)
+            {
+                ws.Send(Encoding.UTF8.GetBytes(message));
+            }
+        }
+
+        public void Disconnect()
+        {
+            if (pingCoroutine != null)
+                coroutineHost.StopCoroutine(pingCoroutine);
+
+            if (connectTimeoutCoroutine != null)
+                coroutineHost.StopCoroutine(connectTimeoutCoroutine);
+
+            if (ws != null)
+            {
+                ws.Close();
+            }
+        }
+
         private ClientServerMessage BuildMessage<T>(CSMRequest.Type type, T body)
         {
             string data = JsonUtility.ToJson(body);
-            ClientServerMessage csm = new ClientServerMessage((int)type, data);
-
-            return csm;
+            return new ClientServerMessage((int)type, data);
         }
 
         private async Task InitializeRemoteConfigAsync()
@@ -184,28 +234,6 @@ namespace PJTC.Scripts
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
             }
-        }
-
-        private void ParseRemoteConfig(ConfigResponse configResponse)
-        {
-            this.ip = RemoteConfigService.Instance.appConfig.GetString("serverURL");
-            this.port = RemoteConfigService.Instance.appConfig.GetString("serverPORT");
-            RemoteConfigService.Instance.FetchCompleted -= ParseRemoteConfig;
-            Debug.Log($"connecting {ip}:{port}");
-            ws = new WebSocket($"ws://{ip}:{port}/checkers");
-            serverDataHandler = new ServerDataHandler(ws);
-            serverDataSender = new ServerDataSender(ws, this);
-            ws.OnMessage += OnMessage;
-            ws.OnOpen += OnConnected;
-            ws.OnError += OnError;
-            ws.OnClose += OnConnectionClosed;
-            ws.ConnectAsync();
-
-            connectTimer = new Timer(MAX_CONNECT_TIME);
-            connectTimer.Elapsed += OnConnectError;
-            connectTimer.AutoReset = false;
-            connectTimer.Enabled = true;
-            connectTimer.Start();
         }
     }
 }

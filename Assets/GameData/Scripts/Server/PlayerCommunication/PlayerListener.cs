@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Timers;
 using PJTC.Enums;
@@ -40,7 +41,7 @@ namespace PJTC.Server
             csm.messageID = messageCount;
             messageCount++;
             string message = JsonUtility.ToJson(csm);
-            SendAsync(message, MessageSended);
+            SendAsync(Encoding.UTF8.GetBytes(message), MessageSended);
 
             if (needAck)
             {
@@ -103,7 +104,9 @@ namespace PJTC.Server
 
         protected override void OnMessage(MessageEventArgs e)
         {
-            ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(e.Data);
+    
+            
+            ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(Encoding.UTF8.GetString(e.RawData));
 
             HandleMessage(csm);
         }

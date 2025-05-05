@@ -57,7 +57,7 @@ namespace PJTC.Managers
 
         public void Start()
         {
-            serverCommunicator = new ServerCommunicator(this);
+            serverCommunicator = new ServerCommunicator(this, this);
         }
 
         public void Connect()

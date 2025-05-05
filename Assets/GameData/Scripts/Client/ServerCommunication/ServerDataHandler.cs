@@ -4,7 +4,7 @@ using PJTC.Enums;
 using PJTC.Structs;
 using UnityEngine;
 using UnityEngine.Events;
-using WebSocketSharp;
+using HybridWebSocket;
 
 namespace PJTC.Managers
 {

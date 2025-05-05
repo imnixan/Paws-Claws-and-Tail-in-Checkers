@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 15003, guid: 0000000000000000e000000000000000, type: 0}
   m_Name: CLIENT
   m_EditorClassIdentifier: 
+  m_AssetVersion: 1
   m_BuildTarget: 19
   m_Subtarget: 2
   m_PlatformId: 4e3c793746204150860bf175a9a41a05
   m_PlatformBuildProfile:
     rid: 887890127880194
+  m_OverrideGlobalSceneList: 1
   m_Scenes:
   - m_enabled: 1
     m_path: Assets/Scenes/GameScene.unity
@@ -34,7 +36,7 @@ MonoBehaviour:
     - line: '|   targetDevice: 2'
     - line: '|   useOnDemandResources: 0'
     - line: '|   accelerometerFrequency: 60'
-    - line: '|   companyName: DefaultCompany'
+    - line: '|   companyName: imnixan'
     - line: '|   productName: Paws, Claws and Tail in Checkers'
     - line: '|   defaultCursor: {instanceID: 0}'
     - line: '|   cursorHotspot: {x: 0, y: 0}'
@@ -72,6 +74,7 @@ MonoBehaviour:
     - line: '|   m_StereoRenderingPath: 0'
     - line: '|   m_ActiveColorSpace: 1'
     - line: '|   unsupportedMSAAFallback: 0'
+    - line: '|   m_SpriteBatchMaxVertexCount: 65535'
     - line: '|   m_SpriteBatchVertexThreshold: 300'
     - line: '|   m_MTRendering: 1'
     - line: '|   mipStripping: 0'
@@ -93,19 +96,18 @@ MonoBehaviour:
     - line: '|   androidRenderOutsideSafeArea: 1'
     - line: '|   androidUseSwappy: 0'
     - line: '|   androidBlitType: 0'
-    - line: '|   androidResizableWindow: 0'
+    - line: '|   androidResizeableActivity: 0'
     - line: '|   androidDefaultWindowWidth: 1920'
     - line: '|   androidDefaultWindowHeight: 1080'
     - line: '|   androidMinimumWindowWidth: 400'
     - line: '|   androidMinimumWindowHeight: 300'
     - line: '|   androidFullscreenMode: 1'
     - line: '|   androidAutoRotationBehavior: 1'
-    - line: '|   androidApplicationEntry: 2'
     - line: '|   androidPredictiveBackSupport: 0'
+    - line: '|   androidApplicationEntry: 2'
     - line: '|   defaultIsNativeResolution: 1'
     - line: '|   macRetinaSupport: 1'
     - line: '|   runInBackground: 1'
-    - line: '|   captureSingleScreen: 0'
     - line: '|   muteOtherAudioSources: 0'
     - line: '|   Prepare IOS For Recording: 0'
     - line: '|   Force IOS Speakers When Recording: 0'
@@ -579,6 +581,7 @@ MonoBehaviour:
     - line: '|   playModeTestRunnerEnabled: 0'
     - line: '|   runPlayModeTestAsEditModeTest: 0'
     - line: '|   actionOnDotNetUnhandledException: 1'
+    - line: '|   editorGfxJobOverride: 1'
     - line: '|   enableInternalProfiler: 0'
     - line: '|   logObjCUncaughtExceptions: 1'
     - line: '|   enableCrashReportAPI: 0'
@@ -889,11 +892,11 @@ MonoBehaviour:
     - line: '|   gcIncremental: 1'
     - line: '|   gcWBarrierValidation: 0'
     - line: '|   apiCompatibilityLevelPerPlatform: {}'
-    - line: '|   editorAssembliesCompatibilityLevel: 1'
+    - line: '|   editorAssembliesCompatibilityLevel: 2'
     - line: '|   m_RenderingPath: 1'
     - line: '|   m_MobileRenderingPath: 1'
-    - line: '|   metroPackageName: Paws, Claws and Tail in Checkers'
-    - line: '|   metroPackageVersion: '
+    - line: '|   metroPackageName: PawsClawsandTailinCheckers'
+    - line: '|   metroPackageVersion: 1.0.0.0'
     - line: '|   metroCertificatePath: '
     - line: '|   metroCertificatePassword: '
     - line: '|   metroCertificateSubject: '
@@ -901,7 +904,7 @@ MonoBehaviour:
     - line: '|   metroCertificateNotAfter: 0000000000000000'
     - line: '|   metroApplicationDescription: Paws, Claws and Tail in Checkers'
     - line: '|   wsaImages: {}'
-    - line: '|   metroTileShortName: '
+    - line: '|   metroTileShortName: Paws, Claws and Tail in Checkers'
     - line: '|   metroTileShowName: 0'
     - line: '|   metroMediumTileShowName: 0'
     - line: '|   metroLargeTileShowName: 0'
@@ -968,7 +971,7 @@ MonoBehaviour:
     - line: '|   hmiCpuConfiguration: '
     - line: '|   hmiLogStartupTiming: 0'
     - line: '|   qnxGraphicConfPath: '
-    - line: '|   apiCompatibilityLevel: 3'
+    - line: '|   apiCompatibilityLevel: 6'
     - line: '|   captureStartupLogs: {}'
     - line: '|   activeInputHandler: 2'
     - line: '|   windowsGamepadBackendHint: 0'
@@ -983,6 +986,8 @@ MonoBehaviour:
     - line: '|   platformRequiresReadableAssets: 0'
     - line: '|   virtualTexturingSupportEnabled: 0'
     - line: '|   insecureHttpOption: 0'
+    - line: '|   androidVulkanDenyFilterList: []'
+    - line: '|   androidVulkanAllowFilterList: []'
     - line: '| '
   references:
     version: 2
