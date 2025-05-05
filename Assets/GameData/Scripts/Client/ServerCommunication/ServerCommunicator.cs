@@ -157,8 +157,11 @@ namespace PJTC.Scripts
 #endif
             try
             {
+                Debug.Log($"Message bytes length '{msg.Length}'" );
                 string data = Encoding.UTF8.GetString(msg);
+                Debug.Log($"MessageText  '{data}'" );
                 ClientServerMessage csm = JsonUtility.FromJson<ClientServerMessage>(data);
+                Debug.Log($"Message csm data  '{csm.data}'" );
                 UnityMainThreadDispatcher.Instance.Enqueue(() => HandleMessage(csm));
             }
             catch (System.Exception e)
