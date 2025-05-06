@@ -66,9 +66,9 @@ namespace PJTC.Scripts
             ip = RemoteConfigService.Instance.appConfig.GetString("serverURL");
             port = RemoteConfigService.Instance.appConfig.GetString("serverPORT");
 
-            Debug.Log($"Connecting to ws://{ip}:{port}/checkers");
-
-            ws = WebSocketFactory.CreateInstance($"ws://{ip}:{port}/checkers");
+            string finalAddress = $"wss://{ip}:{port}/checkers";
+            Debug.Log($"Connecting to {finalAddress}");
+            ws = WebSocketFactory.CreateInstance(finalAddress);
             serverDataHandler = new ServerDataHandler(ws);
             serverDataSender = new ServerDataSender(ws, this);
 

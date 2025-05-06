@@ -1,6 +1,8 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using WebSocketSharp.Server;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 
 namespace PJTC.Server
 {
@@ -11,17 +13,14 @@ namespace PJTC.Server
 
         private WebSocketServer wss;
 
+       
         void OnEnable()
         {
-            wss = production
-                ? new WebSocketServer(IPAddress.IPv6Any, 8080)
-                : new WebSocketServer($"ws://0.0.0.0:8080");
-
-            wss.AddWebSocketService<PlayerListener>("/checkers");
+            wss = new WebSocketServer(System.Net.IPAddress.Any, 8080, true);
+            wss.SslConfiguration.ServerCertificate = new X509Certificate2();
+            wss.AddWebSocketService<PlayerListener>("/checkers"); // Подключение по wss://pctc.wowandy.dev:8081/ws
             wss.Start();
-
-            // Возможно
-            Debug.Log($"WebSocket server started at ws://IPAddress.IPv6Any:8080");
+            Debug.Log($"{wss.Address} is listening on port {wss.Port}");
         }
 
         void OnDestroy()
