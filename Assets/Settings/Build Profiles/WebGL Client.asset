@@ -859,7 +859,7 @@ MonoBehaviour:
     - line: '|     QNX: DOTWEEN'
     - line: '|     Standalone: DOTWEEN'
     - line: '|     VisionOS: DOTWEEN'
-    - line: '|     WebGL: DOTWEEN'
+    - line: '|     WebGL: DOTWEEN;FISHNET;FISHNET_V4'
     - line: '|     Windows Store Apps: DOTWEEN'
     - line: '|     XboxOne: DOTWEEN'
     - line: '|     iPhone: DOTWEEN'

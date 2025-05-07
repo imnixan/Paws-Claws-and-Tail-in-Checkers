@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusion;
 using PJTC.Builders;
 using PJTC.CameraControl;
 using PJTC.CatScripts;
@@ -59,11 +60,22 @@ namespace PJTC.Managers
         {
             serverCommunicator = new ServerCommunicator(this, this);
         }
-
-        public void Connect()
+        private NetworkRunner _runner;
+        public async void Connect()
         {
-            serverCommunicator.TryToConnect();
-            uiManager.OnStartConnect();
+            // serverCommunicator.TryToConnect();
+            // uiManager.OnStartConnect();
+            _runner = gameObject.AddComponent<NetworkRunner>();
+
+         
+
+            // Start or join (depends on gamemode) a session with a specific name
+            await _runner.StartGame(new StartGameArgs()
+            {
+                GameMode = GameMode.Client,
+                SessionName = "Checkers",
+                SceneManager = gameObject.AddComponent<NetworkSceneManagerDefault>()
+            });
         }
 
         public void OnConnect()
