@@ -12,16 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 469c24fdb3bd6431b92cc1465bd9166b, type: 3}
   m_Name: RemoteConfigDataStoreAsset
   m_EditorClassIdentifier: 
-  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"cef044bb-3d31-43ea-b609-8073b35496c2\"\r\n   
+  _rsKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"95a4ce69-92e5-4da7-8d36-b45f59d19b1b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"serverURL\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"pctc.wowandy.dev\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"15e2edd1-a13e-46c0-8e04-7714b0d3c884\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5654d6aa-490c-4c59-901c-8ce3c834bb34\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"serverPORT\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"8080\"\r\n    }\r\n  }\r\n]"
-  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"cef044bb-3d31-43ea-b609-8073b35496c2\"\r\n   
+  _rsLastCachedKeyList: "[\r\n  {\r\n    \"metadata\": {\r\n      \"entityId\": \"95a4ce69-92e5-4da7-8d36-b45f59d19b1b\"\r\n   
     },\r\n    \"rs\": {\r\n      \"key\": \"serverURL\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"pctc.wowandy.dev\"\r\n    }\r\n  },\r\n  {\r\n    \"metadata\":
-    {\r\n      \"entityId\": \"15e2edd1-a13e-46c0-8e04-7714b0d3c884\"\r\n    },\r\n   
+    {\r\n      \"entityId\": \"5654d6aa-490c-4c59-901c-8ce3c834bb34\"\r\n    },\r\n   
     \"rs\": {\r\n      \"key\": \"serverPORT\",\r\n      \"type\": \"string\",\r\n     
     \"value\": \"8080\"\r\n    }\r\n  }\r\n]"
   _environments: "[\r\n  {\r\n    \"projectId\": \"fb54e1a9-1ddf-4e3d-b736-c2c954335331\",\r\n   
